@@ -1,2 +1,2 @@
-config.php
-db.conf
+backend/config.php
+database/db.conf
