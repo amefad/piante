@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Mappa delle piante</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <h1>Mappa delle piante</h1>
+    
+    <h2>Registrati</h2>
+    <form id="register">
+        <input type="text" name="name" placeholder="Nome Cognome" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Registrati">
+    </form>
+    <pre id="register-result"></pre>
+
+    <h2>Login</h2>
+    <form id="login">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Login">   
+    </form>
+    <pre id="login-result"></pre>
+
+    <h2>Logout</h2>
+    <form id="logout">
+        <input type="submit" value="Logout">   
+    </form>
+    <pre id="logout-result"></pre>
+
+    <hr>
+
+    <h2>Piante nel database</h2>
+    <p>Per visualizzare le piante nel database non è necessario essere loggati.</p>
+    <button id="load-plants">Mostra piante nel database</button>
+    <pre id="plants-result"></pre>
+
+    <hr>
+
+    <h2>Invia dati al database</h2>
+    <p>Login necessario.</p>
+    <form id="send-plant">
+        <label>Nuova pianta nel database:
+        <textarea id="plant-json" style="width: 100%; height: 15em;">{
+"number": 123,
+"latitude": 45.8851066,
+"longitude": 12.2921521,
+"circumference": 50,
+"height": 15,
+"common-name": "Quercia",
+"scientific-name": "Quercus ilex",
+"user-id": 2
+}</textarea></label>
+        <button type="submit">Invia</button>
+    </form>
+    <pre id="send-result"></pre>
+
+    <br>
+
+    <form id="upload-image">
+        <label>Upload immagine:
+        <input type="file" id="image-file" name="image" accept="image/*" required></label>
+        <label>ID pianta:
+        <input type="number" id="plant-id" name="plant-id" value="6" size="3"></label>
+        <button type="submit">Upload</button>
+    </form>
+    <pre id="upload-result"></pre>
+
+    <hr>
+
+    <h2>Elimina</h2>
+    <form id="delete-plant">
+        <label>ID pianta: <input type="number" name="plant-id" value="1" size="3"></label>
+        <button type="submit">Elimina pianta</button>
+    </form>
+    <pre id="delete-result"></pre>
+</body>
+</html>
