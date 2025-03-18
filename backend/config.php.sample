@@ -1,1 +1,6 @@
-
+<?php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'piante');
+define('DB_USER', 'myuser');
+define('DB_PASSWORD', 'mypassword');
+?>
