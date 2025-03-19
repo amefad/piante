@@ -102,7 +102,10 @@ document.getElementById('upload-image').addEventListener('submit', function (eve
 
 // Loads one plant to edit
 sendForm('edit-plant', 'load_plant.php', 'update-plant-json', (data) => {
-    if (data.plant) {
+    if (data.status == 'success') {
+        delete data.plant.date;
+        delete data.plant.user;
+        delete data.plant.images;
         document.getElementById('update-plant-json').innerHTML = JSON.stringify(data.plant, null, 2);
     }
 });
