@@ -2,6 +2,9 @@
 try {
     require 'pdo.php';
     $data = json_decode(file_get_contents('php://input'), true);
+    if (!isset($data['plant-id'])) {
+        throw new Exception('ID pianta mancante');
+    }
     $plant = $pdo->query('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumference, height,
     common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user
     FROM plants WHERE id = '. $data['plant-id'])->fetch(PDO::FETCH_ASSOC);
