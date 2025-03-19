@@ -78,6 +78,20 @@
 
     <hr>
 
+    <h2>Modifica pianta</h2>
+    <form id="edit-plant">
+        <label>ID pianta: <input type="number" name="plant-id" value="1" size="3"></label>
+        <button type="submit">Carica pianta</button>
+    </form>
+    <form id="update-plant">
+        <label>Modifica pianta:
+        <textarea id="update-plant-json" style="width: 100%; height: 20em;"></textarea></label>
+        <button type="submit">Invia modifiche</button>
+    </form>
+    <pre id="update-result"></pre>
+
+    <hr>
+
     <h2>Elimina</h2>
     <form id="delete-plant">
         <label>ID pianta: <input type="number" name="plant-id" value="1" size="3"></label>

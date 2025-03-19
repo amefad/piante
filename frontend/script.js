@@ -22,7 +22,7 @@ function sendForm(formId, phpFile, resultId, callback) {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                document.getElementById(resultId).innerText = JSON.stringify(data, null, 3);
+                document.getElementById(resultId).innerHTML = JSON.stringify(data, null, 3);
                 if (callback) {
                     callback(data);
                 }
@@ -97,6 +97,31 @@ document.getElementById('upload-image').addEventListener('submit', function (eve
         .then(data => {
             console.log(data);
             document.getElementById('upload-result').innerText = data;
+        });
+});
+
+// Loads one plant to edit
+sendForm('edit-plant', 'load_plant.php', 'update-plant-json', (data) => {
+    if (data.plant) {
+        document.getElementById('update-plant-json').innerHTML = JSON.stringify(data.plant, null, 2);
+    }
+});
+
+// Sends updated plant to database
+document.getElementById('update-plant').addEventListener('submit', function (event) {
+    event.preventDefault();
+    var jsonData = JSON.parse(document.getElementById('update-plant-json').value);
+    jsonData['token'] = localStorage.getItem('token');
+    console.log(jsonData);
+    fetch(backendUrl + 'update_plant.php', {
+        method: 'POST',
+        body: JSON.stringify(jsonData),
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            document.getElementById('update-result').innerHTML = JSON.stringify(data, null, 3);
         });
 });
 
