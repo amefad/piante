@@ -55,6 +55,9 @@ document.getElementById('load-plants').addEventListener('click', function () {
         });
 });
 
+// Loads one plant
+sendForm('load-plant', 'load_plant.php', 'plant-result');
+
 // Sends one plant to database
 document.getElementById('send-plant').addEventListener('submit', function (event) {
     event.preventDefault();

@@ -36,8 +36,14 @@
 
     <h2>Piante nel database</h2>
     <p>Per visualizzare le piante nel database non è necessario essere loggati.</p>
-    <button id="load-plants">Mostra piante nel database</button>
+    <button id="load-plants">Tutte le piante nel database</button>
     <pre id="plants-result"></pre>
+
+    <form id="load-plant">
+        <label>Cerca pianta per ID: <input type="number" name="plant-id" value="1" size="3"></label>
+        <button type="submit">Cerca</button>
+    </form>
+    <pre id="plant-result"></pre>
 
     <hr>
 
