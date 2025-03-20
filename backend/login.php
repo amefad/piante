@@ -10,12 +10,12 @@ try {
     }
     $stmt = $pdo->prepare('SELECT id, full_name AS name, email, password FROM users WHERE email = :email');
     $stmt->execute([':email' => $data['email']]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $user = $stmt->fetch();
     if ($user && password_verify($data['password'], $user['password'])) {
-        $stmt = $pdo->prepare('UPDATE users SET token = :token WHERE email = :email');
+        $stmt = $pdo->prepare('UPDATE users SET token = ? WHERE email = ?');
         $token = bin2hex(random_bytes(50));
-        $stmt->execute([':token' => $token, ':email' => $data['email']]);
-        $result = array('status' => 'success', 'message' => 'Login successful', 'token' => $token, 'user' => $user);
+        $stmt->execute([$token, $data['email']]);
+        $result = array('status' => 'success', 'message' => 'Login effettuato', 'token' => $token, 'user' => $user);
     } else {
         throw new Exception('Login fallito');
     }

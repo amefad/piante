@@ -3,15 +3,15 @@
         require 'pdo.php';
         $json = file_get_contents('php://input');
         $data = json_decode($json, true);
-        if (empty($data['token'])) {
-            throw new Exception('Token not provided');
+        $message = 'Eri già disconnesso';
+        if (isset($data['token'])) {
+            $stmt = $pdo->prepare('UPDATE users SET token = NULL WHERE token = ?');
+            $stmt->execute([$data['token']]);
+            if ($stmt->rowCount() == 1) {
+                $message = 'Logout avvenuto con successo';
+            }
         }
-        $stmt = $pdo->prepare('UPDATE users SET token = NULL WHERE token = :token');
-        $stmt->execute([':token' => $data['token']]);
-        if ($stmt->rowCount() == 0) {
-            throw new Exception('Token not found');
-        }
-        $result = ['status' => 'success', 'message' => 'Logout avvenuto con successo'];
+        $result = ['status' => 'success', 'message' => $message];
     } catch (Exception $e) {
         $result = ['status' => 'error', 'message' => $e->getMessage()];
     }

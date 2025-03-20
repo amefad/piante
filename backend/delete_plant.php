@@ -3,10 +3,10 @@ try {
     require 'pdo.php';
     require 'auth.php';
     if (empty($data['plant-id'])) {
-        throw new Exception('Plant ID is required');
+        throw new Exception('ID pianta necessario');
     }
-    $stmt = $pdo->prepare('DELETE FROM plants WHERE id = :id');
-    $stmt->execute([':id' => $data['plant-id']]);
+    $stmt = $pdo->prepare('DELETE FROM plants WHERE id = ?');
+    $stmt->execute([$data['plant-id']]);
     if ($stmt->rowCount() == 0) {
         throw new Exception('Pianta non trovata');
     }

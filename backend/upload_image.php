@@ -1,16 +1,15 @@
 <?php // Receives one image file and saves it in the uploads folder
 if(isset($_POST['token'])) {
     require 'pdo.php';
-    $token = $_POST['token'];
-    $stmt = $pdo->prepare('SELECT id FROM users WHERE token = :token');
-    $stmt->execute([':token' => $token]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE token = ?');
+    $stmt->execute([$_POST['token']]);
+    $user = $stmt->fetch();
     if (!$user) {
         echo 'Token non valido';
         return;
     }
 } else {
-    echo 'Token is required';
+    echo 'Token necessario';
     return;
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
