@@ -8,8 +8,24 @@
 </head>
 <body>
     <h1>Mappa delle piante</h1>
-    
-    <h2>Registrati</h2>
+
+    <h2>Post session (login)</h2>
+    <form id="login">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Login">   
+    </form>
+    <pre id="login-result"></pre>
+
+    <h2>Delete session (logout)</h2>
+    <form id="logout">
+        <input type="submit" value="Logout">   
+    </form>
+    <pre id="logout-result"></pre>
+
+    <hr>
+
+    <h2>Post user</h2>
     <form id="register">
         <input type="text" name="name" placeholder="Nome Cognome" required><br>
         <input type="email" name="email" placeholder="Email" required><br>
@@ -18,69 +34,60 @@
     </form>
     <pre id="register-result"></pre>
 
-    <h2>Login</h2>
-    <form id="login">
-        <input type="email" name="email" placeholder="Email" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <input type="submit" value="Login">   
+    <h2>Get user</h2>
+    <form id="get-user">
+        <label>ID utente: <input type="number" name="id" value="1" size="3" required></label>
+        <input type="submit" value="Cerca">
     </form>
-    <pre id="login-result"></pre>
+    <pre id="user-result"></pre>
 
-    <h2>Logout</h2>
-    <form id="logout">
-        <input type="submit" value="Logout">   
+    <h2>Delete user</h2>
+    <form id="delete-user">
+        <label>ID utente: <input type="number" name="id" value="1" size="3" required></label>
+        <input type="submit" value="Elimina">
     </form>
-    <pre id="logout-result"></pre>
+    <pre id="delete-user-result"></pre>
+    <p>Dopo delete user bisognerebbe chiamare DELETE session col token rimasto</p>
 
     <hr>
 
-    <h2>Piante nel database</h2>
-    <p>Per visualizzare le piante nel database non è necessario essere loggati.</p>
+    <h2>Get plants</h2>
+    <p>Per visualizzare le piante non è necessario il login.</p>
     <button id="load-plants">Tutte le piante nel database</button>
     <pre id="plants-result"></pre>
 
-    <form id="load-plant">
-        <label>Cerca pianta per ID: <input type="number" name="plant-id" value="1" size="3"></label>
+    <h2>Get plant</h2>
+    <form id="get-plant">
+        <label>ID pianta: <input type="number" name="id" value="1" size="3"></label>
         <button type="submit">Cerca</button>
     </form>
     <pre id="plant-result"></pre>
 
     <hr>
 
-    <h2>Invia dati al database</h2>
+    <h2>Post plant</h2>
     <p>Login necessario.</p>
-    <form id="send-plant">
+    <form id="post-plant">
         <label>Nuova pianta nel database:
         <textarea id="plant-json" style="width: 100%; height: 15em;">{
 "number": 123,
 "latitude": 45.8851066,
 "longitude": 12.2921521,
 "circumference": 50,
-"height": 150.5,
+"height": 25.5,
 "common-name": "Quercia",
 "scientific-name": "Quercus ilex",
 "user-id": 2
 }</textarea></label>
         <button type="submit">Invia</button>
     </form>
-    <pre id="send-result"></pre>
-
-    <br>
-
-    <form id="upload-image">
-        <label>Upload immagine:
-        <input type="file" id="image-file" name="image" accept="image/*" required></label>
-        <label>ID pianta:
-        <input type="number" id="plant-id" name="plant-id" value="6" size="3"></label>
-        <button type="submit">Upload</button>
-    </form>
-    <pre id="upload-result"></pre>
+    <pre id="post-plant-result"></pre>
 
     <hr>
 
-    <h2>Modifica pianta</h2>
+    <h2>Put plant</h2>
     <form id="edit-plant">
-        <label>ID pianta: <input type="number" name="plant-id" value="1" size="3"></label>
+        <label>ID pianta: <input type="number" name="id" value="1" size="3"></label>
         <button type="submit">Carica pianta</button>
     </form>
     <form id="update-plant">
@@ -92,11 +99,30 @@
 
     <hr>
 
-    <h2>Elimina</h2>
+    <h2>Delete plant</h2>
     <form id="delete-plant">
-        <label>ID pianta: <input type="number" name="plant-id" value="1" size="3"></label>
+        <label>ID pianta: <input type="number" name="id" value="1" size="3"></label>
         <button type="submit">Elimina pianta</button>
     </form>
     <pre id="delete-result"></pre>
+
+    <hr>
+
+    <h2>Post image</h2>
+    <form id="upload-image">
+        <label>Upload immagine:
+        <input type="file" id="image-file" name="image" accept="image/*" required></label>
+        <label>ID pianta:
+        <input type="number" id="plant-id" name="plant-id" value="1" size="3"></label>
+        <button type="submit">Upload</button>
+    </form>
+    <pre id="upload-result"></pre>
+
+    <h2>Delete image</h2>
+    <form id="delete-image">
+        <label>ID immagine: <input type="number" name="id" value="1" size="3"></label>
+        <button type="submit">Elimina immagine</button>
+    </form>
+    <pre id="delete-image-result"></pre>
 </body>
 </html>

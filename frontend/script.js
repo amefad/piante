@@ -1,28 +1,45 @@
-const backendUrl = '../backend/';
-
-// Sends form data as JSON to PHP file with fetch() method
-function sendForm(formId, phpFile, resultId, callback) {
+// Setups one form to send its data as JSON to the API with fetch() method
+function setupForm(method, request, formId, resultId, callback, textarea) {
     document.getElementById(formId).addEventListener('submit', function (event) {
         event.preventDefault();
-        var formData = new FormData(this);
+        const resultPlace = document.getElementById(resultId);
+        resultPlace.innerHTML = '';
+        // JSON data
         var jsonData = {};
-        formData.forEach((value, key) => {
-            jsonData[key] = value;
-        });
+        if (textarea) {
+            jsonData = JSON.parse(document.getElementById(textarea).value)
+        } else {
+            const formData = new FormData(this);
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+        }
+        // Fetch options
+        const options = { method: method };
+        var url = request;
+        if (method == 'GET' || method == 'PUT' || method == 'DELETE') {
+            url += '/' + jsonData['id'];
+        }
+        if (method == 'POST' || method == 'PUT') {
+            options.body = JSON.stringify(jsonData);
+        }
+        // Headers
         const token = localStorage.getItem('token');
         if (token) {
-            jsonData['token'] = token;
+            options.headers = {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        } else {
+            options.headers = {
+                'Content-Type': 'application/json'
+            };
         }
-        console.log(jsonData);
-        fetch(backendUrl + phpFile, {
-            method: 'POST',
-            body: JSON.stringify(jsonData),
-            headers: { 'Content-Type': 'application/json'}
-        })
+        fetch('../api/' + url, options)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                document.getElementById(resultId).innerHTML = JSON.stringify(data, null, 3);
+                resultPlace.innerHTML = JSON.stringify(data, null, 2);
                 if (callback) {
                     callback(data);
                 }
@@ -30,103 +47,83 @@ function sendForm(formId, phpFile, resultId, callback) {
     });
 }
 
-// Register
-sendForm('register', 'register.php', 'register-result');
-
-// Login
-sendForm('login', 'login.php', 'login-result', (data) => {
-    if (data.status == "success") {
+// Post session (login)
+setupForm('POST', 'session', 'login', 'login-result', (data) => {
+    if (data.token) {
         localStorage.setItem('token', data.token);
     }
 });
 
-// Logout
-sendForm('logout', 'logout.php', 'logout-result', () => {
+// Delete session (logout)
+setupForm('DELETE', 'session', 'logout', 'logout-result', () => {
     localStorage.removeItem('token');
 });
 
-// Loads plants
+
+// Post new user
+setupForm('POST', 'users', 'register', 'register-result');
+
+// Get single user
+setupForm('GET', 'users', 'get-user', 'user-result');
+
+// Delete user
+setupForm('DELETE', 'users', 'delete-user', 'delete-user-result');
+
+
+// Get all plants
 document.getElementById('load-plants').addEventListener('click', function () {
-    fetch(backendUrl + 'load_plants.php')
+    fetch('../api/plants')
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            document.getElementById('plants-result').innerText = JSON.stringify(data, null, 3);
+            document.getElementById('plants-result').innerText = JSON.stringify(data, null, 2);
         });
 });
 
-// Loads one plant
-sendForm('load-plant', 'load_plant.php', 'plant-result');
+// Get one plant
+setupForm('GET', 'plants', 'get-plant', 'plant-result');
 
-// Sends one plant to database
-document.getElementById('send-plant').addEventListener('submit', function (event) {
-    event.preventDefault();
-    var jsonData = JSON.parse(document.getElementById('plant-json').value);
-    jsonData['token'] = localStorage.getItem('token');
-    console.log(jsonData);
-    fetch(backendUrl + 'send_plant.php', {
-        method: 'POST',
-        body: JSON.stringify(jsonData),
-        headers: { 'Content-Type': 'application/json' }
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            document.getElementById('send-result').innerText = JSON.stringify(data, null, 3);
-        });
+// Posts one plant
+setupForm('POST', 'plants', 'post-plant', 'post-plant-result', null, 'plant-json');
+
+// Loads one plant to edit
+setupForm('GET', 'plants', 'edit-plant', 'update-plant-json', (data) => {
+    if (data) {
+        delete data.date;
+        delete data.user;
+        delete data.images;
+        document.getElementById('update-plant-json').innerHTML = JSON.stringify(data, null, 2);
+    }
 });
 
-// Upload image
-// TODO: da upload_image.php non riceve un JSON, ma un testo
+// Puts updated plant
+setupForm('PUT', 'plants', 'update-plant', 'update-result', null, 'update-plant-json');
+
+// Deletes one plant
+setupForm('DELETE', 'plants', 'delete-plant', 'delete-result');
+
+// Uploads image
 document.getElementById('upload-image').addEventListener('submit', function (event) {
     event.preventDefault();
     var formData = new FormData();
     var fileInput = document.getElementById('image-file');
     formData.append('image', fileInput.files[0]);
     formData.append('plant-id', document.getElementById('plant-id').value);
-    const token = localStorage.getItem('token');
-    if (token) {
-        formData.append('token', token);
-    }
-    console.log(formData);
-    fetch(backendUrl + 'upload_image.php', {
+    const options = {
         method: 'POST',
         body: formData
-    })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data);
-            document.getElementById('upload-result').innerText = data;
-        });
-});
-
-// Loads one plant to edit
-sendForm('edit-plant', 'load_plant.php', 'update-plant-json', (data) => {
-    if (data.status == 'success') {
-        delete data.plant.date;
-        delete data.plant.user;
-        delete data.plant.images;
-        document.getElementById('update-plant-json').innerHTML = JSON.stringify(data.plant, null, 2);
+    };
+    const token = localStorage.getItem('token');
+    if (token) {
+        options.headers = { 'Authorization': 'Bearer ' + token }
     }
-});
-
-// Sends updated plant to database
-document.getElementById('update-plant').addEventListener('submit', function (event) {
-    event.preventDefault();
-    var jsonData = JSON.parse(document.getElementById('update-plant-json').value);
-    jsonData['token'] = localStorage.getItem('token');
-    console.log(jsonData);
-    fetch(backendUrl + 'update_plant.php', {
-        method: 'POST',
-        body: JSON.stringify(jsonData),
-        headers: { 'Content-Type': 'application/json' }
-    })
+    fetch('../api/images', options)
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            document.getElementById('update-result').innerHTML = JSON.stringify(data, null, 3);
+            document.getElementById('upload-result').innerHTML = JSON.stringify(data, null, 2);
         });
 });
 
-// Deletes plant
-sendForm('delete-plant', 'delete_plant.php', 'delete-result');
+// Deletes image
+setupForm('DELETE', 'images', 'delete-image', 'delete-image-result');
