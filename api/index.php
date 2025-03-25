@@ -26,7 +26,7 @@ if (is_array($result) && sizeof($result) == 2 && isset($result[0]) && is_array($
 }
 http_response_code($code);
 header('Content-Type: application/json; charset=utf-8');
-echo json_encode($array);
+echo json_encode($array, JSON_UNESCAPED_SLASHES);
 
 function handleUsers($id) {
     require 'users.php';
