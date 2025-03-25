@@ -1,6 +1,6 @@
 <?php // Creates the database
 try {
-    require '../backend/config.php';
+    require '../api/config.php';
     $pdo = new PDO('mysql:host=' . DB_HOST, DB_USER, DB_PASSWORD);
     $sql = file_get_contents('database.sql');
     $sql = str_replace('`piante`', DB_NAME, $sql);
