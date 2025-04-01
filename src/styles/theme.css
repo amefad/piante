@@ -1,0 +1,349 @@
+@import "open-props/style";
+
+:root {
+  /* TOKENS */
+
+  /* Colors */
+  --floral-white: hsla(46, 100%, 97%, 1);
+  --exc-black: #1e1e1e;
+  --carmine: #96031a;
+  --green-custom: hsl(140deg 52.5% 31.37%) 0%;
+
+  /* TODO refers to blog pages */
+  --accent: #2337ff;
+  --accent-dark: #000d8a;
+  --black: 15, 18, 25;
+  --gray: 96, 115, 159;
+  --gray-light: 229, 233, 240;
+  --gray-dark: 34, 41, 57;
+  --gray-gradient: rgba(var(--gray-light), 50%), #fff;
+  --box-shadow: 0 2px 6px rgba(var(--gray), 25%),
+    0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%);
+
+  /* Color aliases */
+  --color-red: var(--red-8);
+  --color-black: var(--exc-black);
+  --color-white: var(--floral-white);
+  --color-blue: #9ecfff;
+
+  /**/
+  --color-primary: var(--green-9);
+  --color-text: var(--color-black);
+  --color-highlight: var(--purple-7);
+
+  /* specific colors */
+  --color-fab-bg: hsla(170, 100%, 81%, 1) 0%;
+  --color-fab-bg-active: radial-gradient(
+    circle,
+    hsla(170, 100%, 81%, 1) 0%,
+    hsla(186, 100%, 69%, 1) 100%
+  );
+  --color-action-button-bg: radial-gradient(
+    circle,
+    hsla(0, 0%, 96%, 1) 0%,
+    hsla(0, 0%, 89%, 1) 100%
+  );
+  --color-action-button-primary-bg: hsla(170, 100%, 81%, 1) 0%;
+  --color-action-button-active-bg: radial-gradient(
+    circle,
+    hsla(170, 100%, 81%, 1) 0%,
+    hsla(186, 100%, 69%, 1) 100%
+  );
+  --color-input-invalid-outline: #ff6446;
+  --color-input-invalid-bg: #ffae9e;
+
+  /* Shadows from https://www.joshwcomeau.com/shadow-palette/ */
+  --shadow-color: 0deg 0% 0%;
+  --shadow-elevation-low: 0.3px 0.3px 0.5px hsl(var(--shadow-color) / 0.1),
+    0.5px 0.5px 0.8px -1.2px hsl(var(--shadow-color) / 0.1),
+    1.2px 1.3px 2px -2.5px hsl(var(--shadow-color) / 0.1);
+  --shadow-elevation-medium: 0.3px 0.3px 0.5px hsl(var(--shadow-color) / 0.11),
+    1px 1px 1.6px -0.8px hsl(var(--shadow-color) / 0.11),
+    2.5px 2.6px 4.1px -1.7px hsl(var(--shadow-color) / 0.11),
+    6.2px 6.3px 9.9px -2.5px hsl(var(--shadow-color) / 0.11);
+  --shadow-elevation-high: 0.3px 0.3px 0.5px hsl(var(--shadow-color) / 0.1),
+    1.8px 1.8px 2.9px -0.4px hsl(var(--shadow-color) / 0.1),
+    3.4px 3.4px 5.4px -0.7px hsl(var(--shadow-color) / 0.1),
+    5.5px 5.6px 8.8px -1.1px hsl(var(--shadow-color) / 0.1),
+    8.8px 9px 14.2px -1.4px hsl(var(--shadow-color) / 0.1),
+    13.8px 14.1px 22.2px -1.8px hsl(var(--shadow-color) / 0.1),
+    21px 21.4px 33.7px -2.1px hsl(var(--shadow-color) / 0.1),
+    30.9px 31.5px 49.6px -2.5px hsl(var(--shadow-color) / 0.1);
+
+  --drop-shadow-solid: drop-shadow(2px 4px var(--color-black));
+  --drop-shadow-standard: drop-shadow(2px 4px 3px lightgray);
+
+  /* Typography */
+  --ratio: 1.25;
+  /* 
+	  ++ scaling coefficients ++
+		ratio^-3 = --num-coeff-m2: 0.512;
+		ratio^-2 = --num-coeff-m2: 0.64;
+		ratio^-1 = --num-coeff-m1: 0.8;
+		ratio^0 = --num-coeff-0: 1;
+		ratio^1 = --num-coeff-1: 1.25;
+		ratio^2 = --num-coeff-2: 1.563;
+		ratio^3 = --num-coeff-3: 1.953;
+		ratio^4 = --num-coeff-4: 2.441;
+		ratio^5 = --num-coeff-5: 3.052; 
+		ratio^6 = --num-coeff-6: 3.815; 
+		ratio^7 = --num-coeff-7: 4.768; 
+	*/
+  --num-coeff-0: 1; /* ratio^0 */
+  --num-coeff-1: var(--ratio); /* ratio^1 */
+  --num-coeff-2: calc(var(--ratio) * var(--num-coeff-1)); /* ratio^2 */
+  --num-coeff-3: calc(var(--ratio) * var(--num-coeff-2)); /* ratio^3 */
+  --num-coeff-4: calc(var(--ratio) * var(--num-coeff-3)); /* ratio^4 */
+  --num-coeff-5: calc(var(--ratio) * var(--num-coeff-4)); /* ratio^5 */
+  --num-coeff-6: calc(var(--ratio) * var(--num-coeff-5)); /* ratio^6 */
+  --num-coeff-7: calc(var(--ratio) * var(--num-coeff-6)); /* ratio^7 */
+  --num-coeff-m1: calc(1 / var(--ratio)); /* ratio^-1 */
+  --num-coeff-m2: calc(1 / var(--num-coeff-2)); /* ratio^-2 */
+  --num-coeff-m3: calc(1 / var(--num-coeff-3)); /* ratio^-3 */
+
+  /* Sizes */
+  /* define size "unit", tune up values based on viewport width */
+  --size-unit: clamp(0.96rem, 0.96rem + 0.18vw, 1.125rem);
+  /* calculated sizes */
+  --size-base-m3: calc(var(--size-unit) * var(--num-coeff-m3));
+  --size-base-m2: calc(var(--size-unit) * var(--num-coeff-m2));
+  --size-base-m1: calc(var(--size-unit) * var(--num-coeff-m1));
+  --size-base-0: calc(var(--size-unit) * var(--num-coeff-0));
+  --size-base-1: calc(var(--size-unit) * var(--num-coeff-1));
+  --size-base-2: calc(var(--size-unit) * var(--num-coeff-2));
+  --size-base-3: calc(var(--size-unit) * var(--num-coeff-3));
+  --size-base-4: calc(var(--size-unit) * var(--num-coeff-4));
+  --size-base-5: calc(var(--size-unit) * var(--num-coeff-5));
+  --size-base-6: calc(var(--size-unit) * var(--num-coeff-6));
+  --size-base-7: calc(var(--size-unit) * var(--num-coeff-7));
+  /* try use scale with line height (unitless) */
+  --line-height-normal: var(--num-coeff-2); /* 1.56 = ratio^2 */
+  --line-height-narrow: var(--num-coeff-1); /* 1.25 = ratio^1 */
+
+  --secure-padding: 3rem;
+  --standard-border: var(--border-size-2) solid var(--color-black);
+  --button-border: var(--standard-border);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: calc(0.5 * var(--size-base-0));
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-white);
+}
+:root {
+  /* firefox */
+  scrollbar-color: var(--color-white) transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  /* typography */
+  font-family: "Roboto Flex Variable", sans-serif;
+  font-size: var(--size-base-0);
+  line-height: var(--line-height-normal);
+  font-weight: 350;
+  /*  */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: var(--color-black);
+}
+
+/* Typographical elements */
+p,
+.like-p {
+  font-size: var(--size-base-0);
+  font-weight: 350;
+  line-height: var(--line-height-normal);
+  margin-block: 0 var(--size-base-0);
+}
+
+.display {
+  /* font-family: 'Lobster Two', sans-serif; */
+  font-style: italic;
+  font-size: var(--size-base-6);
+  line-height: var(--line-height-narrow);
+  /* font-weight: 650; */
+  margin-block: var(--size-base-0) var(--size-base-4);
+}
+
+h1 {
+  font-size: var(--size-base-5);
+  line-height: var(--line-height-narrow);
+  font-weight: 600;
+  margin-block: var(--size-base-4) var(--size-base-3);
+}
+
+h2 {
+  font-size: var(--size-base-4);
+  line-height: var(--line-height-narrow);
+  font-weight: 600;
+  margin-block: var(--size-base-3) var(--size-base-2);
+}
+
+h3,
+.like-h3 {
+  font-size: var(--size-base-3);
+  line-height: 3rem; /* <<< */
+  font-weight: 600;
+  margin-block: var(--size-base-2) var(--size-base-1);
+}
+
+h4,
+.like-h4 {
+  font-size: var(--size-base-2);
+  line-height: 2.5rem; /* <<< */
+  font-weight: 500;
+  margin-block: var(--size-base-1);
+}
+
+h5,
+.like-h5 {
+  font-size: var(--size-base-1);
+  line-height: 2rem; /* <<< */
+  font-weight: 500;
+  margin-block: var(--size-base-1);
+}
+
+hgroup > h1 {
+  margin-block: var(--size-base-4) var(--size-base-0);
+}
+hgroup > p {
+  padding-inline-start: 0.5ch;
+}
+hgroup > p + h1 {
+  margin-block: var(--size-base-0) var(--size-base-3);
+}
+
+small,
+.text-small {
+  font-size: var(--size-base-m1);
+  line-height: 1rem;
+}
+
+.text-x-small {
+  font-size: var(--size-base-m2);
+  line-height: 1rem;
+}
+
+strong {
+  font-weight: 500;
+}
+
+em {
+  font-style: italic;
+  /* padding-inline: 0.5ch; */
+}
+
+mark {
+  background-color: var(--color-white);
+  color: var(--color-black);
+  /* padding-inline: 0.5ch; */
+}
+
+/* Lists */
+ul {
+  padding-inline-start: 2ch;
+  margin-inline: 2ch;
+}
+
+/* Links */
+/* note: may be block, default is inline */
+a {
+  color: inherit;
+  text-decoration-line: none;
+  /* background: ; */
+}
+
+/* Quotes */
+blockquote,
+q,
+cite {
+  font-style: italic;
+  /* padding-inline: 0.5ch; */
+}
+
+/* others */
+/* abbr, sup, sub, kbd */
+
+hr {
+  color: var(--color-black);
+  margin: 1rem 0;
+}
+/* ------------- */
+
+table {
+  width: 100%;
+}
+
+code {
+  padding: 2px 5px;
+  background-color: rgb(var(--gray-light));
+  border-radius: 2px;
+}
+pre {
+  padding: 1.5em;
+  border-radius: 8px;
+}
+pre > code {
+  all: unset;
+}
+blockquote {
+  border-left: 4px solid var(--accent);
+  padding: 0 0 0 20px;
+  margin: 0px;
+  font-size: 1.333em;
+}
+
+/* Utilities */
+div.spacer {
+  block-size: 0;
+  padding: 2rem;
+}
+
+.indent {
+  /* use on a block but acts only on the first line of text */
+  /* use 'ch' which is nice because changes with font-size */
+  text-indent: -1ch;
+}
+
+.m-inline-1 {
+  /* acts on entire block */
+  margin-inline-start: -1ch;
+}
+
+/* :focus-visible:not(:read-only) {
+  outline: dotted var(--color-black);
+  outline-offset: 2px;
+} */
+
+/* input:focus {
+  background-color: #9ecfff;
+  color: var(--color-black);
+} */
+
+button:focus,
+:focus-visible {
+  outline: var(--border-size-3) dotted var(--color-highlight);
+  outline-offset: 2px;
+}
+
+/* screen reader */
+.sr-only {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  /* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
+  clip: rect(1px 1px 1px 1px);
+  /* maybe deprecated but we need to support legacy browsers */
+  clip: rect(1px, 1px, 1px, 1px);
+  /* modern browsers, clip-path works inwards from each corner */
+  clip-path: inset(50%);
+  /* added line to stop words getting smushed together (as they go onto seperate lines and some screen readers do not understand line feeds as a space */
+  white-space: nowrap;
+}
