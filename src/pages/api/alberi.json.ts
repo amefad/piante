@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-export const prerender = false;
+// export const prerender = false;
 
 const exampleData = {
   meta: {
