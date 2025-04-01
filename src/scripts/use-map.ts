@@ -100,7 +100,7 @@ layersControl.addTo(map);
  * }
  */
 async function getData() {
-  const url = "/api/alberi.json";
+  const url = "/api-test/alberi.json";
   try {
     const response = await fetch(url);
     if (!response.ok) {
