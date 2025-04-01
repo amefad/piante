@@ -46,8 +46,8 @@ let unregisterClickMap: () => void;
 
 // References
 const arborForm = document.getElementById("arbor-form") as HTMLFormElement;
-const inputLat = arborForm.elements.namedItem("lat") as HTMLInputElement;
-const inputLng = arborForm.elements.namedItem("lng") as HTMLInputElement;
+const inputLat = arborForm.elements.namedItem("latitude") as HTMLInputElement;
+const inputLng = arborForm.elements.namedItem("longitude") as HTMLInputElement;
 // get only the right inputs
 const inputs = Array.from(document.getElementsByTagName("input")).filter(
   (control) =>

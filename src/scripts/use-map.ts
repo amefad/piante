@@ -70,7 +70,35 @@ map = L.map("map", { layers: [osmLayer, formMarkers] }).fitBounds(
 );
 layersControl.addTo(map);
 
-// ...
+/**
+ *
+ *
+ *
+ * sample item from response:
+ *
+ * {
+ *   "id": 5,
+ *   "number": 123,
+ *   "latitude": 45.8851066,
+ *   "longitude": 12.2921521,
+ *   "height": "15.0",
+ *   "circumference": 50,
+ *   "common-name": "Quercia",
+ *   "scientific-name": "Quercus ilex",
+ *   "date": "2025-03-16 11:24:39",
+ *   "user": {
+ *     "id": 3,
+ *     "name": "amedeo",
+ *     "email": "fame@libero.it"
+ *   },
+ *   "images": [
+ *     {
+ *       "id": 4,
+ *       "file-path": "../uploads/picture.jpg"
+ *     }
+ *   ]
+ * }
+ */
 async function getData() {
   const url = "/api/alberi.json";
   try {
@@ -87,8 +115,8 @@ async function getData() {
 
 // TODO import type
 type TreePlant = {
-  lat: string;
-  lng: string;
+  latitude: string;
+  longitude: string;
   "scientific-name": string;
   circumference: string;
   height: string;
@@ -96,8 +124,8 @@ type TreePlant = {
 
 // TODO
 function addNewLayerToTrees(tree: TreePlant) {
-  const latitude = parseFloat(tree.lat);
-  const longitude = parseFloat(tree.lng);
+  const latitude = parseFloat(tree.latitude);
+  const longitude = parseFloat(tree.longitude);
   if (latitude && longitude) {
     trees.addLayer(
       L.marker([latitude, longitude]).bindPopup(
