@@ -1,2 +1,1 @@
-backend/config.php
-database/db.conf
+api/config.php

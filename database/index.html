@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Crea il database</title>
+</head>
+<body>
+    <h1>Crea il database MySQL</h1>
+    <p>Innanzi tutto setta i dati di accesso al database nel file <code>/api/config.php</code>.</p>
+    <p>
+        Dopodiché sei pronto per creare il database MySQL.<br>
+        <button id="create-db">Crea il database</button>
+    </p>
+    <div id="result"></div>
+</body>
+<script>
+    document.querySelector('#create-db').addEventListener('click', () => {
+        const resultDiv = document.querySelector('#result');
+        resultDiv.innerHTML = '';
+        fetch('create_database.php')
+            .then(res => res.text())
+            .then(text => resultDiv.innerHTML = text)
+    });
+</script>
+</html>

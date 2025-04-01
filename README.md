@@ -1,16 +1,32 @@
 # Piante
-semplice applicazione web per una mappatura collaborativa del verde pubblico
-
-## Backend
-La cartella backend contiene il codice php per le api che permettono di leggere i dati dal database in formato json e inserirli in formato json
-file config.php con le password inserito in .gitignore
-fiel di esempio config.php.sample
+Simple web application for collaborative mapping of public green spaces.
 
 ## Database
-La cartella database contiene gli script per la creazione del database
-le password venno definite in un file di configurazione db.conf che è inserito nel file .gitignore
-file di esempio db.conf.sample
+`database` folder contains the scripts for creating the MySQL database.
+
+Username and password to access the database have to be defined in a `api/config.php` file.\
+You can rename the example file `api/config.php.sample`.
+
+## API
+`api` folder contains the PHP code to get data from MySQL database and return it as JSON.
+
+These are the allowed methods to access the API:
+| Method | Endpoint | Description |
+|-|-|-|
+| POST | `/api/users` | Creates new user |
+| GET | `/api/users/{id}` | Gets one user |
+| DELETE | `/api/users/{id}` | Deletes one user |
+| POST | `/api/session` | Login |
+| DELETE | `/api/session` | Logout |
+| GET | `/api/plants` | Gets all plants |
+| POST | `/api/plants` | Creates new plant |
+| GET | `/api/plants/{id}` | Gets one plant |
+| PUT | `/api/plants/{id}` | Updates one plant |
+| DELETE | `/api/plants/{id}` | Deletes one plant |
+| GET | `/api/images` | Gets all images |
+| POST | `/api/images` | Uploads new image |
+| GET | `/api/images/{id}` | Gets one image |
+| DELETE | `/api/images/{id}` | Deletes one image |
 
 ## Frontend
-
-La cartella forntend contiene il codice da compilare 
+`frontend` folder contains a basic interface to interact with the API.

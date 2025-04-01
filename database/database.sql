@@ -14,7 +14,7 @@ CREATE TABLE `plants` (
   `number` smallint(5) unsigned DEFAULT NULL,
   `location` point DEFAULT NULL,
   `circumference` smallint(5) unsigned DEFAULT NULL,
-  `height` smallint(5) unsigned DEFAULT NULL,
+  `height` decimal(4,1) unsigned DEFAULT NULL,
   `common_name` varchar(180) DEFAULT NULL,
   `scientific_name` varchar(180) DEFAULT NULL,
   `insert_date` datetime NOT NULL DEFAULT current_timestamp(),
