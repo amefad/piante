@@ -1,13 +1,22 @@
 # Piante
+
 Simple web application for collaborative mapping of public green spaces.
 
+## Repository Structure
+
+We want to serve the front-end resources and the api from the same deployment server. In order to do that we wrapped all the code inside an Astro project; the `api/` folder will not be processed by Astro during building but it will still be present in the `dist/` folder (the one that is deployed on the deployment server). The `database` folder is an exception: it doesn't need to adhere to the Astro project structure.
+
+more on [Astro project structure](https://docs.astro.build/en/basics/project-structure/)
+
 ## Database
-`database` folder contains the scripts for creating the MySQL database.
+
+`database` folder contains the scripts for creating the MySQL database but _is not part of the Astro project_
 
 Username and password to access the database have to be defined in a `api/config.php` file.\
 You can rename the example file `api/config.php.sample`.
 
 ## API
+
 `api` folder contains the PHP code to get data from MySQL database and return it as JSON.
 
 These are the allowed methods to access the API:
@@ -29,4 +38,39 @@ These are the allowed methods to access the API:
 | DELETE | `/api/images/{id}` | Deletes one image |
 
 ## Frontend
+
 `frontend` folder contains a basic interface to interact with the API.
+
+### Setting up the dev environment
+
+#### System setup
+
+For Astro to run on your system, you will also need to have **Node.js** installed; only **lts** version are supported so v18.17.1 or v20.3.0, v22.0.0 or higher. ( v19 and v21 are not supported.). Along with Node a version of **npm** (better > 10) is required.
+
+#### Editor setup
+
+If you use vscode add the official Astro VS Code Extension, see [Astro docs](https://docs.astro.build/en/editor-setup/).
+
+#### Install dependencies
+
+run `npm install`
+
+Configs for Astro and other tools are already there.
+
+#### Building with Astro
+
+`npm run build`
+
+generates a `dist/` folder containing all the front-end resources along with the `api/` folder.
+
+`dist/` can be copied as is on the deployment server.
+
+see [how to build your site](https://docs.astro.build/en/develop-and-build/#build-and-preview-your-site)
+
+#### Running other Astro commands
+
+**warning: following commands are NOT intended to be used with the current repository structure**
+
+`npm run preview`: run a server to view the built version of your site locally.
+
+`npm start` (alias for `npm run dev`): run the dev server, see more on how to [start astro dev server](https://docs.astro.build/en/develop-and-build/#start-the-astro-dev-server)
