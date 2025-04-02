@@ -1,0 +1,88 @@
+---
+// import HeaderLink from "./HeaderLink.astro";
+import { SITE_TITLE } from "../consts";
+---
+
+<header>
+    <svg
+      width="96"
+      height="96"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#267A42"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="feather feather-disc"
+      ><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"
+      ></circle></svg
+    >
+    <h1>{SITE_TITLE}</h1>
+  {
+    /*
+    <nav>
+    <HeaderLink href="/">{SITE_TITLE}</HeaderLink>
+    <div class="internal-links">
+      <HeaderLink href="/form" class="like-p">Aggiungi</HeaderLink>
+      <HeaderLink href="/blog" class="like-p">Blog</HeaderLink>
+      <HeaderLink href="/about" class="like-p">About</HeaderLink>
+    </div>
+    </nav>
+    */
+  }
+</header>
+
+<style>
+  header {
+    grid-area: app;
+    z-index: 1;
+    inline-size: fit-content;
+    align-self: start;
+    justify-self: center;
+    /*  */
+    padding: 2px;
+    padding-inline: var(--size-base-0);
+    margin-block-start: 4px;
+    border-radius: var(--radius-round);
+    border: var(--border-size-2) solid var(--color-black);
+    /*  */
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: center;
+    /*  */
+    background: var(--color-white);
+    box-shadow: var(--shadow-elevation-low);
+  }
+  svg {
+    inline-size: var(--size-base-0);
+    block-size: var(--size-base-0);
+    margin-inline-end: 1ch;
+  }
+  h1 {
+    margin: 0;
+    font-weight: 600;
+    font-size: var(--size-base-0);
+    line-height: var(--line-height-normal);
+  }
+  nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: baseline;
+  }
+  .internal-links > * {
+    margin-inline: 8px;
+  }
+  /*  */
+  /* .social-links,
+  .social-links a {
+    display: flex;
+  }
+  @media (max-width: 720px) {
+    .social-links {
+      display: none;
+    }
+  } */
+</style>
