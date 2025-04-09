@@ -59,18 +59,32 @@ Configs for Astro and other tools are already there.
 
 #### Building with Astro
 
-`npm run build`
+run `npm run build`
 
-generates a `dist/` folder containing all the front-end resources along with the `api/` folder.
+to generate the `dist/` folder containing all the front-end resources along with the `api/` folder.
 
-`dist/` can be copied as is on the deployment server.
+`dist/` can be copied on the deployment server.
 
 see [how to build your site](https://docs.astro.build/en/develop-and-build/#build-and-preview-your-site)
 
-#### Running other Astro commands
+<!-- **warning: following commands are NOT intended to be used with the current repository structure** -->
 
-**warning: following commands are NOT intended to be used with the current repository structure**
+#### Development Servers
 
-`npm run preview`: run a server to view the built version of your site locally.
+```text
+"dev": "astro dev"
+"dev:php": "php -S localhost:8000 -t public"
+"start": "astro dev"
+```
 
-`npm start` (alias for `npm run dev`): run the dev server, see more on how to [start astro dev server](https://docs.astro.build/en/develop-and-build/#start-the-astro-dev-server)
+use `npm run dev` to start Astro dev server, in order to use api start also the php dev server with `npm run dev:php`, serving the `public/` folder.
+
+##### Building and Preview
+
+```text
+"build": "astro build"
+"preview": "astro preview"
+"preview:php": "php -S localhost:8000 -t dist"
+```
+
+`npm run preview:php`: run a php server to view the built version of your site locally. Note that it serves the `dist/` folder (not `public/`)

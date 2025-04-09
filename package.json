@@ -4,9 +4,11 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:php": "php -S localhost:8000 -t public",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "preview:php": "php -S localhost:8000 -t dist",
     "astro": "astro"
   },
   "dependencies": {

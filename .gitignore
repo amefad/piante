@@ -1,4 +1,4 @@
-api/config.php
+public/config.php
 
 # build output
 dist/
