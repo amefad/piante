@@ -1,3 +1,5 @@
+const apiPath = '../dist/api/';
+
 // Setups one form to send its data as JSON to the API with fetch() method
 function setupForm(method, request, formId, resultId, callback, textarea) {
     document.getElementById(formId).addEventListener('submit', function (event) {
@@ -35,7 +37,7 @@ function setupForm(method, request, formId, resultId, callback, textarea) {
                 'Content-Type': 'application/json'
             };
         }
-        fetch('../api/' + url, options)
+        fetch(apiPath + url, options)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
@@ -72,7 +74,7 @@ setupForm('DELETE', 'users', 'delete-user', 'delete-user-result');
 
 // Get all plants
 document.getElementById('load-plants').addEventListener('click', function () {
-    fetch('../api/plants')
+    fetch(apiPath + 'plants')
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -117,7 +119,7 @@ document.getElementById('upload-image').addEventListener('submit', function (eve
     if (token) {
         options.headers = { 'Authorization': 'Bearer ' + token }
     }
-    fetch('../api/images', options)
+    fetch(apiPath + 'images', options)
         .then(response => response.json())
         .then(data => {
             console.log(data);

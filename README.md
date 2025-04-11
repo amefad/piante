@@ -91,7 +91,7 @@ files still belong in the `public/` directory.
 ## Test (wip)
 
 The `test/` directory is used for testing and includes a basic interface for
-interacting with the API. ⚠ _(todo) review urls and paths_
+interacting with the API.
 
 ## Setting up the dev environment
 
