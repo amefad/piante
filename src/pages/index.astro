@@ -1,0 +1,519 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Map from "../components/Map.astro";
+import ActionButton from "../components/ActionButton/ActionButton.astro";
+import Banner from "../components/Banner/Banner.astro";
+import { SITE_TITLE } from "../consts";
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <BaseHead title={SITE_TITLE} description="aggiungi un albero" />
+    <script src="../scripts/form.ts"></script>
+    <style>
+      body {
+        background: var(--color-white);
+        min-height: 100dvh;
+        /* padding-inline: var(--size-base-0); */
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas: "app";
+        align-items: center;
+      }
+
+      main {
+        grid-area: app;
+        z-index: 0;
+        inline-size: 100%;
+        block-size: 100%;
+        /*  */
+        display: grid;
+        grid-template-areas: "map";
+      }
+      /* main > * {
+        grid-column: 2;
+        padding-inline: var(--size-base-m1);
+      } */
+      /* due to how Astro works 
+        need to use child selector to boost specificity */
+      /* main > .full-bleed {
+        width: 100%;
+        grid-column: 1 / 4;
+        padding: 0;
+      } */
+      /*  */
+      .map-overlay {
+        grid-area: map;
+        z-index: 1;
+        pointer-events: none;
+        padding: var(--secure-padding) 8px;
+        /*  */
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: end;
+      }
+      .map-wrapper {
+        grid-area: map;
+        z-index: 0;
+        isolation: isolate;
+        inline-size: 100%;
+        block-size: 100%;
+      }
+      dialog.form-dialog {
+        pointer-events: auto;
+        /*  */
+        z-index: 1;
+        inline-size: min(100%, 65ch);
+        position: static;
+        /*  */
+        border: var(--button-border);
+        padding: 0;
+        margin: var(--size-base-m1) auto;
+        background: transparent;
+        box-shadow: var(--shadow-elevation-medium);
+      }
+      form {
+        /* inline-size: min(80%, 65ch);
+        margin: 1rem auto; */
+        /* isolation: isolate; */
+        /*  */
+        /* grid-row: 3 / 4; */
+        /* z-index: 1; */
+        /* align-self: end; */
+        /*  */
+        background-color: var(--color-white);
+      }
+      /*  */
+      #add-tree-button {
+        pointer-events: auto;
+        /* position: absolute; */
+        z-index: 1;
+        /*  */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /*  */
+        inline-size: 64px;
+        block-size: 64px;
+        padding: 12px;
+        margin: var(--size-base-m1);
+        border: var(--border-size-2) solid var(--color-black);
+        border-radius: var(--radius-round);
+        /*  */
+        background: var(--color-primary);
+        color: var(--color-white);
+        box-shadow: var(--shadow-elevation-medium);
+      }
+      #add-tree-button:active {
+        background: radial-gradient(
+          circle,
+          hsla(170, 100%, 81%, 1) 0%,
+          hsla(186, 100%, 69%, 1) 100%
+        );
+        /* filter: drop-shadow(1px 1px var(--color-black)); */
+      }
+      #add-tree-button.hidden {
+        display: none;
+      }
+      /*  */
+      fieldset {
+        border: var(--border-size-2) dashed var(--color-black);
+      }
+      legend {
+        font-weight: 600;
+        padding-inline: 1ch;
+        line-height: 2;
+      }
+      input:read-only {
+        pointer-events: none;
+      }
+      em,
+      em > p {
+        font-weight: 400;
+        font-size: var(--size-base-m1);
+        line-height: var(--line-height-narrow);
+        font-style: normal;
+      }
+      .input-example {
+        font-size: var(--size-base-m1);
+      }
+      .hide {
+        /* display: grid;
+        grid-template-columns: 50% 50%; */
+        display: none;
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: repeat(3, auto);
+      }
+      .columns > p:nth-of-type(even) {
+        justify-self: end;
+      }
+      label {
+        margin-inline: 1ch;
+      }
+      label[for^="measure"] {
+        margin-inline: 0 1ch;
+      }
+      .input-p {
+        line-height: 2;
+      }
+
+      input:not([type="radio"]) {
+        appearance: none;
+        display: inline-block;
+        inline-size: 100%;
+        border: 2px solid var(--color-black);
+        padding: 0 1ch;
+      }
+      input[type="radio"] {
+        /* appearance: none; */
+        width: 16px;
+        height: 16px;
+      }
+      input[type="radio"]:checked + label {
+        font-weight: 700;
+      }
+      input[name="lat"],
+      input[name="lng"] {
+        font-family: monospace;
+        /* background-color: ; */
+        border: none;
+      }
+      input[name="height"],
+      input[name="diameter"],
+      input[name="circumference"] {
+        inline-size: calc(10ch + 4px); /* warn there is padding, border */
+        padding-right: 0;
+        /* text-align: end; */
+        margin-inline-end: 1ch;
+        font-family: monospace;
+        font-weight: 500;
+      }
+      #submit {
+        inline-size: 100%;
+      }
+      /* input:invalid {
+        border: 2px dashed var(--color-red);
+      } */
+      /* ******************** */
+      /* input:required + span::after {
+        font-size: 0.7rem;
+        content: "required";
+        color: white;
+        background-color: black;
+        padding: 5px 10px;
+      } */
+
+      /* input,
+      button {
+        outline-offset: 2px;
+      } */
+
+      /* 
+        invalid after insertion/deletion
+        do not include "touched" inputs onto which no insetion/del happened
+      */
+      input:invalid:not(.value-missing) {
+        outline-color: #ff6446;
+        background-color: #ffae9e;
+      }
+      .invalid {
+        background-color: var(--color-red);
+      }
+      /* focus - already defined in theme */
+      /* input:focus-visible,
+      button:focus-visible {
+        outline-style: dotted;
+      } */
+      .step {
+        display: none;
+        padding-inline: 1ch;
+        padding-block: var(--size-base-m2);
+        background: var(--color-white);
+      }
+      .step-content {
+        padding: var(--size-base-0);
+        /* TODO */
+        border: var(--border-size-2) dashed var(--color-black);
+      }
+      .step[data-step="4"],
+      .step[data-step="5"] {
+        text-align: center;
+      }
+      /*  */
+      .js-step-enabled {
+        display: block;
+      }
+      /* .box {
+        margin: 1rem;
+        padding: 1rem;
+        border: solid;
+        background-color: lightgoldenrodyellow;
+      } */
+
+      /* ******** */
+      .buttons-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 2fr;
+      }
+    </style>
+  </head>
+  <body>
+    <Banner />
+    <Header />
+    <main>
+      <div class="map-overlay">
+        <button type="button" id="add-tree-button" aria-expanded="false"
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-plus"
+            aria-hidden="true"
+            focusable="false"
+            ><line x1="12" y1="5" x2="12" y2="19"></line><line
+              x1="5"
+              y1="12"
+              x2="19"
+              y2="12"></line></svg
+          ></button
+        >
+        {/* Form dialog */}
+        <dialog class="form-dialog" id="form-dialog">
+          <form id="arbor-form" action="" autocomplete="off">
+            {
+
+                /*TODO add progress bar*/
+                // import.meta.env.DEV && (
+                //   <div class="progress-bar"> ✔-------&#9680;- - - - -&#128903;- - - -o</div>
+                // )
+            }
+
+            {/* Locations */}
+            <div class="step js-step-enabled" data-step="1">
+              <fieldset name="location">
+                {/* note: first label gives caption */}
+                <legend>Posizione</legend>
+                {/* note: p can also be nested inside em */}
+                <p>Indica sulla mappa dove si trova la pianta</p>
+                {/* WARN: leaflet map contains form elems */}
+                {/* TODO map zoom, use ctrl, check double click  */}
+                <div class="hide">
+                  <p>
+                    <label for="lat">Latitudine</label>
+                    <input
+                      class="js-submit"
+                      name="latitude"
+                      id="lat"
+                      type="text"
+                      readonly
+                      tabindex="-1"
+                    />
+                  </p>
+                  <p>
+                    <label for="lng">Longitudine</label>
+                    <input
+                      class="js-submit"
+                      name="longitude"
+                      id="lng"
+                      type="text"
+                      readonly
+                      tabindex="-1"
+                    />
+                  </p>
+                </div>
+              </fieldset>
+            </div>
+            {/* Species */}
+            <div class="step" data-step="2">
+              <fieldset name="species">
+                <legend>Specie Arborea <em>(facoltativo)</em></legend>
+                <p class="input-p">
+                  <label for="scientific-name"
+                    >Nome scientifico della specie</label
+                  >
+                  <input
+                    class="js-submit"
+                    name="scientific-name"
+                    id="scientific-name"
+                    type="text"
+                    minlength="2"
+                  />
+                  <span class="input-example">(es: Quercus ilex)</span>
+                </p>
+              </fieldset>
+            </div>
+            {/* Dimensions */}
+            <div class="step" data-step="3">
+              <fieldset name="dimensions">
+                <legend>Dimensioni <em>(facoltativo)</em></legend>
+                <div class="columns">
+                  {/* circumference */}
+                  <p class="input-p">
+                    <label for="circumference"
+                      >Circonferenza <em>(metri)</em></label
+                    >
+                  </p>
+                  <p class="input-p">
+                    <input
+                      class="js-submit"
+                      name="circumference"
+                      id="circumference"
+                      type="number"
+                      min="0"
+                      step="0.10"
+                    />
+                    <em>(m)</em>
+                  </p>
+                  {/* Height */}
+                  <p class="input-p">
+                    <label for="height">Altezza <em>(metri)</em></label>
+                  </p>
+                  <p class="input-p">
+                    <input
+                      class="js-submit"
+                      name="height"
+                      id="height"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                    />
+                    <em>(m)</em>
+                  </p>
+                </div>
+              </fieldset>
+            </div>
+            {/* Feedback */}
+            <div class="step" data-step="4">
+              <div class="step-content">
+                <p>Il tuo albero è stato inserito!😄</p>
+              </div>
+              {/* TODO close success button */}
+            </div>
+            {/* Error */}
+            <div class="step" data-step="5">
+              <div class="step-content">
+                <p>Qualcosa è andato storto!😅</p>
+              </div>
+            </div>
+            {/* Action Buttons */}
+            {/* use a <menu>?? */}
+            <div class="controls buttons-container" id="controls">
+              <ActionButton action="close" id="js-close-button" text="annulla">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="feather feather-x"
+                  aria-hidden="true"
+                  focusable="false"
+                  ><line x1="18" y1="6" x2="6" y2="18"></line><line
+                    x1="6"
+                    y1="6"
+                    x2="18"
+                    y2="18"></line></svg
+                >
+              </ActionButton>
+              <ActionButton action="prev" id="js-prev-button" text="indietro">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="feather feather-arrow-left"
+                  aria-hidden="true"
+                  focusable="false"
+                  ><line x1="19" y1="12" x2="5" y2="12"></line><polyline
+                    points="12 19 5 12 12 5"></polyline></svg
+                >
+              </ActionButton>
+              <ActionButton
+                action="next"
+                id="js-next-button"
+                text="avanti"
+                isPrimary
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="feather feather-arrow-right"
+                  aria-hidden="true"
+                  focusable="false"
+                  ><line x1="5" y1="12" x2="19" y2="12"></line><polyline
+                    points="12 5 19 12 12 19"></polyline></svg
+                >
+              </ActionButton>
+              <ActionButton
+                action="submit"
+                id="js-submit-button"
+                text="invia"
+                isPrimary
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="feather feather-upload"
+                  ><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                  ></path><polyline points="17 8 12 3 7 8"></polyline><line
+                    x1="12"
+                    y1="3"
+                    x2="12"
+                    y2="15"></line></svg
+                >
+              </ActionButton>
+              <ActionButton action="end" id="js-end-button" text="ok" isPrimary>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="feather feather-square"
+                  ><rect x="3" y="3" width="18" height="18" rx="2" ry="2"
+                  ></rect></svg
+                >
+              </ActionButton>
+            </div>
+          </form>
+        </dialog>
+      </div>
+      {/* Map */}
+      {/*NOTE: comes late in dom order for a11y to prevent early focusing*/}
+      <div class="map-wrapper"><Map /></div>
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,83 @@
+---
+
+---
+
+<dialog id="banner-dialog" class="banner">
+  <svg
+    width="96"
+    height="96"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#267A42"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="feather feather-disc"
+    ><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"
+    ></circle></svg
+  >
+  {/* https://www.w3.org/WAI/tutorials/page-structure/headings/ */}
+  <h2>Benvenuto</h2>
+  <p>
+    Mi spiace non abbiamo nessun biscotto da offrirti <br />
+    (no cookies 🍪🥺)
+  </p>
+  <button id="close-banner-button">Inizia</button>
+</dialog>
+<!-- <button>Show the dialog</button> -->
+<style>
+  dialog:modal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+    max-width: 90vw;
+    max-height: 70dvh;
+    /*  */
+    padding: 1rem;
+    background: var(--color-white);
+    border: var(--standard-border);
+    box-shadow: var(--shadow-elevation-medium);
+    /*  */
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    /* justify-content: space-between; */
+    text-align: center;
+  }
+  dialog::backdrop {
+    background: var(--color-white);
+    opacity: 0.35;
+  }
+  p {
+    font-size: var(--size-base-m1);
+  }
+  button {
+    font-size: var(--size-base-1);
+    font-weight: 550;
+
+    margin-block: var(--size-base-0);
+    padding: var(--size-base-0) var(--size-base-1);
+    border: var(--button-border);
+    background: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: var(--shadow-elevation-low);
+  }
+  button:active {
+    background: var(--color-fab-bg-active);
+  }
+</style>
+<script>
+  const dialog = document.getElementById("banner-dialog") as HTMLDialogElement;
+  // const showButton = document.querySelector("dialog + button");
+  const closeButton = document.getElementById(
+    "close-banner-button"
+  ) as HTMLButtonElement;
+  // "Show the dialog" button opens the dialog modally
+  document.addEventListener("DOMContentLoaded", () => dialog.showModal());
+  // "Close" button closes the dialog
+  closeButton.addEventListener("click", () => {
+    dialog.close();
+  });
+</script>

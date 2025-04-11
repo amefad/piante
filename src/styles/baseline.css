@@ -1,0 +1,65 @@
+@media screen and (prefers-reduced-motion: reduce) {
+	body::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2rem;
+		content: 'prefers reduce motion';
+		/* neutral colors */
+		background-color: #dbdbdb;
+		color: black;
+	}
+}
+
+/*
+  adapted from Josh's Custom CSS Reset
+  https://www.joshwcomeau.com/css/custom-css-reset/
+*/
+
+html {
+	box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+
+* {
+	margin: 0;
+}
+
+body {
+	/* fallback line-height */
+	line-height: 1.5;
+	/* text rendering */
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
+}

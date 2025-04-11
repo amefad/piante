@@ -1,0 +1,76 @@
+---
+interface Props {
+  action: string;
+  id: string;
+  text: string;
+  isPrimary?: boolean;
+}
+const { action, id, text, isPrimary } = Astro.props;
+---
+
+<style>
+  .action-button {
+    filter: var(--drop-shadow-standard);
+    /* box-shadow: 2px 4px var(--color-black); */
+    background: radial-gradient(
+      circle,
+      hsla(0, 0%, 96%, 1) 0%,
+      hsla(0, 0%, 89%, 1) 100%
+    );
+    border: var(--border-size-2) solid var(--color-black);
+    padding: 4px 1ch;
+    margin: var(--size-base-m2);
+    block-size: 64px;
+    max-inline-size: 64px;
+    aspect-ratio: 1;
+    flex: 1 1 auto;
+    /*  */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .action-button:disabled {
+    /* visibility: hidden; */
+    display: none;
+  }
+  .action-button:active:not(:disabled) {
+    background: radial-gradient(
+      circle,
+      hsla(170, 100%, 81%, 1) 0%,
+      hsla(186, 100%, 69%, 1) 100%
+    );
+    filter: drop-shadow(1px 1px var(--color-black));
+    /* box-shadow: 1px 1px var(--color-black); */
+  }
+  .primary {
+    aspect-ratio: 2 / 1;
+    max-inline-size: 128px;
+    grid-column: 3;
+    justify-self: end;
+  }
+  .primary:not(:disabled) {
+    background: var(--color-primary);
+    color: var(--color-white);
+  }
+
+  span {
+    font-weight: 400;
+    font-size: var(--size-base-m1);
+    line-height: var(--line-height-narrow);
+    font-style: normal;
+  }
+</style>
+<button
+  type="button"
+  data-action={action}
+  id={id}
+  class:list={["action-button", { primary: isPrimary }]}
+  aria-expanded="false"
+>
+  {/* slot svg here */}
+  <slot />
+  <span>{text}</span>
+</button>

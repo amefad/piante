@@ -1,0 +1,23 @@
+---
+import InfoDialog from "./InfoDialog/InfoDialog.astro";
+---
+
+<footer>
+  <InfoDialog />
+</footer>
+<style>
+  footer {
+    grid-area: app;
+    z-index: 1;
+    inline-size: fit-content;
+    align-self: end;
+    /*  */
+    /* min-block-size: var(--secure-padding); */
+    background: none;
+    /*  */
+    /* display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between; */
+  }
+</style>
