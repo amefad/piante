@@ -5,6 +5,8 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+  // uncomment when build targeting a subpath in the deployment server
+  // base: '/somepath',
   vite: {
     server: {
       proxy: {

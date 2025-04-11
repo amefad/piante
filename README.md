@@ -171,6 +171,16 @@ Run `npm run build` to build the project.
 
 see [how to build your site](https://docs.astro.build/en/develop-and-build/#build-and-preview-your-site) on Astro docs.
 
+#### **deploy to a subpath**
+
+If you want to serve the `dist` folder on a subpath (e.g., `www.example.com/piante/`),
+set the `base` configuration in `astro.config.mjs`.
+(see [base option](https://docs.astro.build/en/reference/configuration-reference/#base))
+
+Note: Use this only for _deployment_ builds (ie you want to move the folder to
+a deployment server), not when previewing with `npm run preview:php`, as the PHP
+server isn't configured for subpath routing.
+
 #### Previewing
 
 ```text
