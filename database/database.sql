@@ -13,7 +13,7 @@ CREATE TABLE `plants` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `number` smallint(5) unsigned DEFAULT NULL,
   `location` point DEFAULT NULL,
-  `circumference` smallint(5) unsigned DEFAULT NULL,
+  `circumferences` json DEFAULT NULL,
   `height` decimal(4,1) unsigned DEFAULT NULL,
   `common_name` varchar(180) DEFAULT NULL,
   `scientific_name` varchar(180) DEFAULT NULL,
