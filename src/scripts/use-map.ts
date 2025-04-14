@@ -84,7 +84,10 @@ layersControl.addTo(map);
  *   "latitude": 45.8851066,
  *   "longitude": 12.2921521,
  *   "height": "15.0",
- *   "circumference": 50,
+ *   "circumferences": [
+ *     50,
+ *     75
+ *   ],
  *   "common-name": "Quercia",
  *   "scientific-name": "Quercus ilex",
  *   "date": "2025-03-16 11:24:39",

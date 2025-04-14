@@ -3,9 +3,16 @@
 function getPlants() {
     try {
         require 'pdo.php';
-        $plants = $pdo->query('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumference, height,
+        $plants = $pdo->query('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumferences, height,
         common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user
         FROM plants')->fetchAll();
+        foreach ($plants as &$plant) {
+            if (!is_null($plant['circumferences'])) {
+                $plant['circumferences'] = json_decode($plant['circumferences']);
+            } else {
+                $plant['circumferences'] = array();
+            }
+        }
         // Adds user data to plants array
         $userIds = array();
         foreach ($plants as &$plant) {
@@ -39,24 +46,34 @@ function getPlants() {
 }
 
 // Receives a plant ID and searches for the plant in database
-function getPlant($id) {
+// With $complete false returns no user nor images
+function getPlant($id, $complete = true) {
     require 'pdo.php';
-    $stmt = $pdo->prepare('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumference, height,
+    $stmt = $pdo->prepare('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumferences, height,
     common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user FROM plants WHERE id = ?');
     $stmt->execute([$id]);
     $plant = $stmt->fetch();
     if ($plant) {
-        $user = $pdo->query('SELECT id, full_name AS name, email FROM users WHERE id = '. $plant['user'])->fetch();
-        if ($user) {
-            $plant['user'] = $user;
+        if (!is_null($plant['circumferences'])) {
+            $plant['circumferences'] = json_decode($plant['circumferences']);
+        } else {
+            $plant['circumferences'] = array();
         }
-        $files = $pdo->query('SELECT id, file_name, plant_id FROM images WHERE plant_id = '. $plant['id'])->fetchAll();
-        $plant['images'] = array();
-        foreach ($files as $file) {
-            $image = array();
-            $image['id'] = $file['id'];
-            $image['file-path'] = UPLOADS_PATH . $file['file_name'];
-            $plant['images'][] = $image;
+        if ($complete) {
+            $user = $pdo->query('SELECT id, full_name AS name, email FROM users WHERE id = '. $plant['user'])->fetch();
+            if ($user) {
+                $plant['user'] = $user;
+            }
+            $files = $pdo->query('SELECT id, file_name, plant_id FROM images WHERE plant_id = '. $plant['id'])->fetchAll();
+            $plant['images'] = array();
+            foreach ($files as $file) {
+                $image = array();
+                $image['id'] = $file['id'];
+                $image['file-path'] = UPLOADS_PATH . $file['file_name'];
+                $plant['images'][] = $image;
+            }
+        } else {
+            unset($plant['user']);
         }
         return $plant;
     } else {
@@ -69,21 +86,22 @@ function postPlant() {
     require 'pdo.php';
     $error = require 'auth.php';
     if ($error) return $error;
-    $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumference, height, common_name, scientific_name, user_id) 
+    $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumferences, height, common_name, scientific_name, user_id)
     VALUES (:num, POINT(:lon, :lat), :circ, :height, :common, :scientific, :user)");
     $stmt->bindParam(':num', $data['number']);
     $stmt->bindParam(':lon', $data['longitude']);
     $stmt->bindParam(':lat', $data['latitude']);
-    $stmt->bindParam(':circ', $data['circumference']);
+    if (isset($data['circumferences']) && !is_null($data['circumferences'])) {
+        $circ = json_encode($data['circumferences']);
+    }
+    $stmt->bindParam(':circ', $circ);
     $stmt->bindParam(':height', $data['height']);
     $stmt->bindParam(':common', $data['common-name']);
     $stmt->bindParam(':scientific', $data['scientific-name']);
     $stmt->bindParam(':user', $data['user-id']);
     $stmt->execute();
-    // returns new plant
-    $id = $pdo->lastInsertId();
-    $plant = $pdo->query("SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumference, height,
-    common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date FROM plants WHERE id = $id")->fetch();
+    // Returns new plant
+    $plant = getPlant($pdo->lastInsertId(), false);
     return [$plant, 201];
 }
 
@@ -94,21 +112,22 @@ function putPlant($id) {
     $error = require 'auth.php';
     if ($error) return $error;
     $stmt = $pdo->prepare('UPDATE plants SET number = :number, location = POINT(:longitude, :latitude),
-    circumference = :circumference, height = :height, common_name = :common_name, scientific_name = :scientific_name
+    circumferences = :circumferences, height = :height, common_name = :common_name, scientific_name = :scientific_name
     WHERE id = :id');
     $stmt->bindParam(':number', $data['number']);
     $stmt->bindParam(':longitude', $data['longitude']);
     $stmt->bindParam(':latitude', $data['latitude']);
-    $stmt->bindParam(':circumference', $data['circumference']);
+    if (isset($data['circumferences']) && !is_null($data['circumferences'])) {
+        $circ = json_encode($data['circumferences']);
+    }
+    $stmt->bindParam(':circumferences', $circ);
     $stmt->bindParam(':height', $data['height']);
     $stmt->bindParam(':common_name', $data['common-name']);
     $stmt->bindParam(':scientific_name', $data['scientific-name']);
     $stmt->bindParam(':id', $id);
     $stmt->execute();
     if ($stmt->rowCount() == 1) {
-        $plant = $pdo->query("SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumference, height,
-        common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date FROM plants WHERE id = $id")->fetch();
-        return $plant;
+        return getPlant($id, false);
     } else {
         return success('Nessuna pianta è stata modificata');
     }
