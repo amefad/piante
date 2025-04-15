@@ -6,7 +6,7 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
-  // uncomment when build targeting a subpath in the deployment server
+  // uncomment to build targeting a subpath (optional)
   // base: '/somepath',
   integrations: [relativeLinks()],
   vite: {

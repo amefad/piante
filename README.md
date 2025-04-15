@@ -171,7 +171,21 @@ Run `npm run build` to build the project.
 
 see [how to build your site](https://docs.astro.build/en/develop-and-build/#build-and-preview-your-site) on Astro docs.
 
+### Astro-relative-links integration
+
+[see integration readme](https://github.com/ixkaito/astro-relative-links#readme)
+Extensions will activate automatically on building.
+
+example result in `dist/index.html`
+
+```html
+<link rel="stylesheet" href="./_astro/index.*.css" />
+<script type="module" src="./_astro/hoisted.*.js"></script>
+```
+
 #### **deploy to a subpath**
+
+(if you need you can still use this along with `astro-relative-links`)
 
 If you want to serve the `dist` folder on a subpath (e.g., `www.example.com/piante/`),
 set the `base` configuration in `astro.config.mjs`.
