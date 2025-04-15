@@ -1,4 +1,5 @@
 import { defineConfig } from "astro/config";
+import relativeLinks from 'astro-relative-links';
 
 export default defineConfig({
   site: "https://example.com",
@@ -7,6 +8,7 @@ export default defineConfig({
   },
   // uncomment when build targeting a subpath in the deployment server
   // base: '/somepath',
+  integrations: [relativeLinks()],
   vite: {
     server: {
       proxy: {
