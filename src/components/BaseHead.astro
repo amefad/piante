@@ -2,7 +2,7 @@
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
 // Supports only weight 400
-import '@fontsource-variable/roboto-flex/standard.css';
+import "@fontsource-variable/roboto-flex/standard.css";
 import "../styles/baseline.css";
 import "../styles/theme.css";
 
@@ -13,14 +13,17 @@ interface Props {
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
 const { title, description, image = "/blog-placeholder-1.jpg" } = Astro.props;
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+{
+  /* TODO(favicon): path is relative to the current page, since favicon is always
+ top-level, non-top-level pages dont't get it */
+}
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <!-- <meta name="generator" content={Astro.generator} /> -->
 
 <!-- Canonical URL -->

@@ -1,4 +1,7 @@
 import L from "leaflet";
+import greenIconRef from "../assets/markers/map-pin.svg";
+import redIconRef from "../assets/markers/map-pin-red.svg";
+import shadowRef from "../assets/markers/custom-shadow.png";
 
 // Well Known Coords
 const CONEGLIANO = {
@@ -23,8 +26,7 @@ const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 const baseMaps = { OpenStreetMap: osmLayer };
 
 // Icons
-const greenIconUrl = "/markers/map-pin.svg";
-const redIconUrl = "/markers/map-pin-red.svg";
+
 let defaultIconSize = L.Icon.Default.prototype.options.iconSize as [
   number,
   number,
@@ -36,17 +38,17 @@ let iconSizeBigger = defaultIconSize.map((pts) => pts + 10) as [number, number];
 const customIconOpts: L.IconOptions = {
   ...L.Icon.Default.prototype.options,
   iconSize: iconSizeNormal,
-  iconUrl: greenIconUrl,
-  iconRetinaUrl: greenIconUrl,
-  shadowUrl: "/markers/custom-shadow.png",
+  iconUrl: greenIconRef.src,
+  iconRetinaUrl: greenIconRef.src,
+  shadowUrl: shadowRef.src,
 };
 
 const biggerCustomIconOpts: L.IconOptions = {
   ...L.Icon.Default.prototype.options,
   iconSize: iconSizeBigger,
-  iconUrl: redIconUrl,
-  iconRetinaUrl: redIconUrl,
-  shadowUrl: "/markers/custom-shadow.png",
+  iconUrl: redIconRef.src,
+  iconRetinaUrl: redIconRef.src,
+  shadowUrl: shadowRef.src,
 };
 
 const customIcon = L.icon(customIconOpts);
