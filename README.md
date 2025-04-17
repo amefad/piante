@@ -67,6 +67,7 @@ These are the allowed methods to access the API:
 | ------ | ------------------ | ----------------- |
 | POST   | `/api/users`       | Creates new user  |
 | GET    | `/api/users/{id}`  | Gets one user     |
+| POST   | `/api/users/{id}`  | Confirms one user |
 | DELETE | `/api/users/{id}`  | Deletes one user  |
 | POST   | `/api/session`     | Login             |
 | DELETE | `/api/session`     | Logout            |

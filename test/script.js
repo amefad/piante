@@ -65,6 +65,17 @@ setupForm('DELETE', 'session', 'logout', 'logout-result', () => {
 // Post new user
 setupForm('POST', 'users', 'register', 'register-result');
 
+// Resend confirmation email
+document.getElementById('send-email').addEventListener('submit', function(event) {
+    event.preventDefault();
+    fetch(apiPath + 'users?email=' + event.target.email.value)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            document.getElementById('email-result').innerHTML = JSON.stringify(data, null, 2);
+        });
+});
+
 // Get single user
 setupForm('GET', 'users', 'get-user', 'user-result');
 

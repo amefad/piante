@@ -34,14 +34,20 @@ function handleUsers($id) {
     if (isset($id)) {
         switch ($method) {
             case 'GET': return getUser($id);
+            case 'POST': return confirmUser($id);
             case 'DELETE': return deleteUser($id);
-            default: return error('Usa GET o DELETE', 405);
+            default: return error('Usa GET, POST o DELETE', 405);
+        }
+    } else if (isset($_GET['email'])) {
+        switch ($method) {
+            case 'GET': return resendConfirmation($_GET['email']);
+            default: return error('Usa GET', 405);
         }
     } else {
         switch ($method) {
             case 'POST': return postUser();
             default: return error('Usa POST', 405);
-        }        
+        }
     }
 }
 
@@ -87,7 +93,7 @@ function handleImages($id) {
             case 'GET': return getImages();
             case 'POST': return postImage();
             default: return error('Usa GET o POST', 405);
-        }        
+        }
     }
 }
 

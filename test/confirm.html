@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Mappa delle piante - Conferma email</title>
+</head>
+<body>
+    <h1>Mappa delle piante</h1>
+    <h2>Conferma email</h2>
+    <pre id="message"></pre>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        const token = urlParams.get('token');
+        const resultPre = document.getElementById('message');
+        if (id && token) {
+            fetch(`../dist/api/users/${id}`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                resultPre.innerHTML = JSON.stringify(data, null, 2);
+                if (data.role == 'editor') {
+                    resultPre.innerHTML += '\n\n<a href="./">Ora puoi effetture il login</a>';
+                }
+            });
+        } else {
+            resultPre.innerHTML = 'ID utente e token necessari';
+        }
+    </script>
+</body>
+</html>

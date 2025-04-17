@@ -27,6 +27,7 @@ CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `full_name` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
+  `role` enum('admin','editor','viewer','invalid') NOT NULL DEFAULT 'invalid',
   `password` varchar(255) NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
