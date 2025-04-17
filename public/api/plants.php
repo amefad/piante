@@ -111,25 +111,53 @@ function putPlant($id) {
     require 'pdo.php';
     $error = require 'auth.php';
     if ($error) return $error;
-    $stmt = $pdo->prepare('UPDATE plants SET number = :number, location = POINT(:longitude, :latitude),
-    circumferences = :circumferences, height = :height, common_name = :common_name, scientific_name = :scientific_name
-    WHERE id = :id');
-    $stmt->bindParam(':number', $data['number']);
-    $stmt->bindParam(':longitude', $data['longitude']);
-    $stmt->bindParam(':latitude', $data['latitude']);
-    if (isset($data['circumferences']) && !is_null($data['circumferences'])) {
-        $circ = json_encode($data['circumferences']);
+    $updates = array(
+        'number' => 'number',
+        'longitude' => 'longitude',
+        'latitude' => 'latitude',
+        'circumferences' => 'circumferences',
+        'height' => 'height',
+        'common_name' => 'common-name',
+        'scientific_name' => 'scientific-name'
+    );
+    // Data into $updates
+    foreach ($updates as $key => $value) {
+        if (array_key_exists($value, $data)) {
+            if (is_null($data[$value])) {
+                $updates[$key] = NULL;
+            } else if ($key == 'circumferences') {
+                $updates[$key] = json_encode($data[$value]);
+            } else {
+                $updates[$key] = $data[$value];
+            }
+        } else {
+            unset($updates[$key]);
+        }
     }
-    $stmt->bindParam(':circumferences', $circ);
-    $stmt->bindParam(':height', $data['height']);
-    $stmt->bindParam(':common_name', $data['common-name']);
-    $stmt->bindParam(':scientific_name', $data['scientific-name']);
-    $stmt->bindParam(':id', $id);
-    $stmt->execute();
-    if ($stmt->rowCount() == 1) {
-        return getPlant($id, false);
-    } else {
-        return success('Nessuna pianta è stata modificata');
+    if ($updates) {
+        // Prepares statement
+        $stmt = $pdo->prepare('UPDATE plants SET ' . join(', ', array_map(function($key) {
+            if ($key == 'longitude') {
+                return "location = POINT(:longitude";
+            } else if ($key == 'latitude') {
+                return ':latitude)';
+            } else {
+                return "$key = :$key";
+            }
+        }, array_keys($updates))) . ' WHERE id = :id');
+        // Binds values
+        foreach ($updates as $key => &$value) {
+            $stmt->bindParam(":$key", $value);
+        }
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        if ($stmt->rowCount() == 1) {
+            return getPlant($id, false);
+        } else {
+            return success('Nessuna pianta è stata modificata');
+        }
+    } else { // $updates is empty
+        return error('Nessun dato da aggiornare');
     }
 }
 

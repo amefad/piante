@@ -19,7 +19,7 @@ function setupForm(method, request, formId, resultId, callback, textarea) {
         // Fetch options
         const options = { method: method };
         var url = request;
-        if (method == 'GET' || method == 'PUT' || method == 'DELETE') {
+        if ((method == 'GET' || method == 'PUT' || method == 'DELETE') && jsonData['id']) {
             url += '/' + jsonData['id'];
         }
         if (method == 'POST' || method == 'PUT') {
