@@ -65,6 +65,7 @@ These are the allowed methods to access the API:
 
 | Method | Endpoint           | Description       |
 | ------ | ------------------ | ----------------- |
+| GET    | `/api/users`       | Gets all users    |
 | POST   | `/api/users`       | Creates new user  |
 | GET    | `/api/users/{id}`  | Gets one user     |
 | POST   | `/api/users/{id}`  | Confirms one user |

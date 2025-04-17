@@ -45,8 +45,9 @@ function handleUsers($id) {
         }
     } else {
         switch ($method) {
+            case 'GET': return getUsers();
             case 'POST': return postUser();
-            default: return error('Usa POST', 405);
+            default: return error('Usa GET o POST', 405);
         }
     }
 }

@@ -81,6 +81,13 @@ function confirmUser($id) {
     }
 }
 
+function getUsers() {
+    require 'pdo.php';
+    $error = require 'auth.php';
+    if ($error) return $error;
+    return $pdo->query("SELECT id, full_name AS name, email, role FROM users")->fetchAll();
+}
+
 function getUser($id) {
     require 'pdo.php';
     $error = require 'auth.php';

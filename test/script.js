@@ -76,6 +76,9 @@ document.getElementById('send-email').addEventListener('submit', function(event)
         });
 });
 
+// Get all users
+setupForm('GET', 'users', 'get-users', 'users-result');
+
 // Get single user
 setupForm('GET', 'users', 'get-user', 'user-result');
 
