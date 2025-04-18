@@ -7,15 +7,15 @@ export default defineConfig({
   },
   // uncomment when build targeting a subpath in the deployment server
   // base: '/somepath',
-  vite: {
-    server: {
-      proxy: {
-        // Proxy requests starting with /api to PHP server
-        "/api": {
-          target: "http://localhost:8000",
-          changeOrigin: true,
-        },
-      },
-    },
-  },
+  // vite: {
+  //   server: {
+  //     proxy: {
+  //       // Proxy requests starting with /api to PHP server
+  //       "/api": {
+  //         target: "http://localhost:8000",
+  //         changeOrigin: true,
+  //       },
+  //     },
+  //   },
+  // },
 });
