@@ -1,7 +1,7 @@
 import L from "leaflet";
-import greenIconRef from "../assets/markers/map-pin.svg";
-import redIconRef from "../assets/markers/map-pin-red.svg";
-import shadowRef from "../assets/markers/custom-shadow.png";
+// import greenIconRef from "../assets/markers/map-pin.svg";
+// import redIconRef from "../assets/markers/map-pin-red.svg";
+// import shadowRef from "../assets/markers/custom-shadow.png";
 
 // Well Known Coords
 const CONEGLIANO = {
@@ -38,17 +38,17 @@ let iconSizeBigger = defaultIconSize.map((pts) => pts + 10) as [number, number];
 const customIconOpts: L.IconOptions = {
   ...L.Icon.Default.prototype.options,
   iconSize: iconSizeNormal,
-  iconUrl: greenIconRef.src,
-  iconRetinaUrl: greenIconRef.src,
-  shadowUrl: shadowRef.src,
+  iconUrl: "./markers/map-pin.svg",
+  iconRetinaUrl: "./markers/map-pin.svg",
+  shadowUrl: "./markers/custom-shadow.png",
 };
 
 const biggerCustomIconOpts: L.IconOptions = {
   ...L.Icon.Default.prototype.options,
   iconSize: iconSizeBigger,
-  iconUrl: redIconRef.src,
-  iconRetinaUrl: redIconRef.src,
-  shadowUrl: shadowRef.src,
+  iconUrl: "./markers/map-pin-red.svg",
+  iconRetinaUrl: "./markers/map-pin.svg-red",
+  shadowUrl: "./markers/custom-shadow.png",
 };
 
 const customIcon = L.icon(customIconOpts);
