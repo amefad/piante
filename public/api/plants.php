@@ -83,11 +83,10 @@ function getPlant($id, $complete = true) {
 
 // Inserts a new plant in database
 function postPlant() {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
+    global $pdo;
     $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumferences, height, common_name, scientific_name, user_id)
     VALUES (:num, POINT(:lon, :lat), :circ, :height, :common, :scientific, :user)");
+    $data = json_decode(file_get_contents('php://input'), true);
     $stmt->bindParam(':num', $data['number']);
     $stmt->bindParam(':lon', $data['longitude']);
     $stmt->bindParam(':lat', $data['latitude']);
@@ -108,9 +107,6 @@ function postPlant() {
 // Receives a JSON with plant ID and other data and updates the plant in database
 // Doesn't update date, user and images
 function putPlant($id) {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
     $updates = array(
         'number' => 'number',
         'longitude' => 'longitude',
@@ -121,6 +117,7 @@ function putPlant($id) {
         'scientific_name' => 'scientific-name'
     );
     // Data into $updates
+    $data = json_decode(file_get_contents('php://input'), true);
     foreach ($updates as $key => $value) {
         if (array_key_exists($value, $data)) {
             if (is_null($data[$value])) {
@@ -135,6 +132,7 @@ function putPlant($id) {
         }
     }
     if ($updates) {
+        global $pdo;
         // Prepares statement
         $stmt = $pdo->prepare('UPDATE plants SET ' . join(', ', array_map(function($key) {
             if ($key == 'longitude') {
@@ -163,9 +161,7 @@ function putPlant($id) {
 
 // Deletes one plant
 function deletePlant($id) {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
+    global $pdo;
     $stmt = $pdo->prepare('DELETE FROM plants WHERE id = ?');
     $stmt->execute([$id]);
     if ($stmt->rowCount() == 1) {

@@ -4,8 +4,7 @@
 // Returns user data with the token
 function postSession() {
     require 'pdo.php';
-    $json = file_get_contents('php://input');
-    $data = json_decode($json, true);
+    $data = json_decode(file_get_contents('php://input'), true);
     if (empty($data['email']) || empty($data['password'])) {
         return error('Email e password necessarie');
     }

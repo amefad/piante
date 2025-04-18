@@ -4,8 +4,7 @@
 // Returns the user just created
 function postUser() {
     require 'pdo.php';
-    $json = file_get_contents('php://input');
-    $data = json_decode($json, true);
+    $data = json_decode(file_get_contents('php://input'), true);
     if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
         return error('Nome, email e password sono necessari');
     }
@@ -37,7 +36,16 @@ function resendConfirmation($email) {
     $user = $stmt->fetch();
     if ($user) {
         if ($user['role'] == 'invalid') {
-            if (sendEmail($user['id'], $user['name'], $email, $user['token'])) {
+            // Recreates the token in the strange case it is missing
+            if (empty($user['token'])) {
+                $token = base64_encode(random_bytes(32));
+                $stmt = $pdo->prepare("UPDATE users SET token = ? WHERE email = ?");
+                $stmt->execute([$token, $email]);
+            } else {
+                $token = $user['token'];
+            }
+            // Sends the email
+            if (sendEmail($user['id'], $user['name'], $email, $token)) {
                 return success('Email di conferma inviata');
             } else {
                 return error('Email non inviata', 500);
@@ -66,33 +74,24 @@ function sendEmail($id, $name, $email, $token) {
 // Confirms the user by setting the role to editor and the token to NULL in database
 // Returns the user just updated
 function confirmUser($id) {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
-    // Updates user
-    $stmt = $pdo->prepare("UPDATE users SET role = 'editor', token = NULL WHERE id = ? AND token = ?");
-    $stmt->execute([$id, $token]);
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE users SET role = 'editor', token = NULL WHERE id = ?");
+    $stmt->execute([$id]);
     if ($stmt->rowCount() == 1) {
-        // Returns user just updated
-        $user = $pdo->query("SELECT id, full_name AS name, email, role FROM users WHERE id = $id")->fetch();
-        return $user;
+        return $pdo->query("SELECT id, full_name AS name, email, role FROM users WHERE id = $id")->fetch();
     } else {
-        return error('Utente non trovato');
+        return error('Utente non trovato', 404);
     }
 }
 
 function getUsers() {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
+    global $pdo;
     return $pdo->query("SELECT id, full_name AS name, email, role FROM users")->fetchAll();
 }
 
 function getUser($id) {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
-    $user = $pdo->query("SELECT id, full_name AS name, email, role, token FROM users WHERE id = $id AND token = '$token'")->fetch();
+    global $pdo;
+    $user = $pdo->query("SELECT id, full_name AS name, email, role, token FROM users WHERE id = $id")->fetch();
     if ($user) {
         return $user;
     } else {
@@ -101,18 +100,13 @@ function getUser($id) {
 }
 
 function deleteUser($id) {
-    require 'pdo.php';
-    $token = getToken();
-    if (isset($token)) {
-        $stmt = $pdo->prepare('DELETE FROM users WHERE id = ? AND token = ?');
-        $stmt->execute([$id, $token]);
-        if ($stmt->rowCount() == 1) {
-            return success('Utente eliminato');
-        } else {
-            return error('Utente non trovato', 404);
-        }
+    global $pdo;
+    $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
+    $stmt->execute([$id]);
+    if ($stmt->rowCount() == 1) {
+        return success('Utente eliminato');
     } else {
-        return error('Token necessario', 401);
+        return error('Utente non trovato', 404);
     }
 }
 ?>
