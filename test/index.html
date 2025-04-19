@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width">
     <title>Mappa delle piante</title>
     <script src="script.js" defer></script>
+    <link rel="icon" href="../dist/favicon.svg">
+    <style>
+        input[type="number"] {
+            width: 3em;
+        }
+        textarea {
+            width: 100%;
+            height: 17em;
+        }
+    </style>
 </head>
 <body>
     <h1>Mappa delle piante</h1>
@@ -34,16 +44,29 @@
     </form>
     <pre id="register-result"></pre>
 
+    <h2>Resend confirmation email</h2>
+    <form id="send-email">
+        <label>Email utente: <input type="email" name="email" required></label>
+        <input type="submit" value="Reinvia">
+    </form>
+    <pre id="email-result"></pre>
+
+    <h2>Get users</h2>
+    <form id="get-users">
+        <input type="submit" value="Tutti gli utenti">
+    </form>
+    <pre id="users-result"></pre>
+
     <h2>Get user</h2>
     <form id="get-user">
-        <label>ID utente: <input type="number" name="id" value="1" size="3" required></label>
+        <label>ID utente: <input type="number" name="id" value="1" required></label>
         <input type="submit" value="Cerca">
     </form>
     <pre id="user-result"></pre>
 
     <h2>Delete user</h2>
     <form id="delete-user">
-        <label>ID utente: <input type="number" name="id" value="1" size="3" required></label>
+        <label>ID utente: <input type="number" name="id" value="1" required></label>
         <input type="submit" value="Elimina">
     </form>
     <pre id="delete-user-result"></pre>
@@ -58,7 +81,7 @@
 
     <h2>Get plant</h2>
     <form id="get-plant">
-        <label>ID pianta: <input type="number" name="id" value="1" size="3"></label>
+        <label>ID pianta: <input type="number" name="id" value="1"></label>
         <button type="submit">Cerca</button>
     </form>
     <pre id="plant-result"></pre>
@@ -69,7 +92,7 @@
     <p>Login necessario.</p>
     <form id="post-plant">
         <label>Nuova pianta nel database:
-        <textarea id="plant-json" style="width: 100%; height: 15em;">{
+        <textarea id="plant-json">{
 "number": 123,
 "latitude": 45.8851066,
 "longitude": 12.2921521,
@@ -87,12 +110,12 @@
 
     <h2>Put plant</h2>
     <form id="edit-plant">
-        <label>ID pianta: <input type="number" name="id" value="1" size="3"></label>
+        <label>ID pianta: <input type="number" name="id" value="1"></label>
         <button type="submit">Carica pianta</button>
     </form>
     <form id="update-plant">
         <label>Modifica pianta:
-        <textarea id="update-plant-json" style="width: 100%; height: 18em;"></textarea></label>
+        <textarea id="update-plant-json"></textarea></label>
         <button type="submit">Invia modifiche</button>
     </form>
     <pre id="update-result"></pre>
@@ -101,7 +124,7 @@
 
     <h2>Delete plant</h2>
     <form id="delete-plant">
-        <label>ID pianta: <input type="number" name="id" value="1" size="3"></label>
+        <label>ID pianta: <input type="number" name="id" value="1"></label>
         <button type="submit">Elimina pianta</button>
     </form>
     <pre id="delete-result"></pre>
@@ -110,17 +133,15 @@
 
     <h2>Post image</h2>
     <form id="upload-image">
-        <label>Upload immagine:
-        <input type="file" id="image-file" name="image" accept="image/*" required></label>
-        <label>ID pianta:
-        <input type="number" id="plant-id" name="plant-id" value="1" size="3"></label>
+        <label>Immagine: <input type="file" id="image-file" name="image" accept="image/*" required></label>
+        <label>ID pianta: <input type="number" id="plant-id" name="plant-id" value="1"></label>
         <button type="submit">Upload</button>
     </form>
     <pre id="upload-result"></pre>
 
     <h2>Delete image</h2>
     <form id="delete-image">
-        <label>ID immagine: <input type="number" name="id" value="1" size="3"></label>
+        <label>ID immagine: <input type="number" name="id" value="1"></label>
         <button type="submit">Elimina immagine</button>
     </form>
     <pre id="delete-image-result"></pre>

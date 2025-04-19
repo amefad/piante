@@ -20,9 +20,7 @@ function getImage($id) {
 
 // Receives one image file and saves it in the uploads folder
 function postImage() {
-    require 'pdo.php';
-    $error = require 'auth.php';
-    if ($error) return $error;
+    global $pdo;
     if (isset($_FILES['image'])) {
         $image = $_FILES['image'];
         if (!is_dir(UPLOADS_PATH)) {
@@ -64,24 +62,19 @@ function postImage() {
 }
 
 function deleteImage($id) {
-    require 'pdo.php';
-    $token = getToken();
-    if (isset($token)) {
-        // Deletes file
-        $image = getImage($id);
-        if (isset($image['file-path']) && file_exists($image['file-path'])) {
-            unlink($image['file-path']);
-        }
-        // Deletes database row
-        $stmt = $pdo->prepare('DELETE FROM images WHERE id = ?');
-        $stmt->execute([$id]);
-        if ($stmt->rowCount() == 1) {
-            return success('Immagine eliminata');
-        } else {
-            return error('Immagine non trovata', 404);
-        }
+    global $pdo;
+    // Deletes file
+    $image = getImage($id);
+    if (isset($image['file-path']) && file_exists($image['file-path'])) {
+        unlink($image['file-path']);
+    }
+    // Deletes database row
+    $stmt = $pdo->prepare('DELETE FROM images WHERE id = ?');
+    $stmt->execute([$id]);
+    if ($stmt->rowCount() == 1) {
+        return success('Immagine eliminata');
     } else {
-        return error('Token necessario', 401);
+        return error('Immagine non trovata', 404);
     }
 }
 ?>

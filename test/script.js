@@ -19,7 +19,7 @@ function setupForm(method, request, formId, resultId, callback, textarea) {
         // Fetch options
         const options = { method: method };
         var url = request;
-        if (method == 'GET' || method == 'PUT' || method == 'DELETE') {
+        if ((method == 'GET' || method == 'PUT' || method == 'DELETE') && jsonData['id']) {
             url += '/' + jsonData['id'];
         }
         if (method == 'POST' || method == 'PUT') {
@@ -64,6 +64,20 @@ setupForm('DELETE', 'session', 'logout', 'logout-result', () => {
 
 // Post new user
 setupForm('POST', 'users', 'register', 'register-result');
+
+// Resend confirmation email
+document.getElementById('send-email').addEventListener('submit', function(event) {
+    event.preventDefault();
+    fetch(apiPath + 'users?email=' + event.target.email.value)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            document.getElementById('email-result').innerHTML = JSON.stringify(data, null, 2);
+        });
+});
+
+// Get all users
+setupForm('GET', 'users', 'get-users', 'users-result');
 
 // Get single user
 setupForm('GET', 'users', 'get-user', 'user-result');

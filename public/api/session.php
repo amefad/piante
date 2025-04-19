@@ -4,17 +4,19 @@
 // Returns user data with the token
 function postSession() {
     require 'pdo.php';
-    $json = file_get_contents('php://input');
-    $data = json_decode($json, true);
+    $data = json_decode(file_get_contents('php://input'), true);
     if (empty($data['email']) || empty($data['password'])) {
         return error('Email e password necessarie');
     }
-    $stmt = $pdo->prepare('SELECT id, full_name AS name, email, password FROM users WHERE email = ?');
+    $stmt = $pdo->prepare('SELECT id, full_name AS name, email, role, password FROM users WHERE email = ?');
     $stmt->execute([$data['email']]);
     $user = $stmt->fetch();
     if ($user && password_verify($data['password'], $user['password'])) {
+        if ($user['role'] == 'invalid') {
+            return error('Email non confermata', 401);
+        }
         $stmt = $pdo->prepare('UPDATE users SET token = ? WHERE email = ?');
-        $token = bin2hex(random_bytes(50));
+        $token = base64_encode(random_bytes(64));
         $stmt->execute([$token, $data['email']]);
         $user['token'] = $token;
         unset($user['password']);

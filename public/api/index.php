@@ -26,22 +26,29 @@ if (is_array($result) && sizeof($result) == 2 && isset($result[0]) && is_array($
 }
 http_response_code($code);
 header('Content-Type: application/json; charset=utf-8');
-echo json_encode($array, JSON_UNESCAPED_SLASHES);
+echo json_encode($array, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
 
 function handleUsers($id) {
     require 'users.php';
     $method = $_SERVER['REQUEST_METHOD'];
     if (isset($id)) {
         switch ($method) {
-            case 'GET': return getUser($id);
-            case 'DELETE': return deleteUser($id);
-            default: return error('Usa GET o DELETE', 405);
+            case 'GET': return auth('getUser', 'view_user', $id);
+            case 'POST': return auth('confirmUser', 'create_user', $id);
+            case 'DELETE': return auth('deleteUser', 'delete_user', $id);
+            default: return error('Usa GET, POST o DELETE', 405);
+        }
+    } else if (isset($_GET['email'])) {
+        switch ($method) {
+            case 'GET': return resendConfirmation($_GET['email']);
+            default: return error('Usa GET', 405);
         }
     } else {
         switch ($method) {
+            case 'GET': return auth('getUsers', 'view_users');
             case 'POST': return postUser();
-            default: return error('Usa POST', 405);
-        }        
+            default: return error('Usa GET o POST', 405);
+        }
     }
 }
 
@@ -60,14 +67,14 @@ function handlePlants($id) {
     if (isset($id)) {
         switch ($method) {
             case 'GET': return getPlant($id);
-            case 'PUT': return putPlant($id);
-            case 'DELETE': return deletePlant($id);
+            case 'PUT': return auth('putPlant', 'edit_plant', $id);
+            case 'DELETE': return auth('deletePlant', 'delete_plant', $id);
             default: return error('Usa GET, PUT o DELETE', 405);
         }
     } else {
         switch ($method) {
             case 'GET': return getPlants();
-            case 'POST': return postPlant();
+            case 'POST': return auth('postPlant', 'create_plant');
             default: return error('Usa GET o POST', 405);
         }
     }
@@ -79,15 +86,41 @@ function handleImages($id) {
     if (isset($id)) {
         switch ($method) {
             case 'GET': return getImage($id);
-            case 'DELETE': return deleteImage($id);
+            case 'DELETE': return auth('deleteImage', 'delete_image', $id);
             default: return error('Usa GET o DELETE', 405);
         }
     } else {
         switch ($method) {
             case 'GET': return getImages();
-            case 'POST': return postImage();
+            case 'POST': return auth('postImage', 'create_image');
             default: return error('Usa GET o POST', 405);
-        }        
+        }
+    }
+}
+
+// Checks if the user has the permission to access the resource
+function auth($callback, $permission, $id = null) {
+    require 'pdo.php';
+    $token = getToken();
+    if (is_null($token)) {
+        return error('Token necessario', 401);
+    } else {
+        $user = $pdo->query("SELECT id, role FROM users WHERE token = '$token'")->fetch();
+        if (!$user) {
+            return error('Token non valido', 401);
+        } else {
+            $stmt = $pdo->prepare("SELECT self_only FROM authorizations WHERE role = ? AND permission = ?");
+            $stmt->execute([$user['role'], $permission]);
+            $selfOnly = $stmt->fetch()['self_only'] ?? false;
+            if ($stmt->rowCount() == 0 || $selfOnly && $user['id'] != $id) {
+                return error('Permessi insufficienti', 403);
+            }
+        }
+    }
+    if ($id) {
+        return $callback($id);
+    } else {
+        return $callback();
     }
 }
 
