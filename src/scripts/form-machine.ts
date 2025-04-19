@@ -1,7 +1,7 @@
-interface State {
-  name: string;
+interface Step<N extends string, A extends string> {
+  name: N;
   transitions: {
-    [name: string]: () => Promise<string>;
+    [action in A]?: () => Promise<N>;
   };
   // guard before making a transition
   guard?: () => boolean;
@@ -9,44 +9,48 @@ interface State {
   effects?: Array<() => void>;
 }
 
-interface Sequence<S extends State> {
-  initial: string;
-  final: string[];
+interface Sequence<S extends Step<N, A>, N extends string, A extends string> {
+  initial: N;
+  final: N[];
   states: {
-    [name: string]: S;
+    [name in N]: S;
   };
 }
 
 /**
  * A generic machine
-*/
-class Machine<S extends State> {
-  sequence: Sequence<S>;
-  // aka index to current state
-  indexToCurrentState: string;
+ */
+class MachineProcess<S extends Step<N, A>, N extends string, A extends string> {
+  
+  sequence: Sequence<S, N, A>;
+  head: N; // index to current state
 
   /**
    * @constructor
-   * @param {Sequence<S>} sequence - A sequence made from states of type S
+   * @param {Sequence<S, N>} sequence - A sequence of states
    */
-  constructor(sequence: Sequence<S>) {
+  constructor(sequence: Sequence<S, N, A>) {
     this.sequence = sequence;
-    this.indexToCurrentState = sequence.initial;
+    this.head = sequence.initial;
   }
 
-  getCurrentState() {
-    return this.sequence.states[this.indexToCurrentState];
+  getCurrentState() : S {
+    return this.sequence.states[this.head];
   }
 
-  async transit(name: string) {
+  async transit(action: A): Promise<void> {
     // console.log(`before: ${this.printCurrentState()}`);
+    const t = this.getCurrentState().transitions[action];
+    // get the transition function from current state
 
-    // get the transition named 'name' from current state
-    const transition = this.getCurrentState().transitions[name].bind(this)
-
-    // get the name of the next state, change the current state index
-    // TODO: what is the 'this' of transition()?
-    this.indexToCurrentState = await transition();
+    if(t) {
+      // TODO: what is the 'this' of transition()?
+      const transition = t.bind(this);
+      // get the name of the next state, change the current state index
+      this.head = await transition();
+    } else {
+      // do nothing
+    }
     // console.log(`after: ${this.printCurrentState()}`);
   }
 
@@ -63,5 +67,5 @@ class Machine<S extends State> {
   }
 }
 
-export type { State, Sequence };
-export { Machine };
+export type { Step , Sequence };
+export { MachineProcess as Machine };
