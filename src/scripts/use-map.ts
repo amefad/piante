@@ -73,7 +73,7 @@ map = L.map("map", { layers: [osmLayer, formMarkers] }).fitBounds(
 layersControl.addTo(map);
 
 async function getData() {
-  const url = import.meta.env.DEV ? "/api-test/alberi.json" : "/api/plants.php";
+  const url = import.meta.env.DEV ? "/data-example/alberi.json" : "./api/plants.php";
   try {
     const response = await fetch(url);
     if (!response.ok) {
