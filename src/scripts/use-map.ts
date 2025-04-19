@@ -47,7 +47,7 @@ const biggerCustomIconOpts: L.IconOptions = {
   ...L.Icon.Default.prototype.options,
   iconSize: iconSizeBigger,
   iconUrl: "./markers/map-pin-red.svg",
-  iconRetinaUrl: "./markers/map-pin.svg-red",
+  iconRetinaUrl: "./markers/map-pin-red.svg",
   shadowUrl: "./markers/custom-shadow.png",
 };
 
