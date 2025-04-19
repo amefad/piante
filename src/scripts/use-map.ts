@@ -72,68 +72,35 @@ map = L.map("map", { layers: [osmLayer, formMarkers] }).fitBounds(
 );
 layersControl.addTo(map);
 
-/**
- *
- *
- *
- * sample item from response:
- *
- * {
- *   "id": 5,
- *   "number": 123,
- *   "latitude": 45.8851066,
- *   "longitude": 12.2921521,
- *   "height": "15.0",
- *   "circumferences": [
- *     50,
- *     75
- *   ],
- *   "common-name": "Quercia",
- *   "scientific-name": "Quercus ilex",
- *   "date": "2025-03-16 11:24:39",
- *   "user": {
- *     "id": 3,
- *     "name": "amedeo",
- *     "email": "fame@libero.it"
- *   },
- *   "images": [
- *     {
- *       "id": 4,
- *       "file-path": "../uploads/picture.jpg"
- *     }
- *   ]
- * }
- */
 async function getData() {
-  const url = "/api-test/alberi.json";
+  const url = import.meta.env.DEV ? "/api-test/alberi.json" : "/api/plants.php";
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
     const json = await response.json();
-    populate(json.data);
+    console.log(json);
+
+    const data = import.meta.env.DEV ? json.data : json;
+    populate(data);
   } catch (error: any) {
     console.error(error.message);
   }
 }
 
-// TODO import type
-type TreePlant = {
-  latitude: string;
-  longitude: string;
-  "scientific-name": string;
-  circumference: string;
-  height: string;
-};
+import type { TreePlant } from "src/consts";
 
 // TODO
 function addNewLayerToTrees(tree: TreePlant) {
-  const latitude = parseFloat(tree.latitude);
-  const longitude = parseFloat(tree.longitude);
+  // const latitude = parseFloat(tree.latitude);
+  const latitude = tree.latitude;
+  const longitude = tree.longitude;
+  console.log(`addNewLayer: ${tree.latitude}, ${tree.longitude}`);
+
   if (latitude && longitude) {
     trees.addLayer(
-      L.marker([latitude, longitude]).bindPopup(
+      L.marker([latitude, longitude], { icon: customIcon }).bindPopup(
         `its a ${tree["scientific-name"] || "boh"}`
       )
     );
@@ -177,4 +144,3 @@ function cleanFormLayer() {
 getData();
 
 export { CONEGLIANO, registerClickFunc, addNewLayerToTrees, cleanFormLayer };
-export type { TreePlant };

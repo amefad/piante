@@ -4,7 +4,8 @@ import {
   registerClickFunc,
   cleanFormLayer,
 } from "../scripts/use-map";
-import { Machine, type State, type Sequence } from "./form-machine";
+import { Machine, type Step, type Sequence } from "./form-machine";
+// import type { TreePlant } from "src/consts";
 
 interface InputControlStep {
   id: string;
@@ -12,7 +13,7 @@ interface InputControlStep {
   required?: boolean;
 }
 
-interface FormStep extends State {
+interface FormStep extends Step<FormStepNames, FormStepActions> {
   description: string;
   // TODO dataset -> enum
   dataSet: number;
@@ -24,6 +25,15 @@ interface FormStep extends State {
   // TODO name is
 }
 
+// type FormStepNames = keyof typeof formSequence.states;
+type FormStepNames =
+  | "location"
+  | "feedback"
+  | "error"
+  | "species"
+  | "dimensions";
+type FormStepActions = "prev" | "next";
+
 /**
  *
  * @param {number} lat latitude in decimal
@@ -33,11 +43,13 @@ function fillInputOnClick(lat: number, lng: number) {
   console.log(`clicked: ${lat}, ${lng}`);
   // Dispatch synthetic input events
   if (inputLat) {
-    inputLat.value = String(lat).slice(0, 8);
+    // inputLat.value = String(lat).slice(0, 8);
+    inputLat.valueAsNumber = lat;
     inputLat.dispatchEvent(new Event("input", { bubbles: true }));
   }
   if (inputLng) {
-    inputLng.value = String(lng).slice(0, 8);
+    // inputLng.value = String(lng).slice(0, 8);
+    inputLng.valueAsNumber = lng;
     inputLng.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }
@@ -74,17 +86,17 @@ const submitButton = document.getElementById(
 ) as HTMLButtonElement;
 const endButton = document.getElementById("js-end-button") as HTMLButtonElement;
 
-const nextButtonSpan = nextButton.querySelector("span")!;
-const closeButtonSpan = closeButton.querySelector("span")!;
+// const nextButtonSpan = nextButton.querySelector("span")!;
+// const closeButtonSpan = closeButton.querySelector("span")!;
 
 // FAB button, open a new form wizard
 const addTreeButton = document.getElementById("add-tree-button");
 const formDialog = document.getElementById("form-dialog") as HTMLDialogElement;
 
-// define the machine
-let formMachine: Machine<FormStep>;
+// declare the machine
+let formMachine: Machine<FormStep, FormStepNames, FormStepActions>;
 // machine sequence description
-const formSequence: Sequence<FormStep> = {
+const formSequence: Sequence<FormStep, FormStepNames, FormStepActions> = {
   initial: "location",
   final: ["feedback", "error"],
   states: {
@@ -95,12 +107,12 @@ const formSequence: Sequence<FormStep> = {
       inputs: [
         {
           id: "lat",
-          type: "text",
+          type: "number",
           required: true,
         },
         {
           id: "lng",
-          type: "text",
+          type: "number",
           required: true,
         },
       ],
@@ -177,13 +189,14 @@ const formSequence: Sequence<FormStep> = {
       name: "feedback",
       description: "Response from server",
       dataSet: 4,
-      transitions: {},
+      transitions: {}, // after sending you cant go back or forth
     },
     error: {
       name: "error",
       description: "Error on submitting to server",
       dataSet: 5,
-      transitions: {},
+      transitions: {}, // after sending you cant go back or forth
+      // TODO make possible to change something
     },
   },
 };
@@ -191,10 +204,12 @@ const formSequence: Sequence<FormStep> = {
 /**
  * data rendering flow: EVENT -> HANDLER -> MACHINE -> VIEW
  *
- * @param action a string representing the action name
+ * @param action a string representing the action name associated to the button
+ * originated event
  */
 async function handleButtonAction(action: string) {
-  // note: user sees buttons if he is allowed to take these actions
+  // note: user is able to click on a button iff 
+  // he is allowed to take the action associated to the button
   switch (action) {
     case "prev": {
       await formMachine.transit("prev");
@@ -252,6 +267,7 @@ async function handleButtonAction(action: string) {
       console.log("handleButtonAction() >> action not recognized");
     }
   }
+  // call 
   updateFormView();
 }
 
@@ -277,7 +293,10 @@ function computeStateValidity(): boolean {
       // readonly attribute specified.
       // need manual check that it is not empty
       if (input.readOnly) {
-        return input.value.length > 0 && input.validity.valid;
+        return (
+          (input.value.length > 0 || input.valueAsNumber) &&
+          input.validity.valid
+        );
       }
       return input.validity.valid;
     });
@@ -423,7 +442,8 @@ function updateFormView() {
 }
 
 /**
- *  get the input data directly from the form elements (not the machine)
+ * Get the input data directly from the form elements (not from the machine)
+ * TODO get from the machine, do not need formdata
  */
 function getFormData() {
   let data: any = {};
@@ -441,7 +461,16 @@ function getFormData() {
 
 // TODO fetch
 /**
- *
+ *{
+"number": 123,
+"latitude": 45.8851066,
+"longitude": 12.2921521,
+"circumferences": [50, 25, 33],
+"height": 25.5,
+"common-name": "Quercia",
+"scientific-name": "Quercus ilex",
+"user-id": 2
+}
  */
 async function mockSend() {
   const data = getFormData();
