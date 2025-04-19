@@ -63,24 +63,25 @@ The `api/` folder contains the PHP code to get data from MySQL database and retu
 
 These are the allowed methods to access the API:
 
-| Method | Endpoint           | Description       |
-| ------ | ------------------ | ----------------- |
-| GET    | `/api/users`       | Gets all users    |
-| POST   | `/api/users`       | Creates new user  |
-| GET    | `/api/users/{id}`  | Gets one user     |
-| POST   | `/api/users/{id}`  | Confirms one user |
-| DELETE | `/api/users/{id}`  | Deletes one user  |
-| POST   | `/api/session`     | Login             |
-| DELETE | `/api/session`     | Logout            |
-| GET    | `/api/plants`      | Gets all plants   |
-| POST   | `/api/plants`      | Creates new plant |
-| GET    | `/api/plants/{id}` | Gets one plant    |
-| PUT    | `/api/plants/{id}` | Updates one plant |
-| DELETE | `/api/plants/{id}` | Deletes one plant |
-| GET    | `/api/images`      | Gets all images   |
-| POST   | `/api/images`      | Uploads new image |
-| GET    | `/api/images/{id}` | Gets one image    |
-| DELETE | `/api/images/{id}` | Deletes one image |
+| Method | Endpoint               | Description              | Minimum role | Token    |
+| ------ | ---------------------- | ------------------------ | ------------ | -------- |
+| GET    | `/users`               | Gets all users           | admin        | required |
+| GET    | `/users/{id}`          | Gets one user            | editor       | required |
+| POST   | `/users`               | Creates new user         | -            | -        |
+| POST   | `/users/{id}`          | Confirms one user        | invalid      | required |
+| DELETE | `/users/{id}`          | Deletes one user         | editor       | required |
+| GET    | `/users?email={email}` | Sends confirmation email | -            | -        |
+| POST   | `/session`             | Login                    | -            | -        |
+| DELETE | `/session`             | Logout                   | -            | optional |
+| GET    | `/plants`              | Gets all plants          | -            | -        |
+| GET    | `/plants/{id}`         | Gets one plant           | -            | -        |
+| POST   | `/plants`              | Creates new plant        | editor       | required |
+| PUT    | `/plants/{id}`         | Updates one plant        | editor       | required |
+| DELETE | `/plants/{id}`         | Deletes one plant        | editor       | required |
+| GET    | `/images`              | Gets all images          | -            | -        |
+| GET    | `/images/{id}`         | Gets one image           | -            | -        |
+| POST   | `/images`              | Uploads new image        | editor       | required |
+| DELETE | `/images/{id}`         | Deletes one image        | editor       | required |
 
 ## Frontend
 
