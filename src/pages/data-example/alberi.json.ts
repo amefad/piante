@@ -132,5 +132,5 @@ const customHeaders = new Headers({
   "Content-Type": "application/json",
 });
 export const GET: APIRoute = () => {
-  return new Response(JSON.stringify(exampleData), { headers: customHeaders });
+  return new Response(JSON.stringify(exampleData.data), { headers: customHeaders });
 };
