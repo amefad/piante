@@ -34,6 +34,20 @@ type FormStepNames =
   | "dimensions";
 type FormStepActions = "prev" | "next";
 
+import { getAllPlants } from "./api-calls";
+// import type { TreePlant } from "src/consts";
+
+async function init() {
+  try {
+    const plants = await getAllPlants();
+    plants.forEach(addNewLayerToTrees);
+  } catch (error: any) {
+    console.error(error.message);
+  }
+}
+
+init();
+
 /**
  *
  * @param {number} lat latitude in decimal

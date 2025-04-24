@@ -16,17 +16,7 @@ const CONEGLIANO = {
   ),
 };
 
-//  Layers
-// base layers
-const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution:
-    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-});
-const baseMaps = { OpenStreetMap: osmLayer };
-
 // Icons
-
 let defaultIconSize = L.Icon.Default.prototype.options.iconSize as [
   number,
   number,
@@ -54,40 +44,35 @@ const biggerCustomIconOpts: L.IconOptions = {
 const customIcon = L.icon(customIconOpts);
 const biggerCustomIcon = L.icon(biggerCustomIconOpts);
 
-// set new default icon
-L.Marker.prototype.options.icon = customIcon;
-
 // TODO try to set icons defaults for layer groups
+// L.Marker.prototype.options.icon = customIcon;
+
+//  Layers
+// base layers
+const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution:
+    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+});
+const baseMaps = { 
+  OpenStreetMap: osmLayer,
+  // TODO add satellite
+};
+
 //  Groups and overlays layers
 const formMarkers = L.layerGroup();
 const trees = L.layerGroup();
 
-// Controls
-const layersControl = L.control.layers(baseMaps);
-
 // Maps
 let map: any;
-map = L.map("map", { layers: [osmLayer, formMarkers] }).fitBounds(
+map = L.map("map", { layers: [osmLayer, formMarkers, trees] }).fitBounds(
   CONEGLIANO.bounds
 );
-layersControl.addTo(map);
 
-async function getData() {
-  const url = import.meta.env.DEV ? "/data-example/alberi.json" : "./api/plants";
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const json = await response.json();
-    console.log(json);
+// Controls
+L.control.layers(baseMaps).addTo(map);
 
-    const data = import.meta.env.DEV ? json.data : json;
-    populate(data);
-  } catch (error: any) {
-    console.error(error.message);
-  }
-}
+
 
 import type { TreePlant } from "src/consts";
 
@@ -105,11 +90,6 @@ function addNewLayerToTrees(tree: TreePlant) {
       )
     );
   }
-}
-
-function populate(data: TreePlant[]) {
-  data.forEach(addNewLayerToTrees);
-  trees.addTo(map);
 }
 
 /**
@@ -141,6 +121,5 @@ function cleanFormLayer() {
   formMarkers.clearLayers();
 }
 
-getData();
 
 export { CONEGLIANO, registerClickFunc, addNewLayerToTrees, cleanFormLayer };
