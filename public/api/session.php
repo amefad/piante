@@ -1,6 +1,6 @@
 <?php
 // Receives the login JSON data and checks the user is in database
-// Adds a random token to the user in the database
+// Adds a random token to the user in the database, if not already present
 // Returns user data with the token
 function postSession() {
     require 'pdo.php';
@@ -8,17 +8,19 @@ function postSession() {
     if (empty($data['email']) || empty($data['password'])) {
         return error('Email e password necessarie');
     }
-    $stmt = $pdo->prepare('SELECT id, full_name AS name, email, role, password FROM users WHERE email = ?');
+    $stmt = $pdo->prepare('SELECT id, full_name AS name, email, role, token, password FROM users WHERE email = ?');
     $stmt->execute([$data['email']]);
     $user = $stmt->fetch();
     if ($user && password_verify($data['password'], $user['password'])) {
         if ($user['role'] == 'invalid') {
             return error('Email non confermata', 401);
         }
-        $stmt = $pdo->prepare('UPDATE users SET token = ? WHERE email = ?');
-        $token = base64_encode(random_bytes(64));
-        $stmt->execute([$token, $data['email']]);
-        $user['token'] = $token;
+        if (is_null($user['token'])) {
+            $stmt = $pdo->prepare('UPDATE users SET token = ? WHERE email = ?');
+            $token = base64_encode(random_bytes(64));
+            $stmt->execute([$token, $data['email']]);
+            $user['token'] = $token;
+        }
         unset($user['password']);
         return $user;
     } else {
