@@ -22,26 +22,28 @@ let defaultIconSize = L.Icon.Default.prototype.options.iconSize as [
   number,
 ];
 
-let iconSizeNormal = defaultIconSize.map((pts) => pts + 5) as [number, number];
+// let iconSizeNormal = defaultIconSize.map((pts) => pts) as [number, number];
 let iconSizeBigger = defaultIconSize.map((pts) => pts + 10) as [number, number];
 
 const customIconOpts: L.IconOptions = {
-  ...L.Icon.Default.prototype.options,
-  iconSize: iconSizeNormal,
+  // ...L.Icon.Default.prototype.options,
+  iconSize: [20, 20],
   iconUrl: "./markers/map-pin.svg",
-  iconRetinaUrl: "./markers/map-pin.svg",
-  shadowUrl: "./markers/custom-shadow.png",
+  // iconRetinaUrl: "./markers/map-pin.svg",
+  // shadowUrl: "./markers/custom-shadow.png",
 };
 
 const biggerCustomIconOpts: L.IconOptions = {
-  ...L.Icon.Default.prototype.options,
+  // ...L.Icon.Default.prototype.options,
   iconSize: iconSizeBigger,
   iconUrl: "./markers/map-pin-red.svg",
-  iconRetinaUrl: "./markers/map-pin-red.svg",
-  shadowUrl: "./markers/custom-shadow.png",
+  // iconRetinaUrl: "./markers/map-pin-red.svg",
+  // shadowUrl: "./markers/custom-shadow.png",
 };
 
 const customIcon = L.icon(customIconOpts);
+console.log(customIcon);
+
 const biggerCustomIcon = L.icon(biggerCustomIconOpts);
 
 // TODO try to set icons defaults for layer groups
