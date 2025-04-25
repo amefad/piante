@@ -50,7 +50,9 @@ const biggerCustomIcon = L.icon(biggerCustomIconOpts);
 //  Layers
 // base layers
 const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
+  minZoom: 12,
+  maxZoom: 21,
+  maxNativeZoom: 19, // OSM tiles max available zoom
   attribution:
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 });
