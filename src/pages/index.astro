@@ -179,8 +179,8 @@ import { SITE_TITLE } from "../consts";
       input[type="radio"]:checked + label {
         font-weight: 700;
       }
-      input[name="lat"],
-      input[name="lng"] {
+      input[name="latitude"],
+      input[name="longitude"] {
         font-family: monospace;
         /* background-color: ; */
         border: none;
@@ -309,25 +309,27 @@ import { SITE_TITLE } from "../consts";
                 {/* TODO map zoom, use ctrl, check double click  */}
                 <div class="hide">
                   <p>
-                    <label for="lat">Latitudine</label>
+                    <label for="latitude">Latitudine</label>
                     <input
                       class="js-submit"
                       name="latitude"
-                      id="lat"
-                      type="text"
+                      id="latitude"
+                      type="number"
                       readonly
                       tabindex="-1"
+                      step="any"
                     />
                   </p>
                   <p>
-                    <label for="lng">Longitudine</label>
+                    <label for="longitude">Longitudine</label>
                     <input
                       class="js-submit"
                       name="longitude"
-                      id="lng"
-                      type="text"
+                      id="longitude"
+                      type="number"
                       readonly
                       tabindex="-1"
+                      step="any"
                     />
                   </p>
                 </div>

@@ -16,133 +16,84 @@ const CONEGLIANO = {
   ),
 };
 
-//  Layers
-// base layers
-const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution:
-    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-});
-const baseMaps = { OpenStreetMap: osmLayer };
-
 // Icons
-
 let defaultIconSize = L.Icon.Default.prototype.options.iconSize as [
   number,
   number,
 ];
 
-let iconSizeNormal = defaultIconSize.map((pts) => pts + 5) as [number, number];
+// let iconSizeNormal = defaultIconSize.map((pts) => pts) as [number, number];
 let iconSizeBigger = defaultIconSize.map((pts) => pts + 10) as [number, number];
 
 const customIconOpts: L.IconOptions = {
-  ...L.Icon.Default.prototype.options,
-  iconSize: iconSizeNormal,
+  // ...L.Icon.Default.prototype.options,
+  iconSize: [20, 20],
   iconUrl: "./markers/map-pin.svg",
-  iconRetinaUrl: "./markers/map-pin.svg",
-  shadowUrl: "./markers/custom-shadow.png",
+  // iconRetinaUrl: "./markers/map-pin.svg",
+  // shadowUrl: "./markers/custom-shadow.png",
 };
 
 const biggerCustomIconOpts: L.IconOptions = {
-  ...L.Icon.Default.prototype.options,
+  // ...L.Icon.Default.prototype.options,
   iconSize: iconSizeBigger,
   iconUrl: "./markers/map-pin-red.svg",
-  iconRetinaUrl: "./markers/map-pin-red.svg",
-  shadowUrl: "./markers/custom-shadow.png",
+  // iconRetinaUrl: "./markers/map-pin-red.svg",
+  // shadowUrl: "./markers/custom-shadow.png",
 };
 
 const customIcon = L.icon(customIconOpts);
+console.log(customIcon);
+
 const biggerCustomIcon = L.icon(biggerCustomIconOpts);
 
-// set new default icon
-L.Marker.prototype.options.icon = customIcon;
-
 // TODO try to set icons defaults for layer groups
+// L.Marker.prototype.options.icon = customIcon;
+
+//  Layers
+// base layers
+const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  minZoom: 12,
+  maxZoom: 21,
+  maxNativeZoom: 19, // OSM tiles max available zoom
+  attribution:
+    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+});
+const baseMaps = { 
+  OpenStreetMap: osmLayer,
+  // TODO add satellite
+};
+
 //  Groups and overlays layers
 const formMarkers = L.layerGroup();
 const trees = L.layerGroup();
 
-// Controls
-const layersControl = L.control.layers(baseMaps);
-
 // Maps
 let map: any;
-map = L.map("map", { layers: [osmLayer, formMarkers] }).fitBounds(
+map = L.map("map", { layers: [osmLayer, formMarkers, trees] }).fitBounds(
   CONEGLIANO.bounds
 );
-layersControl.addTo(map);
 
-/**
- *
- *
- *
- * sample item from response:
- *
- * {
- *   "id": 5,
- *   "number": 123,
- *   "latitude": 45.8851066,
- *   "longitude": 12.2921521,
- *   "height": "15.0",
- *   "circumferences": [
- *     50,
- *     75
- *   ],
- *   "common-name": "Quercia",
- *   "scientific-name": "Quercus ilex",
- *   "date": "2025-03-16 11:24:39",
- *   "user": {
- *     "id": 3,
- *     "name": "amedeo",
- *     "email": "fame@libero.it"
- *   },
- *   "images": [
- *     {
- *       "id": 4,
- *       "file-path": "../uploads/picture.jpg"
- *     }
- *   ]
- * }
- */
-async function getData() {
-  const url = "/api-test/alberi.json";
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const json = await response.json();
-    populate(json.data);
-  } catch (error: any) {
-    console.error(error.message);
-  }
-}
+// Controls
+L.control.layers(baseMaps).addTo(map);
 
-// TODO import type
-type TreePlant = {
-  latitude: string;
-  longitude: string;
-  "scientific-name": string;
-  circumference: string;
-  height: string;
-};
+
+
+import type { TreePlant } from "src/consts";
 
 // TODO
 function addNewLayerToTrees(tree: TreePlant) {
-  const latitude = parseFloat(tree.latitude);
-  const longitude = parseFloat(tree.longitude);
+  // const latitude = parseFloat(tree.latitude);
+  const latitude = tree.latitude;
+  const longitude = tree.longitude;
+  console.log(`addNewLayer: ${tree.latitude}, ${tree.longitude}`);
+
   if (latitude && longitude) {
     trees.addLayer(
-      L.marker([latitude, longitude]).bindPopup(
+      L.marker([latitude, longitude], { icon: customIcon }).bindPopup(
         `its a ${tree["scientific-name"] || "boh"}`
       )
     );
   }
-}
-
-function populate(data: TreePlant[]) {
-  data.forEach(addNewLayerToTrees);
-  trees.addTo(map);
 }
 
 /**
@@ -174,7 +125,5 @@ function cleanFormLayer() {
   formMarkers.clearLayers();
 }
 
-getData();
 
 export { CONEGLIANO, registerClickFunc, addNewLayerToTrees, cleanFormLayer };
-export type { TreePlant };
