@@ -17,7 +17,7 @@ function postSession() {
         }
         if (is_null($user['token'])) {
             $stmt = $pdo->prepare('UPDATE users SET token = ? WHERE email = ?');
-            $token = base64_encode(random_bytes(64));
+            $token = base64_encode(random_bytes(32));
             $stmt->execute([$token, $data['email']]);
             $user['token'] = $token;
         }

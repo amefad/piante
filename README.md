@@ -63,25 +63,27 @@ The `api/` folder contains the PHP code to get data from MySQL database and retu
 
 These are the allowed methods to access the API:
 
-| Method | Endpoint               | Description              | Minimum role | Token    |
-| ------ | ---------------------- | ------------------------ | ------------ | -------- |
-| GET    | `/users`               | Gets all users           | admin        | required |
-| GET    | `/users/{id}`          | Gets one user            | editor       | required |
-| POST   | `/users`               | Creates new user         | -            | -        |
-| POST   | `/users/{id}`          | Confirms one user        | invalid      | required |
-| DELETE | `/users/{id}`          | Deletes one user         | editor       | required |
-| GET    | `/users?email={email}` | Sends confirmation email | -            | -        |
-| POST   | `/session`             | Login                    | -            | -        |
-| DELETE | `/session`             | Logout                   | -            | optional |
-| GET    | `/plants`              | Gets all plants          | -            | -        |
-| GET    | `/plants/{id}`         | Gets one plant           | -            | -        |
-| POST   | `/plants`              | Creates new plant        | editor       | required |
-| PUT    | `/plants/{id}`         | Updates one plant        | editor       | required |
-| DELETE | `/plants/{id}`         | Deletes one plant        | editor       | required |
-| GET    | `/images`              | Gets all images          | -            | -        |
-| GET    | `/images/{id}`         | Gets one image           | -            | -        |
-| POST   | `/images`              | Uploads new image        | editor       | required |
-| DELETE | `/images/{id}`         | Deletes one image        | editor       | required |
+| Method | Endpoint                 | Description                   | Minimum role | Token    |
+| ------ | ------------------------ | ----------------------------- | ------------ | -------- |
+| GET    | `/users`                 | Gets all users                | admin        | required |
+| GET    | `/users/{id}`            | Gets one user                 | viewer       | required |
+| POST   | `/users`                 | Creates new user              | -            | -        |
+| POST   | `/users/{id}`            | Confirms one user             | invalid      | required |
+| PUT    | `/users/{id}`            | Updates one user              | viewer       | required |
+| DELETE | `/users/{id}`            | Deletes one user              | viewer       | required |
+| GET    | `/users?confirm={email}` | Sends confirmation email      | -            | -        |
+| GET    | `/users?reset={email}`   | Sends email to reset password | -            | -        |
+| POST   | `/session`               | Login                         | -            | -        |
+| DELETE | `/session`               | Logout                        | -            | optional |
+| GET    | `/plants`                | Gets all plants               | -            | -        |
+| GET    | `/plants/{id}`           | Gets one plant                | -            | -        |
+| POST   | `/plants`                | Creates new plant             | editor       | required |
+| PUT    | `/plants/{id}`           | Updates one plant             | editor       | required |
+| DELETE | `/plants/{id}`           | Deletes one plant             | editor       | required |
+| GET    | `/images`                | Gets all images               | -            | -        |
+| GET    | `/images/{id}`           | Gets one image                | -            | -        |
+| POST   | `/images`                | Uploads new image             | editor       | required |
+| DELETE | `/images/{id}`           | Deletes one image             | editor       | required |
 
 ## Frontend
 

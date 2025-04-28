@@ -35,12 +35,18 @@ function handleUsers($id) {
         switch ($method) {
             case 'GET': return auth('getUser', 'view_user', $id);
             case 'POST': return auth('confirmUser', 'create_user', $id);
+            case 'PUT': return auth('putUser', 'edit_user', $id);
             case 'DELETE': return auth('deleteUser', 'delete_user', $id);
-            default: return error('Usa GET, POST o DELETE', 405);
+            default: return error('Usa GET, POST, PUT o DELETE', 405);
         }
-    } else if (isset($_GET['email'])) {
+    } else if (isset($_GET['confirm'])) {
         switch ($method) {
-            case 'GET': return resendConfirmation($_GET['email']);
+            case 'GET': return resendConfirmation($_GET['confirm']);
+            default: return error('Usa GET', 405);
+        }
+    } else if (isset($_GET['reset'])) {
+        switch ($method) {
+            case 'GET': return sendResetEmail($_GET['reset']);
             default: return error('Usa GET', 405);
         }
     } else {

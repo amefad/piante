@@ -1,4 +1,4 @@
-const apiPath = '../dist/api/';
+import API_PATH from './global.js';
 
 // Setups one form to send its data as JSON to the API with fetch() method
 function setupForm(method, request, formId, resultId, callback, textarea) {
@@ -37,7 +37,7 @@ function setupForm(method, request, formId, resultId, callback, textarea) {
                 'Content-Type': 'application/json'
             };
         }
-        fetch(apiPath + url, options)
+        fetch(API_PATH + url, options)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
@@ -68,11 +68,22 @@ setupForm('POST', 'users', 'register', 'register-result');
 // Resend confirmation email
 document.getElementById('send-email').addEventListener('submit', function(event) {
     event.preventDefault();
-    fetch(apiPath + 'users?email=' + event.target.email.value)
+    fetch(API_PATH + 'users?confirm=' + event.target.email.value)
         .then(response => response.json())
         .then(data => {
             console.log(data);
             document.getElementById('email-result').innerHTML = JSON.stringify(data, null, 2);
+        });
+});
+
+// Reset password
+document.getElementById('reset-password').addEventListener('submit', function(event) {
+    event.preventDefault();
+    fetch(API_PATH + 'users?reset=' + event.target.email.value)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            document.getElementById('reset-result').innerHTML = JSON.stringify(data, null, 2);
         });
 });
 
@@ -82,13 +93,24 @@ setupForm('GET', 'users', 'get-users', 'users-result');
 // Get single user
 setupForm('GET', 'users', 'get-user', 'user-result');
 
+// Loads one user to edit
+setupForm('GET', 'users', 'edit-user', 'update-user-json', (data) => {
+    if (data) {
+        delete data.token;
+        document.getElementById('update-user-json').innerHTML = JSON.stringify(data, null, 2);
+    }
+});
+
+// Puts updated user
+setupForm('PUT', 'users', 'update-user', 'update-user-result', null, 'update-user-json');
+
 // Delete user
 setupForm('DELETE', 'users', 'delete-user', 'delete-user-result');
 
 
 // Get all plants
 document.getElementById('load-plants').addEventListener('click', function () {
-    fetch(apiPath + 'plants')
+    fetch(API_PATH + 'plants')
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -133,7 +155,7 @@ document.getElementById('upload-image').addEventListener('submit', function (eve
     if (token) {
         options.headers = { 'Authorization': 'Bearer ' + token }
     }
-    fetch(apiPath + 'images', options)
+    fetch(API_PATH + 'images', options)
         .then(response => response.json())
         .then(data => {
             console.log(data);

@@ -10,13 +10,14 @@
     <h1>Mappa delle piante</h1>
     <h2>Conferma email</h2>
     <pre id="message"></pre>
-    <script>
+    <script type="module">
+        import API_PATH from './global.js';
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
         const token = urlParams.get('token');
         const resultPre = document.getElementById('message');
         if (id && token) {
-            fetch(`../dist/api/users/${id}`, {
+            fetch(API_PATH + `users/${id}`, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + token }
             })

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Mappa delle piante - Reset password</title>
+    <link rel="icon" href="../dist/favicon.svg">
+</head>
+<body>
+    <h1>Mappa delle piante</h1>
+    <h2>Reset password</h2>
+    <form id="reset-password">
+        <label>Nuova password: <input type="password" name="password" required></label>
+        <input type="submit" value="Imposta nuova password">
+    </form>
+    <pre id="message"></pre>
+    <script type="module">
+        import API_PATH from './global.js';
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        const token = urlParams.get('token');
+        const resultPre = document.getElementById('message');
+        if (!id || !token) {
+            resultPre.innerHTML = 'ID utente e token necessari';
+        }
+        document.getElementById('reset-password').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const password = formData.get('password');
+            if (id && token && password) {
+                fetch(API_PATH + `users/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ password: password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        // Logout
+                        fetch(API_PATH + 'session', {
+                            method: 'DELETE',
+                            headers: { 'Authorization': 'Bearer ' + data.token }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            resultPre.innerHTML += '\n' + JSON.stringify(data, null, 2);
+                            console.log(data);
+                        });
+                        localStorage.removeItem('token');
+                        delete data.token;
+                    }
+                    resultPre.innerHTML = JSON.stringify(data, null, 2);
+                    console.log(data);
+                });
+            } else {
+                resultPre.innerHTML = 'ID utente, token e password necessari';
+            }
+        });
+    </script>
+</body>
+</html>
