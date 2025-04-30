@@ -140,10 +140,10 @@ function getToken() {
 }
 
 function success($message) {
-    return [['message' => $message], 200 ];
+    return [['message' => $message], 200];
 }
 
-function error($message = 'Errore generico', $code = 400) {
-    return [['message' => $message], $code ];
+function error($message, $code = 400) {
+    return [['message' => $message], $code];
 }
 ?>

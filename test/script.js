@@ -105,8 +105,11 @@ setupForm('GET', 'users', 'edit-user', 'update-user-json', (data) => {
 setupForm('PUT', 'users', 'update-user', 'update-user-result', null, 'update-user-json');
 
 // Delete user
-setupForm('DELETE', 'users', 'delete-user', 'delete-user-result');
-
+setupForm('DELETE', 'users', 'delete-user', 'delete-user-result', (data) => {
+    if (data.message == 'Utente eliminato') {
+        localStorage.removeItem('token');
+    }
+});
 
 // Get all plants
 document.getElementById('load-plants').addEventListener('click', function () {
