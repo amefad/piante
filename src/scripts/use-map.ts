@@ -58,7 +58,7 @@ const osmLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 });
-const baseMaps = { 
+const baseMaps = {
   OpenStreetMap: osmLayer,
   // TODO add satellite
 };
@@ -68,15 +68,17 @@ const formMarkers = L.layerGroup();
 const trees = L.layerGroup();
 
 // Maps
-let map: any;
-map = L.map("map", { layers: [osmLayer, formMarkers, trees] }).fitBounds(
+// let map: any;
+let map = L.map("map", { layers: [osmLayer, formMarkers, trees] }).fitBounds(
   CONEGLIANO.bounds
 );
 
 // Controls
-L.control.layers(baseMaps).addTo(map);
-
-
+L.control.layers(baseMaps).setPosition("topleft").addTo(map);
+// const zoomControl = map.zoomControl.getContainer();
+// if (zoomControl) {
+//   L.DomUtil.addClass(zoomControl, "custom-zoom-control-margin");
+// }
 
 import type { TreePlant } from "src/consts";
 
@@ -124,6 +126,5 @@ function registerClickFunc(aFunction: (lat: number, lng: number) => void) {
 function cleanFormLayer() {
   formMarkers.clearLayers();
 }
-
 
 export { CONEGLIANO, registerClickFunc, addNewLayerToTrees, cleanFormLayer };
