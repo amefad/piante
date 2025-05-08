@@ -4,6 +4,7 @@ import { SITE_TITLE } from "../consts";
 ---
 
 <header>
+  <div class="app-title">
     <svg
       width="96"
       height="96"
@@ -18,33 +19,29 @@ import { SITE_TITLE } from "../consts";
       ></circle></svg
     >
     <h1>{SITE_TITLE}</h1>
-  {
-    /*
-    <nav>
-    <HeaderLink href="/">{SITE_TITLE}</HeaderLink>
-    <div class="internal-links">
-      <HeaderLink href="/form" class="like-p">Aggiungi</HeaderLink>
-      <HeaderLink href="/blog" class="like-p">Blog</HeaderLink>
-      <HeaderLink href="/about" class="like-p">About</HeaderLink>
-    </div>
-    </nav>
-    */
-  }
+  </div>
+  <button type="button" id="js-login-button" class="login-button">Login</button>
 </header>
 
 <style>
   header {
     grid-area: app;
     z-index: 1;
-    inline-size: fit-content;
     align-self: start;
-    justify-self: center;
     /*  */
-    padding: 2px;
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 4fr 1fr;
+    /*  */
+    padding-block-start: var(--size-base-m1);
     padding-inline: var(--size-base-0);
-    margin-block-start: 4px;
-    border-radius: var(--radius-round);
-    border: var(--border-size-2) solid var(--color-black);
+    margin-inline-start: 50px;
+    /* background: tomato; */
+  }
+  .app-title {
+    grid-column: 2;
+    /* inline-size: fit-content; */
+    justify-self: center;
     /*  */
     display: flex;
     flex-flow: row nowrap;
@@ -53,6 +50,10 @@ import { SITE_TITLE } from "../consts";
     /*  */
     background: var(--color-white);
     box-shadow: var(--shadow-elevation-low);
+    border-radius: var(--radius-round);
+    border: var(--border-size-2) solid var(--color-black);
+    padding-block: 2px;
+    padding-inline: var(--size-base-0);
   }
   svg {
     inline-size: var(--size-base-0);
@@ -65,24 +66,15 @@ import { SITE_TITLE } from "../consts";
     font-size: var(--size-base-0);
     line-height: var(--line-height-normal);
   }
-  nav {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: baseline;
+  .login-button {
+    grid-column: 3;
+    box-shadow: var(--shadow-elevation-low);
+    border-radius: var(--radius-round);
+    border: var(--border-size-2) solid var(--color-black);
+    padding-block: 2px;
+    padding-inline: var(--size-base-0);
+    margin-inline-start: auto;
+    color: var(--color-white);
+    background-color: var(--color-primary);
   }
-  .internal-links > * {
-    margin-inline: 8px;
-  }
-  /*  */
-  /* .social-links,
-  .social-links a {
-    display: flex;
-  }
-  @media (max-width: 720px) {
-    .social-links {
-      display: none;
-    }
-  } */
 </style>
