@@ -21,6 +21,7 @@ import { SITE_TITLE } from "../consts";
     <h1>{SITE_TITLE}</h1>
   </div>
   <button type="button" id="js-login-button" class="login-button">Login</button>
+  <button type="button" id="js-register-button" class="register-button">Register</button>
 </header>
 
 <style>
@@ -66,7 +67,7 @@ import { SITE_TITLE } from "../consts";
     font-size: var(--size-base-0);
     line-height: var(--line-height-normal);
   }
-  .login-button {
+  .login-button, .register-button {
     grid-column: 3;
     box-shadow: var(--shadow-elevation-low);
     border-radius: var(--radius-round);
@@ -76,5 +77,8 @@ import { SITE_TITLE } from "../consts";
     margin-inline-start: auto;
     color: var(--color-white);
     background-color: var(--color-primary);
+  }
+  .login-button.hidden, .register-button.hidden {
+    display: none;
   }
 </style>

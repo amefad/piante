@@ -4,6 +4,7 @@ import {
   registerClickFunc,
   cleanFormLayer,
 } from "../scripts/use-map";
+import { tryPostPlant } from "./api-calls";
 import { Machine, type Step, type Sequence } from "./form-machine";
 // import type { TreePlant } from "src/consts";
 
@@ -34,20 +35,6 @@ type FormStepNames =
   | "dimensions";
 type FormStepActions = "prev" | "next";
 
-import { getAllPlants } from "./api-calls";
-// import type { TreePlant } from "src/consts";
-
-async function init() {
-  try {
-    const plants = await getAllPlants();
-    plants.forEach(addNewLayerToTrees);
-  } catch (error: any) {
-    console.error(error.message);
-  }
-}
-
-init();
-
 /**
  *
  * @param {number} lat latitude in decimal
@@ -75,7 +62,7 @@ const arborForm = document.getElementById("arbor-form") as HTMLFormElement;
 const inputLat = arborForm.elements.namedItem("latitude") as HTMLInputElement;
 const inputLng = arborForm.elements.namedItem("longitude") as HTMLInputElement;
 // get only the right inputs
-const inputs = Array.from(document.getElementsByTagName("input")).filter(
+const inputs = Array.from(arborForm.getElementsByTagName("input")).filter(
   (control) =>
     control instanceof HTMLInputElement &&
     control.classList.contains("js-submit")
@@ -83,7 +70,7 @@ const inputs = Array.from(document.getElementsByTagName("input")).filter(
 
 // action buttons
 const actionButtons = Array.from(
-  document.getElementsByClassName("action-button")
+  arborForm.getElementsByClassName("action-button")
 );
 // NOTE: button elements are shared by all the steps
 const prevButton = document.getElementById(
@@ -166,6 +153,7 @@ const formSequence: Sequence<FormStep, FormStepNames, FormStepActions> = {
       description: "Dimensions of the plant",
       dataSet: 3,
       inputs: [
+        // TODO plural
         { type: "number", id: "circumference" },
         { type: "number", id: "height" },
       ],
@@ -174,25 +162,31 @@ const formSequence: Sequence<FormStep, FormStepNames, FormStepActions> = {
       transitions: {
         // submit
         next: async function () {
-          let result;
+          let postPlantResult;
+          const newPlantData = getFormData();
+          console.log(newPlantData);
+
+          // submit has side effects
+          // NOTE: need to wait to get the next state
           try {
-            // submit has side effects
-            // NOTE: need to wait to get the next state
-            result = await mockSend();
-          } catch (e) {
-            console.log(e);
+            postPlantResult = await tryPostPlant(newPlantData);
+          } catch (error) {
+            // this is a network/parsing/... error
+            console.log(`tryPostPlant::catched::${error}`);
+            // ...
           }
+          console.table(postPlantResult);
           arborForm.reset();
-          if (result) {
-            console.log(result);
-            cleanFormLayer();
-            // if ("lat" in result && "lng" in result) {
-            // WARN why does not ts complain?
-            addNewLayerToTrees(result);
-            // }
-            return "feedback";
+          cleanFormLayer();
+          // if ("lat" in postPlantresult && "lng" in postPlantresult) {
+          // WARN why does not ts complain?
+          // }
+          if (postPlantResult.message) {
+            console.log(postPlantResult.message);
+            return "error";
           }
-          return "error";
+          addNewLayerToTrees(postPlantResult);
+          return "feedback";
         },
         prev: async function () {
           return "species";
@@ -222,7 +216,7 @@ const formSequence: Sequence<FormStep, FormStepNames, FormStepActions> = {
  * originated event
  */
 async function handleButtonAction(action: string) {
-  // note: user is able to click on a button iff 
+  // note: user is able to click on a button iff
   // he is allowed to take the action associated to the button
   switch (action) {
     case "prev": {
@@ -281,7 +275,7 @@ async function handleButtonAction(action: string) {
       console.log("handleButtonAction() >> action not recognized");
     }
   }
-  // call 
+  // call
   updateFormView();
 }
 
@@ -296,7 +290,7 @@ function computeStateValidity(): boolean {
   // TODO get inputs names from machine states, get the data inputs from html
   // WARN leaflet has a hidden input field -> log something
   if (formMachine) {
-    const currentStepElement = document.querySelector(
+    const currentStepElement = arborForm.querySelector(
       `div.step[data-step="${formMachine.getCurrentState().dataSet}"]`
     );
     const descendantInputs = currentStepElement
@@ -326,7 +320,7 @@ function updateFormView() {
   // Step Fieldset
   // get all step boxes available in the DOM
   const steps = Array.from(
-    document.getElementsByClassName("step")
+    arborForm.getElementsByClassName("step")
   ) as HTMLElement[];
 
   // display only the current step according to formMachine state
@@ -396,63 +390,6 @@ function updateFormView() {
     nextButton.disabled = true;
     submitButton.disabled = true;
   }
-  // }
-  // for every step
-  // to enable or disable the buttons
-  // look at the validity of the fields for the current state/step
-  // computeStateValidity must run for those steps that has no required fields
-
-  // if (Object.keys(formMachine.getCurrentState().transitions).includes("prev")) {
-  //   prevButton.disabled = false;
-  // } else {
-  //   prevButton.disabled = true;
-  // }
-  // if (
-  //   Object.keys(formMachine.getCurrentState().transitions).includes("next") &&
-  //   computeStateValidity()
-  // ) {
-  //   nextButton.disabled = false;
-  // } else {
-  //   nextButton.disabled = true;
-  // }
-
-  // if (computeStateValidity()) {
-  //   nextButton.disabled = false;
-  // } else {
-  //   nextButton.disabled = true;
-  // }
-  // // Then override the disabled prop based on what state/step is the current
-  // // step 1 - location
-  // if (formMachine.getCurrentState().dataSet === 1) {
-  //   //  ...the user cant go back
-  //   prevButton.disabled = true;
-  // } else {
-  //   // after must explicitly enable in the others
-  //   prevButton.disabled = false;
-  // }
-  // step 3 - location
-  // this is the last step with some inputs
-  // if (formMachine.getCurrentState().dataSet == 3) {
-  //   // change the label of the button
-  //   // TODO change icon for submit
-  //   nextButtonSpan.textContent = "Invia";
-  //   // nextButton.dataset.action = "submit";
-  // } else {
-  //   // but in case of prev action revert text to "next"
-  //   nextButtonSpan.textContent = "Avanti";
-  // }
-  // // step 4 - feedback/error
-  // // after data has been submitted
-  // if (formMachine.getCurrentState().dataSet === 4) {
-  //   // cant go back in any case
-  //   prevButton.disabled = true;
-  //   nextButton.disabled = true;
-  //   // from state 4 you can not go back
-  //   closeButtonSpan.textContent = "Ok";
-  // } else {
-  //   // but the button are reused
-  //   closeButtonSpan.textContent = "Annulla";
-  // }
 }
 
 /**
@@ -467,15 +404,16 @@ function getFormData() {
       controlElem instanceof HTMLInputElement &&
       controlElem.classList.contains("js-submit")
     ) {
-      data[controlElem.name] = controlElem.value;
+      if (controlElem.value) {
+        data[controlElem.name] = controlElem.value;
+      }
     }
   }
   return data;
 }
 
-// TODO fetch
-/**
- *{
+/*
+ {
 "number": 123,
 "latitude": 45.8851066,
 "longitude": 12.2921521,
@@ -486,20 +424,6 @@ function getFormData() {
 "user-id": 2
 }
  */
-async function mockSend() {
-  const data = getFormData();
-  return new Promise<any>((resolve, reject) => {
-    const result = Math.random() * 100;
-    setTimeout(() => {
-      console.log(JSON.stringify(data, null, 2));
-      if (result > 30) {
-        resolve(data);
-      } else {
-        reject("send failed");
-      }
-    }, 200);
-  });
-}
 
 // dont highlight field with value missing
 inputs.forEach((input) => {
@@ -544,6 +468,8 @@ addTreeButton?.addEventListener("click", (e: Event) => {
   // open form dialog
   formDialog.show();
   const thisButton = e.currentTarget as HTMLButtonElement;
+  console.log(`form:: ${thisButton.id}`);
+
   // hide the button when dialog is open
   thisButton.classList.toggle("hidden");
   unregisterClickMap = registerClickFunc(fillInputOnClick);
