@@ -1,4 +1,4 @@
-import type { TreePlant } from "src/consts";
+import type { UserData } from "./user-manager";
 
 interface ApiCallParams {
   method: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
@@ -12,7 +12,7 @@ interface ApiCallParams {
  *
  * @template T - The expected type of the response data.
  * @param {ApiCallParams} params - The configuration parameters for the API call, including the base URL and HTTP method.
- * @returns {(input?: { data?: T, resourceId?: string }) => Promise<T>}
+ * @returns {(input?: { data?: T, resourceId?: string }) => Promise<unknown>}
  *          A function that takes an optional input with data and resourceId, performs the API fetch,
  *          and returns a Promise resolving to data of type T.
  *
@@ -27,14 +27,16 @@ interface ApiCallParams {
  *   .then(response => console.log(response))
  *   .catch(error => console.error("Error fetching item:", error));
  */
-function createApiCall<T>(params: ApiCallParams) {
+function createApiCall(params: ApiCallParams) {
   return async ({
     data,
     resourceId,
   }: {
-    data?: T;
+    data?: any;
     resourceId?: string;
-  } = {}): Promise<T> => {
+  } = {}): Promise<{ code: string; payload: any }> => {
+    console.log(data);
+
     const options: RequestInit = {
       method: params.method,
       headers: {
@@ -52,9 +54,9 @@ function createApiCall<T>(params: ApiCallParams) {
     //   }
     // }
     // Include a body if applicable (skip for GET requests)
-    // if (config.method !== "GET" && data) {
-    //   options.body = JSON.stringify(data);
-    // }
+    if (params.method === "POST" && data) {
+      options.body = JSON.stringify(data);
+    }
 
     try {
       const url = resourceId
@@ -62,21 +64,37 @@ function createApiCall<T>(params: ApiCallParams) {
         : params.baseUrl;
       // TODO query path
       const response = await fetch(url, options);
-
-      // Check for HTTP errors
+      // Check for HTTP errors but do not throw
       if (!response.ok) {
-        throw new Error();
+        console.log(`api-calls:: ${response.url} says ${response.status}`);
       }
-
-      // Parse and return the JSON response
+      // Parse and return the JSON response regardless of http code
       return await response.json();
+      // {message: ...} | { ... }
     } catch (error) {
-      // Here you could integrate logging, user notifications, etc.
-      console.error("API call failed:", error);
+      // This is a network/parsing/... error
+      console.error("api-call::failed:", error);
       throw error;
     }
   };
 }
+
+// export const getAllPlants = createApiCall({
+//   method: "GET",
+//   baseUrl: "./api/plants",
+// });
+
+// export const getPlantWithId = async (resourceId: string) =>
+//   createApiCall({
+//     method: "GET",
+//     baseUrl: import.meta.env.DEV ? "/data-example/alberi.json" : "./api/plants",
+//   })({ resourceId });
+
+// export const registerUser = async (userCredentials: string[]) =>
+//   createApiCall({
+//     method: "POST",
+//     baseUrl: "./api/users",
+//   })({ data: userCredentials });
 
 /**
  * Retrieves the complete list of plants.
@@ -85,15 +103,121 @@ function createApiCall<T>(params: ApiCallParams) {
  * It is designed to fetch an array of TreePlant objects.
  *
  * @returns A promise that resolves to an array of TreePlant objects.
+ * @throws A network/parsing/ecc Error
  */
-export const getAllPlants = createApiCall<TreePlant[]>({
-  method: "GET",
-  // baseUrl: import.meta.env.DEV ? "/data-example/alberi.json" : "./api/plants",
-  baseUrl: "./api/plants",
-});
-
-export const getPlantWithId = async (resourceId: string) =>
-  createApiCall<TreePlant>({
+export async function getAllPlants() {
+  const options: RequestInit = {
     method: "GET",
-    baseUrl: import.meta.env.DEV ? "/data-example/alberi.json" : "./api/plants",
-  })({ resourceId });
+    headers: {
+      Accept: "application/json",
+    },
+  };
+
+  try {
+    const response = await fetch("./api/plants", options);
+    // Check for HTTP errors but do not throw
+    if (!response.ok) {
+      console.log(`api-calls:: ${response.url} says ${response.status}`);
+    }
+    // Parse and return the JSON response regardless of http code
+    return await response.json();
+    // {message: ...} | [{...},{...}]
+  } catch (error) {
+    // This is a network/parsing/... error
+    console.error("api-call::failed:", error);
+    throw error;
+  }
+}
+
+export async function tryPostPlant(plantData: string[]) {
+  const userData = localStorage.getItem("user-data");
+  if (!userData) {
+    return;
+  }
+  const user = JSON.parse(userData) as UserData;
+  const {id } = user
+  const payload = { "user-id": id, ...plantData };
+  console.table(payload);
+  const options: RequestInit = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${user.token}`,
+    },
+    body: JSON.stringify(payload),
+  };
+
+  try {
+    const response = await fetch("./api/plants", options);
+    // Check for HTTP errors but do not throw
+    if (!response.ok) {
+      console.log(`api-calls::tryPostPlant says ${response.status}`);
+    }
+    // Parse and return the JSON response regardless of http code
+    return await response.json();
+    // {message: ...} | { user }
+  } catch (error) {
+    // This is a network/parsing/... error
+    console.error("api-call::tryPostPlant failed:", error);
+    throw error;
+  }
+}
+
+/** */
+export async function tryLoginUser(userLoginCredentials: string[]) {
+  console.table(userLoginCredentials);
+
+  const options: RequestInit = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(userLoginCredentials),
+  };
+
+  try {
+    const response = await fetch("./api/session", options);
+    // Check for HTTP errors but do not throw
+    if (!response.ok) {
+      console.log(`api-calls::tryLoginUser says ${response.status}`);
+    }
+    // Parse and return the JSON response regardless of http code
+    return await response.json();
+    // {message: ...} | { user }
+  } catch (error) {
+    // This is a network/parsing/... error
+    console.error("api-call::tryLoginUser failed:", error);
+    throw error;
+  }
+}
+
+/** */
+export async function tryRegisterUser(userRegisterCredentials: string[]) {
+  console.table(userRegisterCredentials);
+
+  const options: RequestInit = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(userRegisterCredentials),
+  };
+
+  try {
+    const response = await fetch("./api/users", options);
+    // Check for HTTP errors but do not throw
+    if (!response.ok) {
+      console.log(`api-calls::tryRegisterUser says ${response.status}`);
+    }
+    // Parse and return the JSON response regardless of http code
+    return await response.json();
+    // {message: ...} | { token: ... }
+  } catch (error) {
+    // This is a network/parsing/... error
+    console.error("api-call::tryRegisterUser failed:", error);
+    throw error;
+  }
+}

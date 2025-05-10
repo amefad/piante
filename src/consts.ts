@@ -1,5 +1,5 @@
-export const SITE_TITLE = "Alberi Monumentali";
-export const SITE_DESCRIPTION = "Censimento degli alberi monumentali in città";
+export const SITE_TITLE = "Piante";
+export const SITE_DESCRIPTION = "Mappatura collaborativa del verde pubblico";
 
 export interface User {
   id?: number;
