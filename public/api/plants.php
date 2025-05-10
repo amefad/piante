@@ -83,10 +83,13 @@ function getPlant($id, $complete = true) {
 
 // Inserts a new plant in database
 function postPlant() {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!isset($data['user-id'])) {
+        return error('ID utente necessario');
+    }
     global $pdo;
     $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumferences, height, common_name, scientific_name, user_id)
     VALUES (:num, POINT(:lon, :lat), :circ, :height, :common, :scientific, :user)");
-    $data = json_decode(file_get_contents('php://input'), true);
     $stmt->bindParam(':num', $data['number']);
     $stmt->bindParam(':lon', $data['longitude']);
     $stmt->bindParam(':lat', $data['latitude']);
