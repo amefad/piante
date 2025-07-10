@@ -1,5 +1,7 @@
 <?php
-define('UPLOADS_PATH', '../uploads/');
+define('UPLOAD_PATH', '../uploads/');
+define('SCALED_PATH', '../uploads/scaled/');
+define('THUMBNAIL_PATH', '../uploads/thumbnail/');
 
 $url = strtok($_SERVER['REQUEST_URI'], '?'); // Removes any query from the request
 preg_match('/\/api[\/]?(.*)/', $url, $matches); // Finds everything after '/api/'
