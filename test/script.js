@@ -146,9 +146,12 @@ setupForm('DELETE', 'plants', 'delete-plant', 'delete-result');
 // Uploads image
 document.getElementById('upload-image').addEventListener('submit', function (event) {
     event.preventDefault();
-    var formData = new FormData();
-    var fileInput = document.getElementById('image-file');
-    formData.append('image', fileInput.files[0]);
+    const formData = new FormData();
+    const file = document.getElementById('image-file').files[0];
+    formData.append('image', file);
+    const date = new Date(file.lastModified);
+    date.setMilliseconds(0);
+    formData.append('file-time', date.getTime() / 1000); // UTC Unix timestamp in seconds (without milliseconds)
     formData.append('plant-id', document.getElementById('plant-id').value);
     const options = {
         method: 'POST',

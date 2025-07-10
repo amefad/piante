@@ -30,7 +30,7 @@ function getPlants() {
         foreach ($plants as &$plant) {
             $plantIds[] = $plant['id'];
         }
-        $images = $pdo->query('SELECT plant_id, id, CONCAT("' . UPLOADS_PATH .'", file_name) AS `file-path`
+        $images = $pdo->query('SELECT plant_id, id, file_name AS `file-name`
         FROM images WHERE plant_id IN ('. join(',', $plantIds). ')')->fetchAll(PDO::FETCH_GROUP);
         foreach ($plants as &$plant) {
             if (isset($images[$plant['id']])) {
@@ -69,7 +69,7 @@ function getPlant($id, $complete = true) {
             foreach ($files as $file) {
                 $image = array();
                 $image['id'] = $file['id'];
-                $image['file-path'] = UPLOADS_PATH . $file['file_name'];
+                $image['file-name'] = $file['file_name'];
                 $plant['images'][] = $image;
             }
         } else {

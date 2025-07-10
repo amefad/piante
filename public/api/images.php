@@ -2,15 +2,14 @@
 // Gets all images
 function getImages() {
     require 'pdo.php';
-    $files = $pdo->query("SELECT id, CONCAT('" . UPLOADS_PATH . "', file_name) AS `file-path`, plant_id AS `plant-id` FROM images")->fetchAll();
+    $files = $pdo->query("SELECT id, file_name AS `file-name`, plant_id AS `plant-id` FROM images")->fetchAll();
     return $files;
 }
 
-// Gests one image
+// Gets one image
 function getImage($id) {
     require 'pdo.php';
-    $file = $pdo->query("SELECT id, CONCAT('" . UPLOADS_PATH . "', file_name) AS `file-path`, plant_id AS `plant-id`
-    FROM images WHERE id = $id")->fetch();
+    $file = $pdo->query("SELECT id, file_name AS `file-name`, plant_id AS `plant-id` FROM images WHERE id = $id")->fetch();
     if ($file) {
         return $file;
     } else {
@@ -21,44 +20,65 @@ function getImage($id) {
 // Receives one image file and saves it in the uploads folder
 function postImage() {
     global $pdo;
+    if (!isset($_POST['file-time']) || !isset($_POST['plant-id'])) {
+        return error('Necessari data file e ID pianta');
+    }
     if (isset($_FILES['image'])) {
-        $image = $_FILES['image'];
-        if (!is_dir(UPLOADS_PATH)) {
-            mkdir(UPLOADS_PATH);
-        }
-        $target_file = UPLOADS_PATH . basename($image['name']);
-        // Checks if image file is a actual image or fake image
-        $check = getimagesize($image['tmp_name']);
+        $file = $_FILES['image'];
+        // Checks if file is an actual image
+        $check = getimagesize($file['tmp_name']);
         if ($check == false) {
             return error('Il file non è un\'immagine');
         }
-        // Checks if file already exists
-        if (file_exists($target_file)) {
-            return error('Questo file esiste già', 409);
-        }
         // Checks file size
-        if ($image['size'] > 5000000) {
+        if ($file['size'] > 5000000) {
             return error('File troppo grande', 413);
         }
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if ($extension == 'jpeg') {
+            $extension = 'jpg';
+        }
         // Allows certain file formats
-        $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        if ($fileType != 'jpg' && $fileType != 'png' && $fileType != 'jpeg' && $fileType != 'gif' && $fileType != 'webp') {
-            return error('Accettiamo solo file JPG, JPEG, PNG, GIF e WEBP');
+        if ($extension != 'jpg' && $extension != 'png' && $extension != 'gif' && $extension != 'webp') {
+            return error('Accettiamo solo file JPEG, PNG, GIF e WEBP');
+        }
+        // Checks if file with same date and size already exists
+        date_default_timezone_set('Europe/Rome'); // To be sure the Unix timestamp is converted to Italian timezone regardless of the server timezone
+        $timeName = date('Ymd_His', $_POST['file-time']);
+        $files = glob(UPLOADS_PATH . "$timeName*.$extension");
+        foreach ($files as $existingFile) {
+            if (filesize($existingFile) == $file['size']) {
+                return error('Questo file esiste già', 409);
+            }
+        }
+        // Avoids files with the same name
+        $fileName = "$timeName.$extension";
+        $targetFile = UPLOADS_PATH . $fileName;
+        $i = 1;
+        while (file_exists($targetFile)) {
+            $fileName = $timeName . "_$i.$extension";
+            $targetFile = UPLOADS_PATH . $fileName;
+            $i++;
+            if ($i > 100) {
+                return error('Impossibile caricare il file, troppi conflitti di nome', 409);
+            }
+        }
+        // Creates uploads folder if it doesn't exist
+        if (!is_dir(UPLOADS_PATH)) {
+            mkdir(UPLOADS_PATH);
         }
         // Tries to upload the file
-        if (move_uploaded_file($image['tmp_name'], $target_file)) {
-            $stmt = $pdo->prepare('INSERT INTO images (file_name, plant_id) VALUES (:name, :plant_id)');
-            $name = basename($image['name']);
-            $stmt->bindParam(':name', $name);
-            $stmt->bindParam(':plant_id', $_POST['plant-id']);
-            $stmt->execute();
-            $id = $pdo->lastInsertId();
-            $file = $pdo->query("SELECT id, CONCAT('" . UPLOADS_PATH . "', file_name) AS `file-path` FROM images WHERE id = $id")->fetch();
-            return [$file, 201];
+        if (move_uploaded_file($file['tmp_name'], $targetFile)) {
+            $stmt = $pdo->prepare('INSERT INTO images (file_name, plant_id) VALUES (?, ?)');
+            $stmt->execute([$fileName, $_POST['plant-id']]);
+            $image = getImage($pdo->lastInsertId());
+            return [$image, 201];
         } else {
             return error('Si è verificato un errore caricando il file');
         }
-    } else return error('Nessun file ricevuto');
+    } else {
+        return error('Nessun file ricevuto');
+    }
 }
 
 function deleteImage($id) {
