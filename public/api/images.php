@@ -44,8 +44,17 @@ function postImage() {
             return error('Accettiamo solo file JPEG, PNG, GIF e WEBP');
         }
         // Checks if file with same date and size already exists
-        date_default_timezone_set('Europe/Rome'); // To be sure the Unix timestamp is converted to Italian timezone regardless of the server timezone
-        $timeName = date('Ymd_His', $_POST['file-time']);
+        // Tries to get original date from EXIF data
+        $exifData = exif_read_data($file['tmp_name']);
+        if (!empty($exifData['DateTimeOriginal'])) {
+            $timeName = preg_replace('/[:\-\/\\.#]/', '', $exifData['DateTimeOriginal']); // Removes all punctuation characters
+            $timeName = str_replace(' ', '_', $timeName); // Replaces space with underscore
+        }
+        // Otherwise uses the Unix timestamp coming from JavaScript file.lastModified
+        if (!isset($timeName)) {
+            date_default_timezone_set('Europe/Rome'); // Timestamp is converted to Italian timezone regardless of the server timezone
+            $timeName = date('Ymd_His', $_POST['file-time']);
+        }
         $files = glob(UPLOAD_PATH . "$timeName*.$extension");
         foreach ($files as $existingFile) {
             if (filesize($existingFile) == $file['size']) {
