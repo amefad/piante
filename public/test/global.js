@@ -1,2 +1,2 @@
-const API_PATH = '../public/api/';
+const API_PATH = '../api/';
 export default API_PATH;
