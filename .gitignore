@@ -2,6 +2,7 @@ public/config.php
 
 # build output
 dist/
+piante/
 # generated types
 .astro/
 
