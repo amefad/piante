@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "dev:php": "php -S localhost:8000 -t public",
-    "preview:php": "php -S localhost:8000 -t dist"
+    "preview:php": "php -S localhost:8000 -t piante"
   },
   "dependencies": {
     "@fontsource-variable/roboto-flex": "^5.1.0",

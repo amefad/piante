@@ -3,7 +3,7 @@ export function Home() {
     <>
       <h1>Mappa delle piante</h1>
       <p>
-        <a href="/test">Interfaccia minima con le API</a>
+        <a href="./test">Interfaccia minima con le API</a>
       </p>
     </>
   );
