@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Page from "./Page";
 
 function Login() {
 	const [email, setEmail] = useState('');
@@ -12,9 +13,8 @@ function Login() {
 	};
 
 	return (
-		<div className="login-container">
+		<Page title="Login">
 			<form onSubmit={handleSubmit}>
-				<h2>Login</h2>
 				<div>
 					<label htmlFor="email">Email:</label>
 					<input
@@ -37,7 +37,7 @@ function Login() {
 				</div>
 				<button type="submit">Login</button>
 			</form>
-		</div>
+		</Page>
 	);
 }
 
