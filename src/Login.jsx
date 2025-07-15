@@ -1,17 +1,14 @@
 import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
 
 function Login() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	// const navigate = useNavigate();
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		// Add your login logic here
 		console.log('Login attempt with:', email, password);
 		// After successful login, you can navigate to another route
-		// navigate('/dashboard');
 	};
 
 	return (
