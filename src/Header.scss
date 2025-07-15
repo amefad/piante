@@ -1,0 +1,30 @@
+header {
+  padding: 1em;
+  background-color: light-dark(#e9eeee, #111515);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    img {
+      height: 2.5rem;
+    }
+    h1 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin: 0;
+      color: light-dark(#1b4236, #a0d2c0);
+    }
+  }
+  nav {
+    margin-left: 1em;
+    display: flex;
+    gap: 1em;
+    .active {
+      font-weight: bold;
+      color: light-dark(#35434f, #a6c2d2);
+    }
+  }
+}
