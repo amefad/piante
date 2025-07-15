@@ -1,7 +1,11 @@
+import { Link } from "react-router";
+import Page from "./Page";
+import Map from "./Map";
+import "./Home.scss";
+
 export default function Home() {
   return (
-    <>
-      <h2>Mappa delle piante</h2>
+    <Page title="Mappa delle piante">
       <p>
         Applicazione web per visualizzare e gestire una mappa del verde pubblico
         e privato a Conegliano (Treviso).
@@ -11,6 +15,9 @@ export default function Home() {
           Interfaccia minima con le API
         </a>
       </p>
-    </>
+      <Link to={`${import.meta.env.BASE_URL}/map`}>
+        <Map />
+      </Link>
+    </Page>
   );
 }
