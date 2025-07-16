@@ -1,0 +1,16 @@
+.login-page {
+  margin: 0 auto;
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    .error {
+        border-radius: 3px;
+        border: 2px solid red;
+        padding: .5em 1em;
+        background-color: #ffe4dc;
+        color: #a00000;
+    }
+  }
+}

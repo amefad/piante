@@ -1,4 +1,6 @@
 import API_PATH from './global.js';
+const TOKEN_KEY = 'authToken';
+const USER_KEY = 'userData';
 
 // Setups one form to send its data as JSON to the API with fetch() method
 function setupForm(method, request, formId, resultId, callback, textarea) {
@@ -26,7 +28,7 @@ function setupForm(method, request, formId, resultId, callback, textarea) {
             options.body = JSON.stringify(jsonData);
         }
         // Headers
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem(TOKEN_KEY);
         if (token) {
             options.headers = {
                 'Authorization': 'Bearer ' + token,
@@ -52,13 +54,21 @@ function setupForm(method, request, formId, resultId, callback, textarea) {
 // Post session (login)
 setupForm('POST', 'session', 'login', 'login-result', (data) => {
     if (data.token) {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem(TOKEN_KEY, data.token);
+        const user = {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            role: data.role
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
     }
 });
 
 // Delete session (logout)
 setupForm('DELETE', 'session', 'logout', 'logout-result', () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
 });
 
 
@@ -107,7 +117,7 @@ setupForm('PUT', 'users', 'update-user', 'update-user-result', null, 'update-use
 // Delete user
 setupForm('DELETE', 'users', 'delete-user', 'delete-user-result', (data) => {
     if (data.message == 'Utente eliminato') {
-        localStorage.removeItem('token');
+        localStorage.removeItem(TOKEN_KEY);
     }
 });
 
@@ -157,7 +167,7 @@ document.getElementById('upload-image').addEventListener('submit', function (eve
         method: 'POST',
         body: formData
     };
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
         options.headers = { 'Authorization': 'Bearer ' + token }
     }
