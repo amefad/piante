@@ -1,16 +1,16 @@
 import Page from "./Page";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useSearchParams, useNavigate } from "react-router";
 
 export default function Confirm() {
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleConfirm = () => {
     setError(null);
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
-    const token = urlParams.get("token");
+    const id = searchParams.get("id");
+    const token = searchParams.get("token");
     if (id && token) {
       fetch(`${import.meta.env.BASE_URL}/api/users/${id}`, {
         method: "POST",
