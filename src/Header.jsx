@@ -11,24 +11,25 @@ export default function Header() {
         <h1>Mappa delle piante</h1>
       </Link>
       <nav>
-        <NavLink
-          to={`${import.meta.env.BASE_URL}`}
-          end
-          activeClassName="active"
-        >
-          Home
-        </NavLink>
         {token ? ( // User is logged in
           <button onClick={logout} title="Logout">
             {user.name}
           </button>
         ) : (
-          <NavLink
-            to={`${import.meta.env.BASE_URL}/login`}
-            activeClassName="active"
-          >
-            Login
-          </NavLink>
+          <>
+            <NavLink
+              to={`${import.meta.env.BASE_URL}/login`}
+              activeClassName="active"
+            >
+              Login
+            </NavLink>
+            <NavLink
+              to={`${import.meta.env.BASE_URL}/register`}
+              activeClassName="active"
+            >
+              Registrati
+            </NavLink>
+          </>
         )}
       </nav>
     </header>

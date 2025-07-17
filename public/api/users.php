@@ -62,7 +62,7 @@ function resendConfirmation($email) {
 function sendEmail($id, $name, $email, $token) {
     $token = urlencode($token);
     $subject = 'Benvenuto nella Mappa delle piante';
-    $link = "https://michelesalvador.it/piante/test/confirm.html?id=$id&token=$token";
+    $link = "https://michelesalvador.it/piante/confirm?id=$id&token=$token";
     $message = "<p>Ciao $name,<br>benvenuto nella Mappa delle piante.</p>
         <p>Per completare la registrazione clicca questo link:</p>
         <p><strong><a href=\"$link\">$link</a></strong></p>

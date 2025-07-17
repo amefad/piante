@@ -48,3 +48,25 @@ button {
     border-color: #646cff;
   }
 }
+.simple-page {
+  margin: 0 auto;
+  h2,
+  p {
+    text-align: center;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+  }
+  .error {
+    padding: 0.3em 1em 0.5em;
+    background-color: light-dark(#ffc1c1, #970000);
+    color: light-dark(#970000, #fff8f8);
+    font-size: 1.15em;
+    font-weight: 600;
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+  }
+}

@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { useAuth } from "./AuthContext";
 import Page from "./Page";
-import "./Login.scss";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -39,7 +38,7 @@ export default function Login() {
   };
 
   return (
-    <Page title="Login" className="login-page">
+    <Page title="Login" className="simple-page">
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -56,8 +55,12 @@ export default function Login() {
           required
         />
         <button type="submit">Login</button>
-        {error && <p className="error">{error}</p>}
       </form>
+      {error && <p className="error">{error}</p>}
+      <p>
+        Non hai un account?{" "}
+        <Link to={`${import.meta.env.BASE_URL}/register`}>Registrati qui</Link>
+      </p>
     </Page>
   );
 }

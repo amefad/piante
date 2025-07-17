@@ -5,7 +5,7 @@ export default function Page(props) {
     <>
       <Header />
       <main className={props.className}>
-        <h2>{props.title}</h2>
+        {props.title && <h2>{props.title}</h2>}
         {props.children}
       </main>
     </>

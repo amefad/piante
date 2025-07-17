@@ -118,6 +118,7 @@ setupForm('PUT', 'users', 'update-user', 'update-user-result', null, 'update-use
 setupForm('DELETE', 'users', 'delete-user', 'delete-user-result', (data) => {
     if (data.message == 'Utente eliminato') {
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
     }
 });
 
