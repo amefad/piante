@@ -7,6 +7,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [resend, setResend] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -31,7 +32,10 @@ export default function Login() {
           login({ token: data.token, user });
           navigate(`${import.meta.env.BASE_URL}`);
         } else {
-          setError(data.message || "Login failed");
+          setError(data.message || "Login fallito");
+          if (response.status == 403) {
+            setResend(true);
+          }
         }
       });
     });
@@ -57,10 +61,20 @@ export default function Login() {
         <button type="submit">Login</button>
       </form>
       {error && <p className="error">{error}</p>}
-      <p>
-        Non hai un account?{" "}
-        <Link to={`${import.meta.env.BASE_URL}/register`}>Registrati qui</Link>
-      </p>
+      {resend ? (
+        <p>
+          <Link to={`${import.meta.env.BASE_URL}/resend`} state={{ email }}>
+            Reinvia email di conferma
+          </Link>
+        </p>
+      ) : (
+        <p>
+          Non hai un account?{" "}
+          <Link to={`${import.meta.env.BASE_URL}/register`}>
+            Registrati qui
+          </Link>
+        </p>
+      )}
     </Page>
   );
 }

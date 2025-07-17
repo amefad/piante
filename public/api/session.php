@@ -13,7 +13,7 @@ function postSession() {
     $user = $stmt->fetch();
     if ($user && password_verify($data['password'], $user['password'])) {
         if ($user['role'] == 'invalid') {
-            return error('Email non confermata', 401);
+            return error('Email non confermata', 403);
         }
         if (is_null($user['token'])) {
             $stmt = $pdo->prepare('UPDATE users SET token = ? WHERE email = ?');
