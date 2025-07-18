@@ -3,30 +3,24 @@ import { useAuth } from "./AuthContext";
 import "./Header.scss";
 
 export default function Header() {
-  const { token, user, logout } = useAuth();
+  const { user, logout } = useAuth();
   return (
     <header>
-      <Link className="logo" to={`${import.meta.env.BASE_URL}`} end>
-        <img src="/piante/favicon.svg" alt="Logo" />
+      <Link className="logo" to="/" end>
+        <img src={`${import.meta.env.BASE_URL}/favicon.svg`} alt="Logo" />
         <h1>Mappa delle piante</h1>
       </Link>
       <nav>
-        {token ? ( // User is logged in
+        {user ? ( // User is logged in
           <button onClick={logout} title="Logout">
             {user.name}
           </button>
         ) : (
           <>
-            <NavLink
-              to={`${import.meta.env.BASE_URL}/login`}
-              activeClassName="active"
-            >
+            <NavLink to="/login" activeClassName="active">
               Login
             </NavLink>
-            <NavLink
-              to={`${import.meta.env.BASE_URL}/register`}
-              activeClassName="active"
-            >
+            <NavLink to="/register" activeClassName="active">
               Registrati
             </NavLink>
           </>

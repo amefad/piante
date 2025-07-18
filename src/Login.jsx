@@ -30,7 +30,7 @@ export default function Login() {
             role: data.role,
           };
           login({ token: data.token, user });
-          navigate(`${import.meta.env.BASE_URL}`);
+          navigate("/");
         } else {
           setError(data.message || "Login fallito");
           if (response.status == 403) {
@@ -63,21 +63,18 @@ export default function Login() {
       {error && <p className="error">{error}</p>}
       {resend ? (
         <p>
-          <Link to={`${import.meta.env.BASE_URL}/resend`} state={{ email }}>
+          <Link to="/resend" state={{ email }}>
             Reinvia email di conferma
           </Link>
         </p>
       ) : (
         <>
           <p>
-            Non hai un account?{" "}
-            <Link to={`${import.meta.env.BASE_URL}/register`}>
-              Registrati qui
-            </Link>
+            Non hai un account? <Link to="/register">Registrati qui</Link>
           </p>
           <p>
             Hai dimenticato la password?{" "}
-            <Link to={`${import.meta.env.BASE_URL}/recover`} state={{ email }}>
+            <Link to="/recover" state={{ email }}>
               Recupera&nbsp;password
             </Link>
           </p>

@@ -43,11 +43,10 @@ export default function Reset() {
       {success ? (
         <>
           <p>
-            Impostata con successo nuova password per{" "}
-            <strong>{userName}</strong>.
+            Impostata con successo nuova password per <strong>{userName}</strong>.
           </p>
           <p>
-            <Link to={`${import.meta.env.BASE_URL}/login`}>Vai al login</Link>
+            <Link to="/login">Vai al login</Link>
           </p>
         </>
       ) : (

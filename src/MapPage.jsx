@@ -6,7 +6,7 @@ export default function MapPage() {
   return (
     <>
       <Map />
-      <Link to={`${import.meta.env.BASE_URL}/login`} className="login">
+      <Link to="/login" className="login">
         Login
       </Link>
     </>

@@ -8,20 +8,19 @@ import Resend from "./Resend";
 import Recover from "./Recover";
 import Reset from "./Reset";
 import MapPage from "./MapPage";
-import Page from "./Page";
 
 export default function App() {
   return (
     <Routes>
-      <Route path={`${import.meta.env.BASE_URL}`} element={<Home />} />
-      <Route path={`${import.meta.env.BASE_URL}/register`} element={<Register />} />
-      <Route path={`${import.meta.env.BASE_URL}/confirm`} element={<Confirm />} />
-      <Route path={`${import.meta.env.BASE_URL}/login`} element={<Login />} />
-      <Route path={`${import.meta.env.BASE_URL}/resend`} element={<Resend />} />
-      <Route path={`${import.meta.env.BASE_URL}/recover`} element={<Recover />} />
-      <Route path={`${import.meta.env.BASE_URL}/reset`} element={<Reset />} />
-      <Route path={`${import.meta.env.BASE_URL}/map`} element={<MapPage />} />
-      <Route path="*" element={<Page title="Niente qui" />} />
+      <Route index element={<Home />} />
+      <Route path="register" element={<Register />} />
+      <Route path="confirm" element={<Confirm />} />
+      <Route path="login" element={<Login />} />
+      <Route path="resend" element={<Resend />} />
+      <Route path="recover" element={<Recover />} />
+      <Route path="reset" element={<Reset />} />
+      <Route path="map" element={<MapPage />} />
+      <Route path="*" element={<Home />} />
     </Routes>
   );
 }

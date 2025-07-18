@@ -20,7 +20,7 @@ export default function Confirm() {
       }).then((response) => {
         response.json().then((data) => {
           if (response.ok) {
-            navigate(`${import.meta.env.BASE_URL}/login`);
+            navigate("/login");
           } else {
             setError(data.message || "Conferma fallita");
           }

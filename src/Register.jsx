@@ -37,9 +37,7 @@ export default function Register() {
           <p>
             Abbiamo mandato un'email all'indirizzo <strong>{email}</strong>
           </p>
-          <p>
-            Per completare la registrazione clicca sul link che vi troverai.
-          </p>
+          <p>Per completare la registrazione clicca sul link che vi troverai.</p>
           <p>(Eventualmente controlla la cartella spam)</p>
         </>
       ) : (
@@ -72,8 +70,7 @@ export default function Register() {
           </form>
           {error && <p className="error">{error}</p>}
           <p>
-            Hai già un account?{" "}
-            <Link to={`${import.meta.env.BASE_URL}/login`}>Fai login qui</Link>
+            Hai già un account? <Link to="/login">Fai login qui</Link>
           </p>
         </>
       )}
