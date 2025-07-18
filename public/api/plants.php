@@ -3,40 +3,57 @@
 function getPlants() {
     try {
         require 'pdo.php';
-        $plants = $pdo->query('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumferences, height,
-        common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user
-        FROM plants')->fetchAll();
-        foreach ($plants as &$plant) {
-            if (!is_null($plant['circumferences'])) {
-                $plant['circumferences'] = json_decode($plant['circumferences']);
-            } else {
-                $plant['circumferences'] = array();
+        $query = 'SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumferences, height,
+        common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user FROM plants';
+        if (isset($_GET['user'])) {
+            $userId = intval($_GET['user']);
+            if ($userId <= 0) {
+                return error('ID utente non valido');
             }
+            $query .= " WHERE user_id = $userId";
         }
-        // Adds user data to plants array
-        $userIds = array();
-        foreach ($plants as &$plant) {
-            if (!in_array($plant['user'], $userIds)) $userIds[] = $plant['user'];
-        }
-        $users = $pdo->query('SELECT id, id, full_name AS name, email
-        FROM users WHERE id IN ('. join(',', $userIds). ')')->fetchAll(PDO::FETCH_UNIQUE);
-        foreach ($plants as &$plant) {
-            if (isset($users[$plant['user']])) {
-                $plant['user'] = $users[$plant['user']];
+        if (isset($_GET['last'])) {
+            $limit = intval($_GET['last']);
+            if ($limit <= 0) {
+                return error('Limite non valido');
             }
+            $query .= " ORDER BY insert_date DESC LIMIT $limit";
         }
-        // Add images data to plants array
-        $plantIds = array();
-        foreach ($plants as &$plant) {
-            $plantIds[] = $plant['id'];
-        }
-        $images = $pdo->query('SELECT plant_id, id, file_name AS `file-name`
-        FROM images WHERE plant_id IN ('. join(',', $plantIds). ')')->fetchAll(PDO::FETCH_GROUP);
-        foreach ($plants as &$plant) {
-            if (isset($images[$plant['id']])) {
-                $plant['images'] = $images[$plant['id']];
-            } else {
-                $plant['images'] = array(); // Empty array
+        $plants = $pdo->query($query)->fetchAll();
+
+        if ($plants) {
+            foreach ($plants as &$plant) {
+                if (!is_null($plant['circumferences'])) {
+                    $plant['circumferences'] = json_decode($plant['circumferences']);
+                } else {
+                    $plant['circumferences'] = array();
+                }
+            }
+            // Adds user data to plants array
+            $userIds = array();
+            foreach ($plants as &$plant) {
+                if (!in_array($plant['user'], $userIds)) $userIds[] = $plant['user'];
+            }
+            $users = $pdo->query('SELECT id, id, full_name AS name, email
+            FROM users WHERE id IN ('. join(',', $userIds). ')')->fetchAll(PDO::FETCH_UNIQUE);
+            foreach ($plants as &$plant) {
+                if (isset($users[$plant['user']])) {
+                    $plant['user'] = $users[$plant['user']];
+                }
+            }
+            // Add images data to plants array
+            $plantIds = array();
+            foreach ($plants as &$plant) {
+                $plantIds[] = $plant['id'];
+            }
+            $images = $pdo->query('SELECT plant_id, id, file_name AS `file-name`
+            FROM images WHERE plant_id IN ('. join(',', $plantIds). ')')->fetchAll(PDO::FETCH_GROUP);
+            foreach ($plants as &$plant) {
+                if (isset($images[$plant['id']])) {
+                    $plant['images'] = $images[$plant['id']];
+                } else {
+                    $plant['images'] = array(); // Empty array
+                }
             }
         }
         return $plants;

@@ -1,4 +1,23 @@
-main {
+.homepage {
+  h2 {
+    font-size: 1.6em;
+  }
+  section {
+    display: grid;
+    gap: 1em;
+    article {
+      border-radius: 5px;
+      background-color: #468a7e4c;
+      padding: 1em 1.5em;
+      h3 {
+        margin: 0;
+      }
+      img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  }
   .map {
     height: 50vh;
     border-radius: 10px;
