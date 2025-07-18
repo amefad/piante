@@ -1,14 +1,13 @@
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router";
 import Page from "./Page";
-import { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router";
 
 export default function Confirm() {
   const [searchParams] = useSearchParams();
+  const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
-  const handleConfirm = () => {
-    setError(null);
+  useEffect(() => {
     const id = searchParams.get("id");
     const token = searchParams.get("token");
     if (id && token) {
@@ -20,7 +19,7 @@ export default function Confirm() {
       }).then((response) => {
         response.json().then((data) => {
           if (response.ok) {
-            navigate("/login");
+            setUser(data);
           } else {
             setError(data.message || "Conferma fallita");
           }
@@ -29,14 +28,20 @@ export default function Confirm() {
     } else {
       setError("ID utente e token necessari");
     }
-  };
+  }, []);
 
   return (
     <Page title="Conferma account" className="simple-page">
-      <p>Clicca il pulsante qui sotto per confermare il tuo account.</p>
-      <p>
-        <button onClick={handleConfirm}>Conferma account</button>
-      </p>
+      {user && (
+        <>
+          <p>
+            <strong>{user.name}</strong> benvenuto nella Mappa delle piante!
+          </p>
+          <p>
+            <Link to="/login">Ora puoi effettuare il login</Link>
+          </p>
+        </>
+      )}
       {error && <p className="error">{error}</p>}
     </Page>
   );
