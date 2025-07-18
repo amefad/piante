@@ -68,12 +68,20 @@ export default function Login() {
           </Link>
         </p>
       ) : (
-        <p>
-          Non hai un account?{" "}
-          <Link to={`${import.meta.env.BASE_URL}/register`}>
-            Registrati qui
-          </Link>
-        </p>
+        <>
+          <p>
+            Non hai un account?{" "}
+            <Link to={`${import.meta.env.BASE_URL}/register`}>
+              Registrati qui
+            </Link>
+          </p>
+          <p>
+            Hai dimenticato la password?{" "}
+            <Link to={`${import.meta.env.BASE_URL}/recover`} state={{ email }}>
+              Recupera&nbsp;password
+            </Link>
+          </p>
+        </>
       )}
     </Page>
   );

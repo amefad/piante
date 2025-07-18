@@ -161,9 +161,9 @@ function sendResetEmail($email) {
             $token = $user['token'];
         }
         // Sends the email
-        $subject = 'Reimposta la tua password';
+        $subject = 'Reimposta la password di Mappa delle piante';
         $token = urlencode($token);
-        $link = "https://michelesalvador.it/piante/test/reset.html?id=$id&token=$token";
+        $link = "https://michelesalvador.it/piante/reset?id=$id&token=$token";
         $message = "<p>Ciao {$user['name']},<br>per reimpostare la tua password clicca questo link:</p>
             <p><strong><a href=\"$link\">$link</a></strong></p>
             <p>Se non hai richiesto questa email, puoi ignorarla.</p>
