@@ -14,6 +14,7 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setError(null);
+    setResend(false);
     fetch(`${import.meta.env.BASE_URL}/api/session`, {
       method: "POST",
       headers: {
