@@ -30,7 +30,8 @@ INSERT INTO `authorizations` (`role`, `permission`, `self_only`) VALUES
 ('viewer',	'delete_user',	1),
 ('viewer',	'edit_user',	1),
 ('viewer',	'view_user',	1),
-('invalid',	'create_user',	1);
+('invalid',	'create_user',	1),
+('invalid',	'edit_user',	1);
 
 
 CREATE TABLE `images` (
