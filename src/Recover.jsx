@@ -11,17 +11,15 @@ export default function Recover() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
-    fetch(`${import.meta.env.BASE_URL}/api/users?reset=${email}`).then(
-      (response) => {
-        if (response.ok) {
-          setSuccess(true);
-        } else {
-          response.json().then((data) => {
-            setError(data.message || "Errore");
-          });
-        }
+    fetch(`${import.meta.env.BASE_URL}/api/users?reset=${email}`).then((response) => {
+      if (response.ok) {
+        setSuccess(true);
+      } else {
+        response.json().then((data) => {
+          setError(data.message || "Errore");
+        });
       }
-    );
+    });
   };
 
   return (
@@ -29,20 +27,13 @@ export default function Recover() {
       {success ? (
         <>
           <p>
-            Un'email per il recupero della password è stata inviata a{" "}
-            <strong>{email}</strong>
+            Un'email per reimpostare la password è stata inviata a <strong>{email}</strong>
           </p>
-          <p>
-            Controlla la tua casella di posta (ed eventualmente la cartella
-            spam).
-          </p>
+          <p>Controlla la tua casella di posta (ed eventualmente la cartella spam).</p>
         </>
       ) : (
         <>
-          <p>
-            Inserisci la tua email per ricevere le istruzioni per reimpostare la
-            password.
-          </p>
+          <p>Inserisci la tua email per ricevere le istruzioni per reimpostare la password.</p>
           <form onSubmit={handleSubmit}>
             <input
               type="email"
