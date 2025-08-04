@@ -30,6 +30,8 @@ export default function Map({ active }) {
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        minZoom={3}
+        maxZoom={21}
       />
       <Marker position={position} icon={marker}>
         <Popup>
