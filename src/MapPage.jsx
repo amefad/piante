@@ -5,7 +5,7 @@ import "./MapPage.scss";
 export default function MapPage() {
   return (
     <>
-      <Map />
+      <Map active={true} />
       <Link to="/login" className="login">
         Login
       </Link>
