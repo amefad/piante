@@ -1,13 +1,12 @@
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import L from "leaflet";
+import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
 const position = [45.8869, 12.29733];
 const bounds = [
-  [45.866446, 12.333395],
-  [45.947274, 12.323518],
-  [45.860204, 12.326402],
-  [45.903145, 12.24726],
+  [46.05, 12.52], // NE corner
+  [45.7, 12.13], // SW corner
 ];
 
 export default function Map({ active }) {
@@ -18,7 +17,6 @@ export default function Map({ active }) {
   return (
     <MapContainer
       center={position}
-      bounds={bounds}
       zoom={13}
       zoomControl={active}
       dragging={active}
@@ -26,13 +24,17 @@ export default function Map({ active }) {
       doubleClickZoom={active}
       boxZoom={active}
       touchZoom={active}
+      attributionControl={false}
+      maxBounds={bounds}
+      maxBoundsViscosity={0.9}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        minZoom={3}
+        minZoom={11}
         maxZoom={21}
       />
+      <AttributionControl prefix="" position="bottomright" />
       <Marker position={position} icon={marker}>
         <Popup>
           A pretty CSS3 popup. <br />
