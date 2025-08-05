@@ -8,4 +8,12 @@ export default defineConfig({
   build: {
     outDir: "piante",
   },
+  server: {
+    proxy: {
+      "/piante/api": {
+        target: "http://localhost:8000/public/api",
+        rewrite: (path) => path.replace(/^\/piante\/api/, ""),
+      },
+    },
+  },
 });
