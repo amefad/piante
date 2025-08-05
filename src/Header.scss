@@ -18,14 +18,7 @@ header {
       color: light-dark(#1b4236, #a0d2c0);
     }
   }
-  nav {
+  #access {
     margin-left: 1em;
-    display: flex;
-    align-items: flex-end;
-    gap: 1em;
-    .active {
-      font-weight: bold;
-      color: light-dark(#35434f, #a6c2d2);
-    }
   }
 }

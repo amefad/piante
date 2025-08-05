@@ -1,14 +1,12 @@
-import { Link } from "react-router";
 import Map from "./Map";
+import Access from "./Access";
 import "./MapPage.scss";
 
 export default function MapPage() {
   return (
-    <>
+    <div id="map-page">
       <Map active={true} />
-      <Link to="/login" className="login">
-        Login
-      </Link>
-    </>
+      <Access />
+    </div>
   );
 }

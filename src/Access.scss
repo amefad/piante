@@ -1,0 +1,27 @@
+#access {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  a {
+    border: 1px solid darkblue;
+    border-radius: 5px;
+    background-color: #d4efffd1;
+    padding: 4px 15px 6px;
+    color: darkblue;
+    &.active {
+      background-color: #d1e0ff;
+      font-weight: 600;
+    }
+  }
+  button {
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    background-color: crimson;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
