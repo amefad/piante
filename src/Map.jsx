@@ -17,6 +17,8 @@ export default function Map({ active }) {
   return (
     <MapContainer
       center={position}
+      maxBounds={bounds}
+      maxBoundsViscosity={0.9}
       zoom={13}
       zoomControl={active}
       dragging={active}
@@ -25,16 +27,14 @@ export default function Map({ active }) {
       boxZoom={active}
       touchZoom={active}
       attributionControl={false}
-      maxBounds={bounds}
-      maxBoundsViscosity={0.9}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         minZoom={11}
         maxZoom={21}
       />
-      <AttributionControl prefix="" position="bottomright" />
+      <AttributionControl prefix={false} position="bottomright" />
       <Marker position={position} icon={marker}>
         <Popup>
           A pretty CSS3 popup. <br />
