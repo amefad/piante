@@ -23,12 +23,8 @@ export default function Header() {
         </button>
       ) : (
         <>
-          <NavLink to="/login" activeClassName="active">
-            Login
-          </NavLink>
-          <NavLink to="/register" activeClassName="active">
-            Registrati
-          </NavLink>
+          <NavLink to="/login">Login</NavLink>
+          <NavLink to="/register">Registrati</NavLink>
         </>
       )}
     </div>
