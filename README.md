@@ -4,20 +4,14 @@ Simple web application for collaborative mapping of public green spaces.
 
 ## Repository Structure
 
-This project is built with the Vite React template and structured to serve both frontend and backend components from a specific server folder (`piante`).
+The project was scaffolded using the Vite React template.
 
-The codebase is organized as follows:
+- `src/`: Primary React front-end source code.
+- `public/`: Files that Vite does not process during build; these are copied unchanged into the output `piante/` folder.
+  - `public/api/`: PHP API endpoints
+  - `public/test/`: Basic API testing interface
 
-- `src/`: Contains the primary React frontend code
-- `public/`: Houses files that Vite preserves untouched during build:
-  - `api/`: Backend PHP endpoints
-  - `test/`: Basic API testing interface
-
-The `public` folder's contents are copied directly to the `piante/` output directory during build.
-
-While placing `api/` and `test/` inside `public/` may seem unconventional, this structure allows us to serve both frontend and backend under the same domain subpath (`piante/`) on our production server.
-
-The Vite configuration uses a `base` path and API proxying to maintain consistent behavior across development and production environments.
+Placing `api/` and `test/` inside `public/` may seem unconventional but allows us to easily serve both frontend and backend under the same domain subpath (`piante/`) on our existing server, just by storing the build output on the specific server folder (`piante`). Vite is configured with a custom base path and a proxy for API calls to maintain consistent behavior across development and production environments.
 
 ## Prerequisites
 
@@ -27,11 +21,11 @@ In order to successfully start the app and run it either in dev and in preview m
 - PHP with PDO extension.
 - Node **LTS** >= 20 and npm
 
-### Database Setup
+### Database setup
 
 The application requires a MySQL or MariaDB database instance. Use the scripts in the `database/` folder to create the schema.
 
-Copy `public/config.php.sample` to `public/config.php` and configure your database connection parameters.
+Rename `public/config.php.sample` into `public/config.php` and configure your database connection parameters.
 
 > **Note on MariaDB Authentication (Debian/Ubuntu)**:
 >
@@ -64,12 +58,12 @@ Copy `public/config.php.sample` to `public/config.php` and configure your databa
 
 Ensure you have:
 
-1. PHP (CLI or VS Code extension)
-2. [PDO extension](https://www.php.net/manual/en/book.pdo.php) for database connectivity
+1. PHP (we use PHP-CLI, VS Code extension may work either)
+2. [PDO extension](https://www.php.net/manual/en/book.pdo.php) for database connectivity, installed and enabled.
 
 ### Node.js Setup
 
-Use the latest npm version compatible with your Node.js LTS installation (v20 or v22).
+Node.js LTS (v20 or v22) and npm. Use the latest npm version compatible with your Node.js LTS installation.
 
 ## Getting Started
 
@@ -78,11 +72,11 @@ Use the latest npm version compatible with your Node.js LTS installation (v20 or
    ```bash
    npm install
    ```
-3. Build the backend (required for development):
+3. Build the backend (required for development as the PHP server serves APIs even in development):
    ```bash
    npm run build
    ```
-4. Start development servers:
+4. Start development servers (Vite and PHP):
    ```bash
    npm start
    ```
@@ -106,8 +100,8 @@ Endpoint permissions:
 
 | Method | Endpoint                 | Description               | Minimum Role | Token    |
 | ------ | ------------------------ | ------------------------- | ------------ | -------- |
-| GET    | `/users`                 | List all users            | admin        | required |
-| GET    | `/users/{id}`            | Get user details          | viewer       | required |
+| GET    | `/users`                 | Get all users             | admin        | required |
+| GET    | `/users/{id}`            | Get a single user         | viewer       | required |
 | POST   | `/users`                 | Create user               | -            | -        |
 | POST   | `/users/{id}`            | Confirm user              | invalid      | required |
 | PUT    | `/users/{id}`            | Update user               | viewer       | required |
@@ -116,12 +110,12 @@ Endpoint permissions:
 | GET    | `/users?reset={email}`   | Send password reset email | -            | -        |
 | POST   | `/session`               | Login                     | -            | -        |
 | DELETE | `/session`               | Logout                    | -            | optional |
-| GET    | `/plants`                | List all plants           | -            | -        |
-| GET    | `/plants/{id}`           | Get plant details         | -            | -        |
+| GET    | `/plants`                | Get all plants            | -            | -        |
+| GET    | `/plants/{id}`           | Get a single plant        | -            | -        |
 | POST   | `/plants`                | Create plant              | editor       | required |
 | PUT    | `/plants/{id}`           | Update plant              | editor       | required |
 | DELETE | `/plants/{id}`           | Delete plant              | editor       | required |
-| GET    | `/images`                | List all images           | -            | -        |
+| GET    | `/images`                | Get all images            | -            | -        |
 | GET    | `/images/{id}`           | Get image details         | -            | -        |
 | POST   | `/images`                | Upload image              | editor       | required |
 | DELETE | `/images/{id}`           | Delete image              | editor       | required |
@@ -130,11 +124,12 @@ Endpoint permissions:
 
 ### Code Style
 
-Use prettier to format code but we are just using the Vscode extension (we only set a custom `"printWidth": 100`)
+We use prettier to format code. For now the Prettier instance is managed via the VS Code extension and is not listed as package dependency.
+We set `"printWidth": 100`.
 
 ### Visual Studio Code
 
-If you are using Vscode you may want to add the extensions we are using:
+If you are using VS Code you may want to add the extensions we are using:
 
 ```json
 // .vscode/extensions.json
