@@ -4,21 +4,50 @@ Simple web application for collaborative mapping of public green spaces.
 
 ## Repository Structure
 
-We want to serve the front-end resources and the api from the same deployment server.
-To achieve this, we wrapped all the code within an Astro project which leverages
-an opinionated folder layout (see more on [Astro project structure](https://docs.astro.build/en/basics/project-structure/)).
+The project was scaffolded with Vite React template.
 
-## Database
+We want to publish the front-end resources and the back-end api on a specific server folder (`piante`).
+To do so we choose to put api into `public` folder.
 
-The `database/` folder includes scripts designed to help you create a MySQL
-(or MariaDB) database with the correct schema.
+The front-end code is primarily stored in the `src/` directory. However, some
+files still belong in the `public/` directory.
 
-Define your database access parameters in the `public/config.php` file.  
-You may use the example file `public/config.php.sample` by renaming it accordingly.
+`public` folder stores files that Vite does not process during building, they are copied untouched
+over to the generated output `piante/`.
+
+APIs code is located in `public/api`
+
+The `public/test` directory is used for interacting with the API using a basic interface.
+
+Placing the `api/` and `test/` inside the `public/` may be a little unusual. The reason behind that
+is that we want to publish the front-end resources and the back-end APIs on the same domain subpath
+just placing them into a folder called (`piante`) on a server we already have up and running.
+
+We configured Vite to serve from a `base` path and proxy APIs calls to ensure we can reach api
+during development while maintaining the correct behavior when deployed on our server.
+
+## Requisites
+
+In order to successfully start the app and run it either in dev and in preview mode you need:
+
+- A reachable instance of a MySQL or MariaDB database.
+- PHP with PDO extension.
+- Node **LTS** >= 20 and npm
+
+### Database (MySQL or MariaDB)
+
+APIs must have access to a running instance of either MySQL or MariaDB.
+
+The `database/` folder includes scripts designed to help you create a MySQL (or MariaDB) database
+with the correct schema.
+
+Define your database access parameters in the `public/config.php` file. (configure a proper
+authentication method). You may use the example file `public/config.php.sample` by renaming it
+accordingly.
 
 <details>
 
-<summary> Note: MariaDB on Debian (and Ubuntu) commonly comes preconfigured to
+<summary> Note: MariaDB on Debian (and Ubuntu) commonly comes pre-configured to
 use Unix socket authentication for the root user rather than a password. </summary>
 
 Socket (or Unix socket) authentication works by matching the system (OS) username
@@ -28,7 +57,7 @@ the root database account is configured to login with the authentication plugin
 against the MariaDB account.
 
 Socket authentication checks your operating system user, if you want to login
-as _root@locahost_ (the MariaDB root user), you must either be the system’s root
+as `root@localhost` (the MariaDB root user), you must either be the system’s root
 user or use sudo. For example:
 
 ```bash
@@ -56,6 +85,37 @@ for in depth instructions.
 See how to **[switch to Password-based Authentication](https://mariadb.com/kb/en/authentication-plugin-unix-socket/#switching-to-password-based-authentication)**
 
 </details>
+
+### PHP with PDO extension
+
+You need something that can run PHP, can be PHP CLI or a Visual Studio Code extension.
+
+The [PDO extension](https://www.php.net/manual/en/book.pdo.php) of the PHP ecosystem is required for
+database interactions, you may need to install or activate it.
+
+### Node LTS and npm
+
+The only supported versions are the **LTS** v20 and v22. Use the latest version of **npm** compatible
+with the Node version you are using.
+
+## Get Started
+
+After cloning the repo and fulfill the above requirements you can run `npm install` to install dependencies.
+
+Run `npm run build` to build the current backend. Keep in mind that APIs are always served by the
+PHP server even in development, so you need to do this at least one time before running`npm start`.
+
+Run `npm start` to launch the Vite development server and the PHP server for APIs at the same time.
+
+Run `npm build` to generate a build in the `piante/` folder (will be automatically created or overwritten)
+
+Run `npm run preview:php` if want to locally preview the production build at `localhost:8000/piante`.
+
+Useful readings:
+
+- Vite [Modes](https://vite.dev/guide/env-and-mode.html#modes).
+- Vite [CLI](https://vite.dev/guide/cli.html).
+- PHP [CLI](https://www.php.net/manual/en/features.commandline.php)
 
 ## API
 
@@ -85,133 +145,23 @@ These are the allowed methods to access the API:
 | POST   | `/images`                | Uploads new image             | editor       | required |
 | DELETE | `/images/{id}`           | Deletes one image             | editor       | required |
 
-## Frontend
+## Contributing
 
-This repository adheres to the Astro project convention.
-(see more on [Astro project structure](https://docs.astro.build/en/basics/project-structure/))
+### Tools
 
-The front-end code is primarily stored in the `src/` directory. However, some
-files still belong in the `public/` directory.
+Use prettier to format code but we are just using the Vscode extension (we only set a custom `"printWidth": 100`)
 
-## Test (wip)
+### Visual Studio Code
 
-The `test/` directory is used for testing and includes a basic interface for
-interacting with the API.
+If you are using Vscode you may want to add the extensions we are using:
 
-## Setting up the dev environment
-
-### Prerequisites
-
-- Database (MySQL or MariaDB)
-- PHP with PDO extension
-- Node LTS and npm
-
-#### Database (MySQL or MariaDB)
-
-You must have access to a running instance of either MySQL or MariaDB.
-
-See section [database](#database).
-
-#### PHP with PDO extension
-
-You can install PHP and PHP CLI on your system, or use a Visual Studio Code
-extension.
-
-The [PDO extension](https://www.php.net/manual/en/book.pdo.php) is required for
-database interactions. Make sure to configure the proper authentication method
-in config.php (see the [Database](#database) section for details).
-
-#### Node LTS and npm
-
-For Astro to run on your system, you must have **Node.js** installed. Only **LTS**
-versions v20 and v22 are supported ( v19 and v21 are not supported).
-
-Along with Node.js a version of **npm** (v10 or higher) is required.
-
-### Editor setup
-
-If you use vscode add the official Astro VS Code Extension to syntax highlight
-and format Astro code. see [Astro docs](https://docs.astro.build/en/editor-setup/).
-
-### Install dependencies
-
-Run `npm install` to install dependencies.
-
-Configs for Astro and other tools are already there.
-
-### Development Servers
-
-```text
-"dev": "astro dev"
-"dev:php": "php -S localhost:8000 -t public"
-"start": "astro dev"
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "bmewburn.vscode-intelephense-client",
+    "dbaeumer.vscode-eslint"
+  ]
+}
 ```
-
-To begin development, start the Astro dev server by running `npm run dev`.
-Additionally, ensure that the API is available: either launch the PHP dev server
-using `npm run dev:php` (using PHP CLI) or use alternative methods such as VSCode
-extensions to serve the `public/` folder.
-
-Open the browser and visit `localhost:4321` (default Astro dev server port).
-
-Astro will serve the front-end and proxy API calls to your PHP server based on
-proxy configuration in `astro.config.mjs`.
-
-### Building with Astro
-
-During the build Astro performs the following steps:
-
-- It processes and transforms the files in the `src` folder (e.g., astro components,
-  pages, scripts, etc.), generating pre-rendered HTML files and bundling assets
-  like JavaScript and CSS for interactivity.
-
-- The `public` folder is kept unchanged. Its contents (such as static assets
-  like images or other files) are simply copied over to the `dist` folder.
-
-- Finally, Astro combines the transformed output from the `src` folder and the
-  files from the `public` folder into the final production-ready build output,
-  which by default is placed in the `dist` folder (_this output directory is configurable_).
-
-Run `npm run build` to build the project.
-
-see [how to build your site](https://docs.astro.build/en/develop-and-build/#build-and-preview-your-site) on Astro docs.
-
-### Astro-relative-links integration
-
-[see integration readme](https://github.com/ixkaito/astro-relative-links#readme)
-Extensions will activate automatically on building.
-
-example result in `dist/index.html`
-
-```html
-<link rel="stylesheet" href="./_astro/index.*.css" />
-<script type="module" src="./_astro/hoisted.*.js"></script>
-```
-
-#### **deploy to a subpath**
-
-(if you need you can still use this along with `astro-relative-links`)
-
-If you want to serve the `dist` folder on a subpath (e.g., `www.example.com/piante/`),
-set the `base` configuration in `astro.config.mjs`.
-(see [base option](https://docs.astro.build/en/reference/configuration-reference/#base))
-
-Note: Use this only for _deployment_ builds (ie you want to move the folder to
-a deployment server), not when previewing with `npm run preview:php`, as the PHP
-server isn't configured for subpath routing.
-
-#### Previewing
-
-```text
-"build": "astro build"
-"preview": "astro preview"
-"preview:php": "php -S localhost:8000 -t dist"
-```
-
-After building the project with `npm run build`, preview the compiled code by
-running `npm run preview:php` (you do not need to launch the other scripts anymore).
-
-Visit `localhost:8000` with your browser to see the preview.
-
-Note that this command serves the `dist/` folder (not `public/`), if you are using a vscode
-extensions be sure the path is set accordingly.
