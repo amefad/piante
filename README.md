@@ -4,26 +4,26 @@ Simple web application for collaborative mapping of public green spaces.
 
 ## Repository Structure
 
-The project was scaffolded using the Vite React template.
+The project was scaffolded using the Vite React template (see [create-vite](https://github.com/vitejs/vite/tree/main/packages/create-vite))
 
-- `src/`: Primary React front-end source code.
-- `public/`: Files that Vite does not process during build; these are copied unchanged into the output `piante/` folder.
-  - `public/api/`: PHP API endpoints
-  - `public/test/`: Basic API testing interface
+- `src`: Primary React front-end source code.
+- `public`: Files that Vite does not process during build; these are copied unchanged into the output folder `piante`.
+  - `public/api`: PHP API endpoints
+  - `public/test`: Basic API testing interface
 
-Placing `api/` and `test/` inside `public/` may seem unconventional but allows us to easily serve both frontend and backend under the same domain subpath (`piante/`) on our existing server, just by storing the build output on the specific server folder (`piante`). Vite is configured with a custom base path and a proxy for API calls to maintain consistent behavior across development and production environments.
+Placing `api` and `test` inside `public` may seem unconventional but allows us to easily serve both frontend and backend under the same domain subpath (`/piante`) on our existing server, just by storing the build output on the specific server folder (also named `piante`). Vite is configured with a custom base path and a proxy for API calls to maintain consistent behavior across development and production environments.
 
 ## Prerequisites
 
 In order to successfully start the app and run it either in dev and in preview mode you need:
 
-- A reachable instance of a MySQL or MariaDB database.
+- A _reachable_ instance of a MySQL or MariaDB database.
 - PHP with PDO extension.
 - Node **LTS** >= 20 and npm
 
 ### Database setup
 
-The application requires a MySQL or MariaDB database instance. Use the scripts in the `database/` folder to create the schema.
+The application requires a MySQL or MariaDB database instance. Use the scripts in the `database` folder to create the schema.
 
 Rename `public/config.php.sample` into `public/config.php` and configure your database connection parameters.
 
@@ -33,6 +33,7 @@ Rename `public/config.php.sample` into `public/config.php` and configure your da
 >
 > 1. Authentication matches the system username with the database username
 > 2. To use `root@localhost`, you must either be the system root user or use sudo:
+>
 >    ```bash
 >    sudo mysql
 >    ```
@@ -69,21 +70,26 @@ Node.js LTS (v20 or v22) and npm. Use the latest npm version compatible with you
 
 1. Clone the repository
 2. Install dependencies:
+
    ```bash
    npm install
    ```
+
 3. Build the backend (required for development as the PHP server serves APIs even in development):
+
    ```bash
    npm run build
    ```
+
 4. Start development servers (Vite and PHP):
+
    ```bash
    npm start
    ```
 
 Additional commands:
 
-- `npm run build`: Generate production build in `piante/`
+- `npm run build`: Generate production build in `piante`
 - `npm run preview:php`: Preview production build at `localhost:8000/piante`
 
 Resources:
@@ -115,10 +121,12 @@ Endpoint permissions:
 | POST   | `/plants`                | Create plant              | editor       | required |
 | PUT    | `/plants/{id}`           | Update plant              | editor       | required |
 | DELETE | `/plants/{id}`           | Delete plant              | editor       | required |
-| GET    | `/images`                | Get all images            | -            | -        |
-| GET    | `/images/{id}`           | Get image details         | -            | -        |
+| GET    | `/images`                | Get details of all images | -            | -        |
+| GET    | `/images/{id}`           | Get details of an image   | -            | -        |
 | POST   | `/images`                | Upload image              | editor       | required |
 | DELETE | `/images/{id}`           | Delete image              | editor       | required |
+
+where roles are _admin_, _editor_, _viewer_, _invalid_, _public_, listed from the most powerful to the least one.
 
 ## Contributing
 
