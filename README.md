@@ -100,18 +100,18 @@ Resources:
 
 ## API Reference
 
-The `api/` directory contains PHP endpoints that interact with the MySQL database and return JSON responses.
+The `api` directory contains PHP endpoints that interact with the MySQL database and return JSON responses.
 
 Endpoint permissions:
 
 | Method | Endpoint                 | Description               | Minimum Role | Token    |
 | ------ | ------------------------ | ------------------------- | ------------ | -------- |
 | GET    | `/users`                 | Get all users             | admin        | required |
-| GET    | `/users/{id}`            | Get a single user         | viewer       | required |
+| GET    | `/users/{id}`            | Get a single user         | viewer*      | required |
 | POST   | `/users`                 | Create user               | -            | -        |
-| POST   | `/users/{id}`            | Confirm user              | invalid      | required |
-| PUT    | `/users/{id}`            | Update user               | viewer       | required |
-| DELETE | `/users/{id}`            | Delete user               | viewer       | required |
+| POST   | `/users/{id}`            | Confirm user              | invalid*     | required |
+| PUT    | `/users/{id}`            | Update user               | invalid*     | required |
+| DELETE | `/users/{id}`            | Delete user               | viewer*      | required |
 | GET    | `/users?confirm={email}` | Send confirmation email   | -            | -        |
 | GET    | `/users?reset={email}`   | Send password reset email | -            | -        |
 | POST   | `/session`               | Login                     | -            | -        |
@@ -126,7 +126,16 @@ Endpoint permissions:
 | POST   | `/images`                | Upload image              | editor       | required |
 | DELETE | `/images/{id}`           | Delete image              | editor       | required |
 
-where roles are _admin_, _editor_, _viewer_, _invalid_, _public_, listed from the most powerful to the least one.
+(*) Can access only their own user profile (unless _admin_).
+
+### Roles
+
+These are the four roles, listed from the weaker to the most powerful:
+
+1. **invalid** - User just registered, waiting to confirm their email address. Can do nothing but update their password.
+2. **viewer** - Can also view and delete their own profile. Usually unused.
+3. **editor** - User after email confirmation. Can also update all contents.
+4. **admin** - Can also list, modify and delete other users.
 
 ## Contributing
 
