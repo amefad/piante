@@ -11,7 +11,7 @@ The project was scaffolded using the Vite React template (see [create-vite](http
   - `public/api`: PHP API endpoints
   - `public/test`: Basic API testing interface
 
-Placing `api` and `test` inside `public` may seem unconventional but allows us to easily serve both frontend and backend under the same domain subpath (`/piante`) on our existing server, just by storing the build output on the specific server folder (also named `piante`). Vite is configured with a custom base path and a proxy for API calls to maintain consistent behavior across development and production environments.
+Placing `api` and `test` inside `public` may seem unconventional but allows us to easily serve both frontend and backend under the same domain subpath (`/piante`) on our existing server, just by storing the build output on the specific server folder (also named `piante`). Vite is configured with a custom base path and a proxy for API calls to maintain consistent behavior across development and production environments (see `vite.config.js`).
 
 ## Prerequisites
 
@@ -75,22 +75,27 @@ Node.js LTS (v20 or v22) and npm. Use the latest npm version compatible with you
    npm install
    ```
 
-3. Build the backend (required for development as the PHP server serves APIs even in development):
+3. Run the build command:
 
    ```bash
    npm run build
    ```
 
-4. Start development servers (Vite and PHP):
+   This will generate a complete production build in the `piante` folder. Note that this step is
+   required for development, as the PHP server serves APIs even in development mode.
+
+4. Now you can start both the Vite dev server and the PHP server using:
 
    ```bash
    npm start
    ```
 
-Additional commands:
+   When launched with this command, the Vite server listens on port `5173`, while the PHP server
+   listens on port `8000`.
 
-- `npm run build`: Generate production build in `piante`
-- `npm run preview:php`: Preview production build at `localhost:8000/piante`
+### Additional Scripts
+
+- `npm run preview:php`: Preview the production build using the PHP server.
 
 Resources:
 
