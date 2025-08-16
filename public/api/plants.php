@@ -4,7 +4,7 @@ function getPlants() {
     try {
         require 'pdo.php';
         $query = 'SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumferences, height,
-        common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user FROM plants';
+        common_name AS commonName, scientific_name AS scientificName, insert_date AS date, user_id AS user FROM plants';
         if (isset($_GET['user'])) {
             $userId = intval($_GET['user']);
             if ($userId <= 0) {
@@ -46,7 +46,7 @@ function getPlants() {
             foreach ($plants as &$plant) {
                 $plantIds[] = $plant['id'];
             }
-            $images = $pdo->query('SELECT plant_id, id, file_name AS `file-name`
+            $images = $pdo->query('SELECT plant_id, id, file_name AS fileName
             FROM images WHERE plant_id IN ('. join(',', $plantIds). ')')->fetchAll(PDO::FETCH_GROUP);
             foreach ($plants as &$plant) {
                 if (isset($images[$plant['id']])) {
@@ -67,7 +67,7 @@ function getPlants() {
 function getPlant($id, $complete = true) {
     require 'pdo.php';
     $stmt = $pdo->prepare('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumferences, height,
-    common_name AS `common-name`, scientific_name AS `scientific-name`, insert_date AS date, user_id AS user FROM plants WHERE id = ?');
+    common_name AS commonName, scientific_name AS scientificName, insert_date AS date, user_id AS user FROM plants WHERE id = ?');
     $stmt->execute([$id]);
     $plant = $stmt->fetch();
     if ($plant) {
@@ -86,7 +86,7 @@ function getPlant($id, $complete = true) {
             foreach ($files as $file) {
                 $image = array();
                 $image['id'] = $file['id'];
-                $image['file-name'] = $file['file_name'];
+                $image['fileName'] = $file['file_name'];
                 $plant['images'][] = $image;
             }
         } else {
@@ -101,7 +101,7 @@ function getPlant($id, $complete = true) {
 // Inserts a new plant in database
 function postPlant() {
     $data = json_decode(file_get_contents('php://input'), true);
-    if (!isset($data['user-id'])) {
+    if (!isset($data['userId'])) {
         return error('ID utente necessario');
     }
     global $pdo;
@@ -115,9 +115,9 @@ function postPlant() {
     }
     $stmt->bindParam(':circ', $circ);
     $stmt->bindParam(':height', $data['height']);
-    $stmt->bindParam(':common', $data['common-name']);
-    $stmt->bindParam(':scientific', $data['scientific-name']);
-    $stmt->bindParam(':user', $data['user-id']);
+    $stmt->bindParam(':common', $data['commonName']);
+    $stmt->bindParam(':scientific', $data['scientificName']);
+    $stmt->bindParam(':user', $data['userId']);
     $stmt->execute();
     // Returns new plant
     $plant = getPlant($pdo->lastInsertId(), false);
@@ -133,8 +133,8 @@ function putPlant($id) {
         'latitude' => 'latitude',
         'circumferences' => 'circumferences',
         'height' => 'height',
-        'common_name' => 'common-name',
-        'scientific_name' => 'scientific-name'
+        'common_name' => 'commonName',
+        'scientific_name' => 'scientificName'
     );
     // Data into $updates
     $data = json_decode(file_get_contents('php://input'), true);

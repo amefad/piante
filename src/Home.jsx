@@ -32,7 +32,7 @@ export default function Home() {
                 {plants.map((plant) => (
                   <article key={plant.id}>
                     <h3>
-                      {plant["common-name"]} ({plant["scientific-name"]})
+                      {plant.commonName} ({plant.scientificName})
                     </h3>
                     <p>
                       ID {plant.id}
@@ -47,7 +47,7 @@ export default function Home() {
                     {plant.images.map((image) => (
                       <img
                         key={image.id}
-                        src={`${import.meta.env.BASE_URL}/uploads/thumbnail/${image["file-name"]}`}
+                        src={`${import.meta.env.BASE_URL}/uploads/thumbnail/${image.fileName}`}
                       />
                     ))}
                   </article>

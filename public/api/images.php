@@ -2,14 +2,14 @@
 // Gets all images
 function getImages() {
     require 'pdo.php';
-    $files = $pdo->query("SELECT id, file_name AS `file-name`, plant_id AS `plant-id` FROM images")->fetchAll();
+    $files = $pdo->query("SELECT id, file_name AS fileName, plant_id AS plantId FROM images")->fetchAll();
     return $files;
 }
 
 // Gets one image
 function getImage($id) {
     require 'pdo.php';
-    $file = $pdo->query("SELECT id, file_name AS `file-name`, plant_id AS `plant-id` FROM images WHERE id = $id")->fetch();
+    $file = $pdo->query("SELECT id, file_name AS fileName, plant_id AS plantId FROM images WHERE id = $id")->fetch();
     if ($file) {
         return $file;
     } else {
@@ -112,8 +112,8 @@ function deleteImage($id) {
     global $pdo;
     // Deletes three files
     $image = getImage($id);
-    if (isset($image['file-name'])) {
-        $name = $image['file-name'];
+    if (isset($image['fileName'])) {
+        $name = $image['fileName'];
         $uploadedFile = UPLOAD_PATH . $name;
         if (file_exists($uploadedFile)) unlink($uploadedFile);
         $scaledFile = SCALED_PATH . $name;
