@@ -133,9 +133,9 @@ function auth($callback, $permission, $id = null) {
 }
 
 function getToken() {
-    $headers = getallheaders();
-    if (isset($headers['Authorization'])) {
-        return trim(str_replace('Bearer', '', $headers['Authorization']));
+    $headers = array_change_key_case(getallheaders());
+    if (isset($headers['authorization'], )) {
+        return trim(str_replace('Bearer', '', $headers['authorization']));
     } else {
         return null;
     }
