@@ -66,7 +66,7 @@ export default function Home() {
         </>
       )}
       <p>
-        <a href={`${import.meta.env.BASE_URL}/test`}>Interfaccia minima con le API</a>
+        <a href={`${import.meta.env.BASE_URL}/test/index.html`}>Interfaccia minima con le API</a>
       </p>
       <Link to="/map">
         <Map />
