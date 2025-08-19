@@ -4,214 +4,162 @@ Simple web application for collaborative mapping of public green spaces.
 
 ## Repository Structure
 
-We want to serve the front-end resources and the api from the same deployment server.
-To achieve this, we wrapped all the code within an Astro project which leverages
-an opinionated folder layout (see more on [Astro project structure](https://docs.astro.build/en/basics/project-structure/)).
+The project was scaffolded using the Vite React template (see [create-vite](https://github.com/vitejs/vite/tree/main/packages/create-vite))
 
-## Database
+- `src`: Primary React front-end source code.
+- `public`: Files that Vite does not process during build; these are copied unchanged into the output folder `piante`.
+  - `public/api`: PHP API endpoints
+  - `public/test`: Basic API testing interface
 
-The `database/` folder includes scripts designed to help you create a MySQL
-(or MariaDB) database with the correct schema.
+Placing `api` and `test` inside `public` may seem unconventional but allows us to easily serve both frontend and backend under the same domain subpath (`/piante`) on our existing server, just by storing the build output on the specific server folder (also named `piante`). Vite is configured with a custom base path and a proxy for API calls to maintain consistent behavior across development and production environments (see `vite.config.js`).
 
-Define your database access parameters in the `public/config.php` file.  
-You may use the example file `public/config.php.sample` by renaming it accordingly.
+## Prerequisites
 
-<details>
+In order to successfully start the app and run it either in dev and in preview mode you need:
 
-<summary> Note: MariaDB on Debian (and Ubuntu) commonly comes preconfigured to
-use Unix socket authentication for the root user rather than a password. </summary>
+- A _reachable_ instance of a MySQL or MariaDB database.
+- PHP with PDO extension.
+- Node **LTS** >= 20 and npm
 
-Socket (or Unix socket) authentication works by matching the system (OS) username
-with the database username. In a typical default MariaDB installation on Debian,
-the root database account is configured to login with the authentication plugin
-(often called auth_socket or unix_socket) that validates the Linux/Unix username
-against the MariaDB account.
+### Database setup
 
-Socket authentication checks your operating system user, if you want to login
-as _root@locahost_ (the MariaDB root user), you must either be the system’s root
-user or use sudo. For example:
+The application requires a MySQL or MariaDB database instance. Use the scripts in the `database` folder to create the schema.
 
-```bash
-sudo mysql
+Rename `public/config.php.sample` into `public/config.php` and configure your database connection parameters.
+
+> **Note on MariaDB Authentication (Debian/Ubuntu)**:
+>
+> On Debian-based systems, MariaDB typically uses Unix socket authentication for the root user instead of password authentication. This means:
+>
+> 1. Authentication matches the system username with the database username
+> 2. To use `root@localhost`, you must either be the system root user or use sudo:
+>
+>    ```bash
+>    sudo mysql
+>    ```
+>
+> To create additional socket-authenticated users:
+>
+> ```sql
+> CREATE USER 'username'@'localhost' IDENTIFIED VIA unix_socket;
+> ```
+>
+> For socket authentication, ensure the Unix username matches the database username:
+>
+> ```bash
+> mysql -u username
+> ```
+>
+> Resources:
+>
+> - [MariaDB Unix Socket Authentication](https://mariadb.com/kb/en/authentication-plugin-unix-socket/)
+> - [Password Authentication Setup](https://mariadb.com/kb/en/authentication-plugin-unix-socket/#switching-to-password-based-authentication)
+
+### PHP Configuration
+
+Ensure you have:
+
+1. PHP (we use PHP-CLI, VS Code extension may work either)
+2. [PDO extension](https://www.php.net/manual/en/book.pdo.php) for database connectivity, installed and enabled.
+
+### Node.js Setup
+
+Node.js LTS (v20 or v22) and npm. Use the latest npm version compatible with your Node.js LTS installation.
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Run the build command:
+
+   ```bash
+   npm run build
+   ```
+
+   This will generate a complete production build in the `piante` folder. Note that this step is
+   required for development, as the PHP server serves APIs even in development mode.
+
+4. Now you can start both the Vite dev server and the PHP server using:
+
+   ```bash
+   npm start
+   ```
+
+   When launched with this command, the Vite server listens on port `5173`, while the PHP server
+   listens on port `8000`.
+
+### Additional Scripts
+
+- `npm run preview:php`: Preview the production build using the PHP server.
+
+Resources:
+
+- [Vite Modes](https://vite.dev/guide/env-and-mode.html#modes)
+- [Vite CLI](https://vite.dev/guide/cli.html)
+- [PHP CLI](https://www.php.net/manual/en/features.commandline.php)
+
+## API Reference
+
+The `api` directory contains PHP endpoints that interact with the MySQL database and return JSON responses.
+
+Endpoint permissions:
+
+| Method | Endpoint                 | Description               | Minimum Role | Token    |
+| ------ | ------------------------ | ------------------------- | ------------ | -------- |
+| GET    | `/users`                 | Get all users             | admin        | required |
+| GET    | `/users/{id}`            | Get a single user         | viewer*      | required |
+| POST   | `/users`                 | Create user               | -            | -        |
+| POST   | `/users/{id}`            | Confirm user              | invalid*     | required |
+| PUT    | `/users/{id}`            | Update user               | invalid*     | required |
+| DELETE | `/users/{id}`            | Delete user               | viewer*      | required |
+| GET    | `/users?confirm={email}` | Send confirmation email   | -            | -        |
+| GET    | `/users?reset={email}`   | Send password reset email | -            | -        |
+| POST   | `/session`               | Login                     | -            | -        |
+| DELETE | `/session`               | Logout                    | -            | optional |
+| GET    | `/plants`                | Get all plants            | -            | -        |
+| GET    | `/plants/{id}`           | Get a single plant        | -            | -        |
+| POST   | `/plants`                | Create plant              | editor       | required |
+| PUT    | `/plants/{id}`           | Update plant              | editor       | required |
+| DELETE | `/plants/{id}`           | Delete plant              | editor       | required |
+| GET    | `/images`                | Get details of all images | -            | -        |
+| GET    | `/images/{id}`           | Get details of an image   | -            | -        |
+| POST   | `/images`                | Upload image              | editor       | required |
+| DELETE | `/images/{id}`           | Delete image              | editor       | required |
+
+(*) Can access only their own user profile (unless _admin_).
+
+### Roles
+
+These are the four roles, listed from the weaker to the most powerful:
+
+1. **invalid** - User just registered, waiting to confirm their email address. Can do nothing but update their password.
+2. **viewer** - Can also view and delete their own profile. Usually unused.
+3. **editor** - User after email confirmation. Can also update all contents.
+4. **admin** - Can also list, modify and delete other users.
+
+## Contributing
+
+### Code Style
+
+We use prettier to format code. For now the Prettier instance is managed via the VS Code extension and is not listed as package dependency.
+We set `"printWidth": 100`.
+
+### Visual Studio Code
+
+If you are using VS Code you may want to add the extensions we are using:
+
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "bmewburn.vscode-intelephense-client",
+    "dbaeumer.vscode-eslint"
+  ]
+}
 ```
-
-If you want to set up additional MariaDB user accounts to use socket
-authentication, you can do so with a command like:
-
-```sql
-CREATE USER 'alice'@'localhost' IDENTIFIED VIA unix_socket;
-```
-
-For alice to use this authentication, you should ensure that her Unix username
-is also alice. Then she can connect by simply typing:
-_(If not logged in as the expected user, you may have to use sudo or switch to that user.)_
-
-```bash
-mysql -u alice
-```
-
-See [MariaDB docs](https://mariadb.com/kb/en/authentication-plugin-unix-socket/)
-for in depth instructions.
-
-See how to **[switch to Password-based Authentication](https://mariadb.com/kb/en/authentication-plugin-unix-socket/#switching-to-password-based-authentication)**
-
-</details>
-
-## API
-
-The `api/` folder contains the PHP code to get data from MySQL database and return it as JSON.
-
-These are the allowed methods to access the API:
-
-| Method | Endpoint                 | Description                   | Minimum role | Token    |
-| ------ | ------------------------ | ----------------------------- | ------------ | -------- |
-| GET    | `/users`                 | Gets all users                | admin        | required |
-| GET    | `/users/{id}`            | Gets one user                 | viewer       | required |
-| POST   | `/users`                 | Creates new user              | -            | -        |
-| POST   | `/users/{id}`            | Confirms one user             | invalid      | required |
-| PUT    | `/users/{id}`            | Updates one user              | viewer       | required |
-| DELETE | `/users/{id}`            | Deletes one user              | viewer       | required |
-| GET    | `/users?confirm={email}` | Sends confirmation email      | -            | -        |
-| GET    | `/users?reset={email}`   | Sends email to reset password | -            | -        |
-| POST   | `/session`               | Login                         | -            | -        |
-| DELETE | `/session`               | Logout                        | -            | optional |
-| GET    | `/plants`                | Gets all plants               | -            | -        |
-| GET    | `/plants/{id}`           | Gets one plant                | -            | -        |
-| POST   | `/plants`                | Creates new plant             | editor       | required |
-| PUT    | `/plants/{id}`           | Updates one plant             | editor       | required |
-| DELETE | `/plants/{id}`           | Deletes one plant             | editor       | required |
-| GET    | `/images`                | Gets all images               | -            | -        |
-| GET    | `/images/{id}`           | Gets one image                | -            | -        |
-| POST   | `/images`                | Uploads new image             | editor       | required |
-| DELETE | `/images/{id}`           | Deletes one image             | editor       | required |
-
-## Frontend
-
-This repository adheres to the Astro project convention.
-(see more on [Astro project structure](https://docs.astro.build/en/basics/project-structure/))
-
-The front-end code is primarily stored in the `src/` directory. However, some
-files still belong in the `public/` directory.
-
-## Test (wip)
-
-The `test/` directory is used for testing and includes a basic interface for
-interacting with the API.
-
-## Setting up the dev environment
-
-### Prerequisites
-
-- Database (MySQL or MariaDB)
-- PHP with PDO extension
-- Node LTS and npm
-
-#### Database (MySQL or MariaDB)
-
-You must have access to a running instance of either MySQL or MariaDB.
-
-See section [database](#database).
-
-#### PHP with PDO extension
-
-You can install PHP and PHP CLI on your system, or use a Visual Studio Code
-extension.
-
-The [PDO extension](https://www.php.net/manual/en/book.pdo.php) is required for
-database interactions. Make sure to configure the proper authentication method
-in config.php (see the [Database](#database) section for details).
-
-#### Node LTS and npm
-
-For Astro to run on your system, you must have **Node.js** installed. Only **LTS**
-versions v20 and v22 are supported ( v19 and v21 are not supported).
-
-Along with Node.js a version of **npm** (v10 or higher) is required.
-
-### Editor setup
-
-If you use vscode add the official Astro VS Code Extension to syntax highlight
-and format Astro code. see [Astro docs](https://docs.astro.build/en/editor-setup/).
-
-### Install dependencies
-
-Run `npm install` to install dependencies.
-
-Configs for Astro and other tools are already there.
-
-### Development Servers
-
-```text
-"dev": "astro dev"
-"dev:php": "php -S localhost:8000 -t public"
-"start": "astro dev"
-```
-
-To begin development, start the Astro dev server by running `npm run dev`.
-Additionally, ensure that the API is available: either launch the PHP dev server
-using `npm run dev:php` (using PHP CLI) or use alternative methods such as VSCode
-extensions to serve the `public/` folder.
-
-Open the browser and visit `localhost:4321` (default Astro dev server port).
-
-Astro will serve the front-end and proxy API calls to your PHP server based on
-proxy configuration in `astro.config.mjs`.
-
-### Building with Astro
-
-During the build Astro performs the following steps:
-
-- It processes and transforms the files in the `src` folder (e.g., astro components,
-  pages, scripts, etc.), generating pre-rendered HTML files and bundling assets
-  like JavaScript and CSS for interactivity.
-
-- The `public` folder is kept unchanged. Its contents (such as static assets
-  like images or other files) are simply copied over to the `dist` folder.
-
-- Finally, Astro combines the transformed output from the `src` folder and the
-  files from the `public` folder into the final production-ready build output,
-  which by default is placed in the `dist` folder (_this output directory is configurable_).
-
-Run `npm run build` to build the project.
-
-see [how to build your site](https://docs.astro.build/en/develop-and-build/#build-and-preview-your-site) on Astro docs.
-
-### Astro-relative-links integration
-
-[see integration readme](https://github.com/ixkaito/astro-relative-links#readme)
-Extensions will activate automatically on building.
-
-example result in `dist/index.html`
-
-```html
-<link rel="stylesheet" href="./_astro/index.*.css" />
-<script type="module" src="./_astro/hoisted.*.js"></script>
-```
-
-#### **deploy to a subpath**
-
-(if you need you can still use this along with `astro-relative-links`)
-
-If you want to serve the `dist` folder on a subpath (e.g., `www.example.com/piante/`),
-set the `base` configuration in `astro.config.mjs`.
-(see [base option](https://docs.astro.build/en/reference/configuration-reference/#base))
-
-Note: Use this only for _deployment_ builds (ie you want to move the folder to
-a deployment server), not when previewing with `npm run preview:php`, as the PHP
-server isn't configured for subpath routing.
-
-#### Previewing
-
-```text
-"build": "astro build"
-"preview": "astro preview"
-"preview:php": "php -S localhost:8000 -t dist"
-```
-
-After building the project with `npm run build`, preview the compiled code by
-running `npm run preview:php` (you do not need to launch the other scripts anymore).
-
-Visit `localhost:8000` with your browser to see the preview.
-
-Note that this command serves the `dist/` folder (not `public/`), if you are using a vscode
-extensions be sure the path is set accordingly.

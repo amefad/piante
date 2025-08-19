@@ -10,6 +10,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      // ex. http://localhost:5173/piante/api/plants -> http://localhost:8000/public/api/plants
       "/piante/api": {
         target: "http://localhost:8000/public/api",
         rewrite: (path) => path.replace(/^\/piante\/api/, ""),
