@@ -41,5 +41,6 @@ dist
 dist-ssr
 *.local
 
-#vscode (ignoring for now)
+# ignoring for now
 .vscode/
+REVIEW.md
