@@ -1,25 +1,30 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useAuth } from "./AuthContext";
+import { useData } from "./hooks/useData";
 import Page from "./Page";
 import Map from "./Map";
 import "./Home.scss";
 
 export default function Home() {
   const { user } = useAuth();
-  const [plants, setPlants] = useState([]);
+  const { plants, isLoading, isError } = useData(user?.id);
+  console.table(plants);
+  console.log(`HomePage -- isLoading ${isLoading} isError ${isError}`);
 
-  useEffect(() => {
-    if (user) {
-      fetch(`${import.meta.env.BASE_URL}/api/plants?user=${user.id}&last=3`)
-        .then((response) => response.json())
-        .then((data) => setPlants(data));
-    }
-  }, [user]);
+  // const [plants, setPlants] = useState([]);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     fetch(`${import.meta.env.BASE_URL}/api/plants?user=${user.id}&last=3`)
+  //       .then((response) => response.json())
+  //       .then((data) => setPlants(data));
+  //   }
+  // }, [user]);
 
   return (
     <Page className="homepage">
-      {user ? (
+      {user && plants ? (
         <>
           {plants.length == 0 ? (
             <p>
@@ -68,9 +73,7 @@ export default function Home() {
       <p>
         <a href={`${import.meta.env.BASE_URL}/test/index.html`}>Interfaccia minima con le API</a>
       </p>
-      <Link to="/map">
-        <Map />
-      </Link>
+      <Link to="/map">{isLoading ? "loading" : <Map plants={plants} />}</Link>
     </Page>
   );
 }
