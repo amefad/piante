@@ -50,18 +50,20 @@ export default function Map({ active = false, plants = [] }) {
         maxZoom={21}
       />
       <AttributionControl prefix={false} position="bottomright" />
-      {plants.map((plant) => (
-        <Marker position={[plant.latitude, plant.longitude]} icon={marker} key={plant.id}>
-          <Popup>
-            <p style={{ fontWeight: "bold" }}>{plant.commonName}</p>
-            <p style={{ fontStyle: "italic" }}>{plant.scientificName}</p>
-            <p>
-              Aggiunta il <data value={plant.date}>{plant.date}</data>
-              <br /> da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
-            </p>
-          </Popup>
-        </Marker>
-      ))}
+      {plants
+        .filter((plant) => plant.latitude && plant.longitude)
+        .map((plant) => (
+          <Marker position={[plant.latitude, plant.longitude]} icon={marker} key={plant.id}>
+            <Popup>
+              <p style={{ fontWeight: "bold" }}>{plant.commonName}</p>
+              <p style={{ fontStyle: "italic" }}>{plant.scientificName}</p>
+              <p>
+                Aggiunta il <data value={plant.date}>{plant.date}</data>
+                <br /> da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
+              </p>
+            </Popup>
+          </Marker>
+        ))}
     </MapContainer>
   );
 }
