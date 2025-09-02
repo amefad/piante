@@ -1,4 +1,5 @@
 import useSWR from "swr";
+// import { useSWRConfig } from "swr";
 
 import fetcher from "../libs/fetcher";
 
@@ -9,7 +10,12 @@ export function useData(userId) {
   } else {
     url = `${import.meta.env.BASE_URL}/api/plants`;
   }
-  const { data, error, isLoading } = useSWR(url, fetcher);
+  // For now, use a value of 10s to help with debugging.
+  const { data, error, isLoading } = useSWR(url, fetcher, { dedupingInterval: 10000 });
+
+  // debug
+  // const { cache } = useSWRConfig();
+  // console.log(cache);
 
   return {
     plants: data,
