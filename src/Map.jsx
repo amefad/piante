@@ -3,14 +3,6 @@ import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "reac
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
-// generate a random latitude between 45.886900 and 45.886999
-// const minLat = 45.87;
-// const maxLat = 45.89;
-// const randomLat = () => Number((Math.random() * (maxLat - minLat) + minLat).toFixed(6));
-
-// const positions = new Array(10).fill([]).map(() => [randomLat(), 12.29733]);
-// console.log(positions);
-
 const bounds = [
   [46.05, 12.52], // NE corner
   [45.7, 12.13], // SW corner

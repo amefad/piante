@@ -1,4 +1,3 @@
-// import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useAuth } from "./AuthContext";
 import { useData } from "./hooks/useData";
@@ -8,19 +7,11 @@ import "./Home.scss";
 
 export default function Home() {
   const { user } = useAuth();
-  const { plants, isLoading, isError } = useData(user?.id);
-  console.table(plants);
-  console.log(`HomePage -- isLoading ${isLoading} isError ${isError}`);
-
-  // const [plants, setPlants] = useState([]);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     fetch(`${import.meta.env.BASE_URL}/api/plants?user=${user.id}&last=3`)
-  //       .then((response) => response.json())
-  //       .then((data) => setPlants(data));
-  //   }
-  // }, [user]);
+  // plants can be user plants or all public plants
+  const { plants, isLoading } = useData(user?.id);
+  // debug
+  // console.table(plants);
+  // console.log(`HomePage -- isLoading ${isLoading} isError ${isError}`);
 
   return (
     <Page className="homepage">
