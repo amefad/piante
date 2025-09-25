@@ -1,7 +1,6 @@
 import useSWR from "swr";
-// import { useSWRConfig } from "swr";
-
 import fetcher from "../libs/fetcher";
+// import { useSWRConfig } from "swr";
 
 export function useData(userId) {
   let url;
