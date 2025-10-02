@@ -1,8 +1,9 @@
 import useSWR from "swr";
 import fetcher from "../libs/fetcher";
+// debug
 // import { useSWRConfig } from "swr";
 
-export function useData(userId) {
+export function usePlants(userId) {
   let url;
   if (userId) {
     url = `${import.meta.env.BASE_URL}/api/plants?user=${userId}&last=3`;

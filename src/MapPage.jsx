@@ -1,10 +1,10 @@
 import Map from "./Map";
 import Access from "./Access";
-import { useData } from "./hooks/useData";
+import { usePlants } from "./hooks/usePlants";
 import "./MapPage.scss";
 
 export default function MapPage() {
-  const { plants } = useData();
+  const { plants } = usePlants();
 
   return (
     <div id="map-page">

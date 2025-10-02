@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "./AuthContext";
-import { useData } from "./hooks/useData";
+import { usePlants } from "./hooks/usePlants";
 import Page from "./Page";
 import Map from "./Map";
 import "./Home.scss";
@@ -8,7 +8,7 @@ import "./Home.scss";
 export default function Home() {
   const { user } = useAuth();
   // plants can be user plants or all public plants
-  const { plants, isLoading } = useData(user?.id);
+  const { plants, isLoading } = usePlants(user?.id);
   // debug
   // console.table(plants);
   // console.log(`HomePage -- isLoading ${isLoading} isError ${isError}`);
