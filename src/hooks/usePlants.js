@@ -10,8 +10,8 @@ export function usePlants(userId) {
   } else {
     url = `${import.meta.env.BASE_URL}/api/plants`;
   }
-  // For now, use a value of 10s to help with debugging.
-  const { data, error, isLoading } = useSWR(url, fetcher, { dedupingInterval: 10000 });
+  // debug: can help setting `dedupingInterval` (default is 2s)
+  const { data, error, isLoading } = useSWR(url, fetcher);
 
   // debug
   // const { cache } = useSWRConfig();
