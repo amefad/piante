@@ -9,9 +9,6 @@ export default function Home() {
   const { user } = useAuth();
   // plants can be user plants or all public plants
   const { plants, isLoading } = usePlants(user?.id);
-  // debug
-  // console.table(plants);
-  // console.log(`HomePage -- isLoading ${isLoading} isError ${isError}`);
 
   return (
     <Page className="homepage">
