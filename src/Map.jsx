@@ -1,3 +1,6 @@
+import { useAuth } from "./AuthContext";
+
+import { usePlants } from "./hooks/usePlants";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -8,22 +11,27 @@ const bounds = [
   [45.7, 12.13], // SW corner
 ];
 
-const mapCenter = { latitude: 45.8869, longitude: 12.29733 };
+const mapCenter = [45.8869, 12.29733];
 
-export default function Map({ active = false, plants = [] }) {
-  const center = [
-    plants[0]?.latitude ?? mapCenter.latitude,
-    plants[0]?.longitude ?? mapCenter.longitude,
-  ];
+export default function Map({ active = false, limitTo }) {
+  const { user } = useAuth();
+  const { plants, isLoading, isError } = usePlants(user?.id, limitTo);
+
+  // const center = [
+  //   plants[0]?.latitude ?? mapCenter.latitude,
+  //   plants[0]?.longitude ?? mapCenter.longitude,
+  // ];
 
   const marker = L.icon({
     iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin.svg`,
     iconAnchor: [9, 9],
   });
 
+  if (isError) return <div>failed to load</div>;
+  if (isLoading) return <div>loading...</div>;
   return (
     <MapContainer
-      center={center}
+      center={mapCenter}
       maxBounds={bounds}
       maxBoundsViscosity={0.9}
       zoom={13}
