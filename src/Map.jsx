@@ -3,43 +3,57 @@ import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "reac
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
-const position = [45.8869, 12.29733];
 const bounds = [
   [46.05, 12.52], // NE corner
   [45.7, 12.13], // SW corner
 ];
+const mapCenter = [45.8869, 12.29733];
 
-export default function Map({ active }) {
+export default function Map({ data, active = false }) {
   const marker = L.icon({
     iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin.svg`,
     iconAnchor: [9, 9],
   });
+
   return (
-    <MapContainer
-      center={position}
-      maxBounds={bounds}
-      maxBoundsViscosity={0.9}
-      zoom={13}
-      zoomControl={active}
-      dragging={active}
-      scrollWheelZoom={active}
-      doubleClickZoom={active}
-      boxZoom={active}
-      touchZoom={active}
-      attributionControl={false}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        minZoom={11}
-        maxZoom={21}
-      />
-      <AttributionControl prefix={false} position="bottomright" />
-      <Marker position={position} icon={marker}>
-        <Popup>
-          A pretty CSS3 popup. <br />
-        </Popup>
-      </Marker>
-    </MapContainer>
+    <>
+      {data.isError && <div>failed to load</div>}
+      {data.isLoading && <div>loading...</div>}
+      <MapContainer
+        center={mapCenter}
+        maxBounds={bounds}
+        maxBoundsViscosity={0.9}
+        zoom={13}
+        zoomControl={active}
+        dragging={active}
+        scrollWheelZoom={active}
+        doubleClickZoom={active}
+        boxZoom={active}
+        touchZoom={active}
+        attributionControl={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          minZoom={11}
+          maxZoom={21}
+        />
+        <AttributionControl prefix={false} position="bottomright" />
+        {data.plants
+          ?.filter((plant) => plant.latitude && plant.longitude)
+          .map((plant) => (
+            <Marker position={[plant.latitude, plant.longitude]} icon={marker} key={plant.id}>
+              <Popup>
+                <p style={{ fontWeight: "bold" }}>{plant.commonName}</p>
+                <p style={{ fontStyle: "italic" }}>{plant.scientificName}</p>
+                <p>
+                  Aggiunta il <data value={plant.date}>{plant.date}</data>
+                  <br /> da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
+                </p>
+              </Popup>
+            </Marker>
+          ))}
+      </MapContainer>
+    </>
   );
 }
