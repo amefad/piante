@@ -3,15 +3,9 @@ import fetcher from "../libs/fetcher";
 // debug
 // import { useSWRConfig } from "swr";
 
-export function usePlants(userId, limitTo) {
-  let url;
-  if (!userId) {
-    url = `${import.meta.env.BASE_URL}/api/plants`;
-  } else if (!limitTo) {
-    url = `${import.meta.env.BASE_URL}/api/plants?user=${userId}`;
-  } else {
-    url = `${import.meta.env.BASE_URL}/api/plants?user=${userId}&last=${limitTo}`;
-  }
+export function usePlants(queryPath = "") {
+  let url = `${import.meta.env.BASE_URL}/api/plants${queryPath}`;
+
   // debug: can help setting `dedupingInterval` (default is 2s)
   const { data, error, isLoading } = useSWR(url, fetcher);
 
