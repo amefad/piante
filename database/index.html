@@ -15,6 +15,10 @@
     <div id="result"></div>
 </body>
 <script>
+    // Trailing slash is required by fetch() to locate a relative URL
+    if (window.location.pathname.endsWith('/database')) {
+        window.location.pathname += '/';
+    }
     document.querySelector('#create-db').addEventListener('click', () => {
         const resultDiv = document.querySelector('#result');
         resultDiv.innerHTML = '';

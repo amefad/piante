@@ -1,10 +1,12 @@
 <?php
+define('MAX_SPECIES_ID', 92);
+
 // Gets all plants from the database
 function getPlants() {
     try {
         require 'pdo.php';
         $query = 'SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumferences, height,
-        common_name AS commonName, scientific_name AS scientificName, insert_date AS date, user_id AS user FROM plants';
+        species_id AS species, insert_date AS date, user_id AS user FROM plants';
         if (isset($_GET['user'])) {
             $userId = intval($_GET['user']);
             if ($userId <= 0) {
@@ -28,6 +30,15 @@ function getPlants() {
                 } else {
                     $plant['circumferences'] = array();
                 }
+                $species = $pdo->query('SELECT id, scientific_name AS scientificName, common_name AS commonName, warning
+                FROM species WHERE id = '. $plant['species'])->fetch();
+                if (!$species) {
+                    $species = array(
+                        'id' =>  $plant['species'],
+                        'warning' => 'Specie non definita.'
+                    );
+                }
+                $plant['species'] = $species;
             }
             // Adds user data to plants array
             $userIds = array();
@@ -67,7 +78,7 @@ function getPlants() {
 function getPlant($id, $complete = true) {
     require 'pdo.php';
     $stmt = $pdo->prepare('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumferences, height,
-    common_name AS commonName, scientific_name AS scientificName, insert_date AS date, user_id AS user FROM plants WHERE id = ?');
+    species_id AS species, insert_date AS date, user_id AS user FROM plants WHERE id = ?');
     $stmt->execute([$id]);
     $plant = $stmt->fetch();
     if ($plant) {
@@ -76,6 +87,15 @@ function getPlant($id, $complete = true) {
         } else {
             $plant['circumferences'] = array();
         }
+        $species = $pdo->query('SELECT id, scientific_name AS scientificName, common_name AS commonName, warning
+        FROM species WHERE id = '. $plant['species'])->fetch();
+        if (!$species) {
+            $species = array(
+                'id' =>  $plant['species'],
+                'warning' => 'Specie non definita.'
+            );
+        }
+        $plant['species'] = $species;
         if ($complete) {
             $user = $pdo->query('SELECT id, full_name AS name, email FROM users WHERE id = '. $plant['user'])->fetch();
             if ($user) {
@@ -101,12 +121,15 @@ function getPlant($id, $complete = true) {
 // Inserts a new plant in database
 function postPlant() {
     $data = json_decode(file_get_contents('php://input'), true);
+    if (!isset($data['species']) || !is_array($data['species']) || !isset($data['species']['id'])) {
+        return error('Specie non valida');
+    }
     if (!isset($data['userId'])) {
         return error('ID utente necessario');
     }
     global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumferences, height, common_name, scientific_name, user_id)
-    VALUES (:num, POINT(:lon, :lat), :circ, :height, :common, :scientific, :user)");
+    $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumferences, height, species_id, user_id)
+    VALUES (:num, POINT(:lon, :lat), :circ, :height, :species, :user)");
     $stmt->bindParam(':num', $data['number']);
     $stmt->bindParam(':lon', $data['longitude']);
     $stmt->bindParam(':lat', $data['latitude']);
@@ -115,8 +138,11 @@ function postPlant() {
     }
     $stmt->bindParam(':circ', $circ);
     $stmt->bindParam(':height', $data['height']);
-    $stmt->bindParam(':common', $data['commonName']);
-    $stmt->bindParam(':scientific', $data['scientificName']);
+    $speciesId = intval($data['species']['id']);
+    if ($speciesId <= 0 || $speciesId > MAX_SPECIES_ID) {
+        $speciesId = 1; // Default species
+    }
+    $stmt->bindParam(':species', $speciesId);
     $stmt->bindParam(':user', $data['userId']);
     $stmt->execute();
     // Returns new plant
@@ -133,14 +159,22 @@ function putPlant($id) {
         'latitude' => 'latitude',
         'circumferences' => 'circumferences',
         'height' => 'height',
-        'common_name' => 'commonName',
-        'scientific_name' => 'scientificName'
+        'species_id' => 'species'
     );
     // Data into $updates
     $data = json_decode(file_get_contents('php://input'), true);
     foreach ($updates as $key => $value) {
         if (array_key_exists($value, $data)) {
-            if (is_null($data[$value])) {
+            if ($key == 'species_id') {
+                if (is_array($data[$value]) && array_key_exists('id', $data[$value])) {
+                    $speciesId = intval($data[$value]['id']);
+                    if ($speciesId > 0 && $speciesId <= MAX_SPECIES_ID) {
+                        $updates[$key] = $speciesId;
+                        continue;
+                    }
+                }
+                unset($updates[$key]);
+            } else if (is_null($data[$value])) {
                 $updates[$key] = NULL;
             } else if ($key == 'circumferences') {
                 $updates[$key] = json_encode($data[$value]);

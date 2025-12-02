@@ -141,6 +141,9 @@ setupForm('POST', 'plants', 'post-plant', 'post-plant-result', null, 'plant-json
 // Loads one plant to edit
 setupForm('GET', 'plants', 'edit-plant', 'update-plant-json', (data) => {
     if (data) {
+        delete data.species.scientificName;
+        delete data.species.commonName;
+        delete data.species.warning;
         delete data.date;
         delete data.user;
         delete data.images;

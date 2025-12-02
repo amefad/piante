@@ -14,9 +14,10 @@ export default function PlantList({ data, user }) {
             {data.plants &&
               data.plants.map((plant) => (
                 <article key={plant.id}>
-                  <h3>
-                    {plant.commonName} ({plant.scientificName})
-                  </h3>
+                  <h3>{plant.species.scientificName}</h3>
+                  {plant.species.commonName}
+                  <br />
+                  <mark>{plant.species.warning}</mark>
                   <p>
                     ID {plant.id}
                     <br />

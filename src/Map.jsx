@@ -44,11 +44,16 @@ export default function Map({ data, active = false }) {
           .map((plant) => (
             <Marker position={[plant.latitude, plant.longitude]} icon={marker} key={plant.id}>
               <Popup>
-                <p style={{ fontWeight: "bold" }}>{plant.commonName}</p>
-                <p style={{ fontStyle: "italic" }}>{plant.scientificName}</p>
+                <div style={{ fontWeight: "bold", fontSize: "1.2em" }}>
+                  {plant.species.scientificName}
+                </div>
+                {plant.species.commonName}
+                <br />
+                <mark>{plant.species.warning}</mark>
                 <p>
                   Aggiunta il <data value={plant.date}>{plant.date}</data>
-                  <br /> da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
+                  <br />
+                  da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
                 </p>
               </Popup>
             </Marker>
