@@ -109,27 +109,29 @@ The `api` directory contains PHP endpoints that interact with the MySQL database
 
 Endpoint permissions:
 
-| Method | Endpoint                 | Description               | Minimum Role | Token    |
-| ------ | ------------------------ | ------------------------- | ------------ | -------- |
-| GET    | `/users`                 | Get all users             | admin        | required |
-| GET    | `/users/{id}`            | Get a single user         | viewer*      | required |
-| POST   | `/users`                 | Create user               | -            | -        |
-| POST   | `/users/{id}`            | Confirm user              | invalid*     | required |
-| PUT    | `/users/{id}`            | Update user               | invalid*     | required |
-| DELETE | `/users/{id}`            | Delete user               | viewer*      | required |
-| GET    | `/users?confirm={email}` | Send confirmation email   | -            | -        |
-| GET    | `/users?reset={email}`   | Send password reset email | -            | -        |
-| POST   | `/session`               | Login                     | -            | -        |
-| DELETE | `/session`               | Logout                    | -            | optional |
-| GET    | `/plants`                | Get all plants            | -            | -        |
-| GET    | `/plants/{id}`           | Get a single plant        | -            | -        |
-| POST   | `/plants`                | Create plant              | editor       | required |
-| PUT    | `/plants/{id}`           | Update plant              | editor       | required |
-| DELETE | `/plants/{id}`           | Delete plant              | editor       | required |
-| GET    | `/images`                | Get details of all images | -            | -        |
-| GET    | `/images/{id}`           | Get details of an image   | -            | -        |
-| POST   | `/images`                | Upload image              | editor       | required |
-| DELETE | `/images/{id}`           | Delete image              | editor       | required |
+| Method | Endpoint                 | Description                | Minimum Role | Token    |
+| ------ | ------------------------ | -------------------------- | ------------ | -------- |
+| GET    | `/users`                 | Get all users              | admin        | required |
+| GET    | `/users/{id}`            | Get a single user          | viewer*      | required |
+| POST   | `/users`                 | Create user                | -            | -        |
+| POST   | `/users/{id}`            | Confirm user               | invalid*     | required |
+| PUT    | `/users/{id}`            | Update user                | invalid*     | required |
+| DELETE | `/users/{id}`            | Delete user                | viewer*      | required |
+| GET    | `/users?confirm={email}` | Send confirmation email    | -            | -        |
+| GET    | `/users?reset={email}`   | Send password reset email  | -            | -        |
+| POST   | `/session`               | Login                      | -            | -        |
+| DELETE | `/session`               | Logout                     | -            | optional |
+| GET    | `/plants`                | Get all plants             | -            | -        |
+| GET    | `/plants/{id}`           | Get a single plant         | -            | -        |
+| POST   | `/plants`                | Create plant               | editor       | required |
+| PUT    | `/plants/{id}`           | Update plant               | editor       | required |
+| DELETE | `/plants/{id}`           | Delete plant               | editor       | required |
+| GET    | `/species`               | Get details of all species | -            | -        |
+| GET    | `/species/{id}`          | Get details of a species   | -            | -        |
+| GET    | `/images`                | Get details of all images  | -            | -        |
+| GET    | `/images/{id}`           | Get details of an image    | -            | -        |
+| POST   | `/images`                | Upload image               | editor       | required |
+| DELETE | `/images/{id}`           | Delete image               | editor       | required |
 
 (*) Can access only their own user profile (unless _admin_).
 

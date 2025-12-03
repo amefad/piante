@@ -15,6 +15,7 @@ $result = match ($pieces[0]) {
     'users' => handleUsers($id),
     'session' => handleSession(),
     'plants' => handlePlants($id),
+    'species' => handleSpecies($id),
     'images' => handleImages($id),
     default => error('Endpoint inesistente')
 };
@@ -84,6 +85,22 @@ function handlePlants($id) {
             case 'GET': return getPlants();
             case 'POST': return auth('postPlant', 'create_plant');
             default: return error('Usa GET o POST', 405);
+        }
+    }
+}
+
+function handleSpecies($id) {
+    require 'species.php';
+    $method = $_SERVER['REQUEST_METHOD'];
+    if (isset($id)) {
+        switch ($method) {
+            case 'GET': return getSpecies($id);
+            default: return error('Usa GET', 405);
+        }
+    } else {
+        switch ($method) {
+            case 'GET': return getAllSpecies();
+            default: return error('Usa GET', 405);
         }
     }
 }
