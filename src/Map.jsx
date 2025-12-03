@@ -1,5 +1,7 @@
+import { useState } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
+import { useMap, useMapEvent } from "react-leaflet/hooks";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
@@ -8,13 +10,26 @@ const bounds = [
   [45.7, 12.13], // SW corner
 ];
 const mapCenter = [45.8869, 12.29733];
+const marker = L.icon({
+  iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin.svg`,
+  iconAnchor: [9, 9],
+});
+const placer = L.icon({
+  iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin-red.svg`,
+  iconAnchor: [12, 24],
+});
 
-export default function Map({ data, active = false }) {
-  const marker = L.icon({
-    iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin.svg`,
-    iconAnchor: [9, 9],
+function CenterMarker({ setNewCenter }) {
+  //const [center, setCenter] = useState(mapCenter);
+  const map = useMapEvent("drag", () => {
+    const center = map.getCenter();
+    setNewCenter([center.lat, center.lng]);
   });
+  //const map = useMap();
+  return <Marker position={map.getCenter()} icon={placer} />;
+}
 
+export default function Map({ data, active = false, setNewCenter }) {
   return (
     <>
       {data.isError && <div>failed to load</div>}
@@ -58,6 +73,7 @@ export default function Map({ data, active = false }) {
               </Popup>
             </Marker>
           ))}
+        <CenterMarker setNewCenter={setNewCenter} />
       </MapContainer>
     </>
   );
