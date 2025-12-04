@@ -1,20 +1,24 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 
-export const MapContext = createContext();
+const MapContext = createContext(null);
 
-export const MapContextProvider = (props) => {
+export const useMapContext = () => {
+  return useContext(MapContext);
+};
+
+export const MapContextProvider = ({ children }) => {
   const [map, setMap] = useState(null);
-  const [center, setCenter] = useState([45.8869, 12.29733]);
+  const [plantLocation, setPlantLocation] = useState([45.8869, 12.29733]);
   const [step, setStep] = useState(0);
 
   const mapState = {
     map,
     setMap,
-    center,
-    setCenter,
+    plantLocation,
+    setPlantLocation,
     step,
     setStep,
   };
 
-  return <MapContext.Provider value={mapState}>{props.children}</MapContext.Provider>;
+  return <MapContext value={mapState}>{children}</MapContext>;
 };

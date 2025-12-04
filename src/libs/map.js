@@ -1,5 +1,4 @@
 export const disableMap = (map) => {
-  map.zoomControl.disable();
   map.dragging.disable();
   map.scrollWheelZoom.disable();
   map.doubleClickZoom.disable();
@@ -9,11 +8,17 @@ export const disableMap = (map) => {
 };
 
 export const enableMap = (map) => {
-  map.zoomControl.enable();
   map.dragging.enable();
   map.scrollWheelZoom.enable();
   map.doubleClickZoom.enable();
   map.boxZoom.enable();
   map.touchZoom.enable();
   map.keyboard.enable();
+};
+
+export const moveMap = (map) => {
+  setTimeout(() => {
+    const panelHeight = document.getElementsByClassName("panel")[0].clientHeight;
+    map.panBy([0, panelHeight / 2]);
+  }, 200);
 };
