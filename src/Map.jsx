@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useContext, useCallback } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
-import { useMap, useMapEvent } from "react-leaflet/hooks";
+import { MapContext } from "./MapContext";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
@@ -9,7 +9,7 @@ const bounds = [
   [46.05, 12.52], // NE corner
   [45.7, 12.13], // SW corner
 ];
-const mapCenter = [45.8869, 12.29733];
+const initialCenter = [45.8869, 12.29733];
 const marker = L.icon({
   iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin.svg`,
   iconAnchor: [9, 9],
@@ -19,23 +19,29 @@ const placer = L.icon({
   iconAnchor: [12, 24],
 });
 
-function CenterMarker({ setNewCenter }) {
-  //const [center, setCenter] = useState(mapCenter);
-  const map = useMapEvent("drag", () => {
-    const center = map.getCenter();
-    setNewCenter([center.lat, center.lng]);
-  });
-  //const map = useMap();
-  return <Marker position={map.getCenter()} icon={placer} />;
+function CenterMarker() {
+  const mapState = useContext(MapContext);
+  const onMove = useCallback(() => {
+    const mapCenter = mapState.map.getCenter();
+    mapState.setCenter([mapCenter.lat, mapCenter.lng]);
+  }, [mapState?.map]);
+  mapState?.map?.on("move", onMove);
+  mapState?.map?.on("zoom", onMove);
+
+  return mapState && mapState.step > 0 ? (
+    <Marker position={mapState.map.getCenter()} icon={placer} />
+  ) : null;
 }
 
-export default function Map({ data, active = false, setNewCenter }) {
+export default function Map({ data, active = false }) {
+  const mapState = useContext(MapContext);
+
   return (
     <>
       {data.isError && <div>failed to load</div>}
       {data.isLoading && <div>loading...</div>}
       <MapContainer
-        center={mapCenter}
+        center={initialCenter}
         maxBounds={bounds}
         maxBoundsViscosity={0.9}
         zoom={13}
@@ -45,7 +51,9 @@ export default function Map({ data, active = false, setNewCenter }) {
         doubleClickZoom={active}
         boxZoom={active}
         touchZoom={active}
+        keyboard={active}
         attributionControl={false}
+        ref={mapState?.setMap}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -73,7 +81,7 @@ export default function Map({ data, active = false, setNewCenter }) {
               </Popup>
             </Marker>
           ))}
-        <CenterMarker setNewCenter={setNewCenter} />
+        <CenterMarker />
       </MapContainer>
     </>
   );
