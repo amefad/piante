@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useAuth } from "./AuthContext";
-//import { CenterContext } from "./MapContext";
+import { MapContext } from "./MapContext";
 import Autocomplete from "./Autocomplete";
+import { disableMap, enableMap } from "./libs/map";
 import "./PlantCreator.scss";
 
-export default function PlantCreator({ newCenter }) {
+export default function PlantCreator() {
   const { user } = useAuth();
-  const [step, setStep] = useState(0);
+  const mapState = useContext(MapContext);
   const [species, setSpecies] = useState({ id: 1 });
   const [number, setNumber] = useState("");
   const [height, setHeight] = useState("");
@@ -17,8 +18,8 @@ export default function PlantCreator({ newCenter }) {
     const token = localStorage.getItem("authToken");
     const jsonData = {
       number: number || null,
-      latitude: newCenter[0],
-      longitude: newCenter[1],
+      latitude: mapState.center[0],
+      longitude: mapState.center[1],
       circumferences: [50], // TODO
       height: height || null,
       species: {
@@ -34,7 +35,8 @@ export default function PlantCreator({ newCenter }) {
     }).then((response) => {
       response.json().then((data) => {
         if (response.ok) {
-          setStep(0);
+          mapState.setStep(0);
+          enableMap(mapState.map);
         } else {
           setError(data.message || "Inserimento fallito");
         }
@@ -43,18 +45,24 @@ export default function PlantCreator({ newCenter }) {
   }
 
   if (user) {
-    if (step == 0) {
+    if (mapState.step == 0) {
       return (
-        <button className="add" onClick={() => setStep(1)} title="Aggiungi una pianta">
+        <button className="add" onClick={() => mapState.setStep(1)} title="Aggiungi una pianta">
           +
         </button>
       );
-    } else if (step == 1) {
+    } else if (mapState.step == 1) {
       return (
         <>
           <section className="panel">
             Posiziona la mappa e prosegui.
-            <button onClick={() => setStep(2)} title="Passo successivo">
+            <button
+              onClick={() => {
+                mapState.setStep(2);
+                disableMap(mapState.map);
+              }}
+              title="Passo successivo"
+            >
               Prosegui
             </button>
           </section>
@@ -66,9 +74,6 @@ export default function PlantCreator({ newCenter }) {
     } else {
       return (
         <section className="panel">
-          <small>
-            {newCenter[0]} {newCenter[1]}
-          </small>
           <Autocomplete value={"?"} setSpecies={setSpecies} />
           {species.warning && <mark>{species.warning}</mark>}
           <input
@@ -85,7 +90,13 @@ export default function PlantCreator({ newCenter }) {
           />
           <textarea placeholder="Note" value="Note (da implementare)" disabled />
           <div className="buttons">
-            <button onClick={() => setStep(0)} title="Annulla l'inserimento">
+            <button
+              onClick={() => {
+                mapState.setStep(0);
+                enableMap(mapState.map);
+              }}
+              title="Annulla l'inserimento"
+            >
               Annulla
             </button>
             <button onClick={addPlant} title="Concludi l'inserimento">
