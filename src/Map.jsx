@@ -1,7 +1,7 @@
-import { useContext, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
-import { MapContext } from "./MapContext";
+import { useMapContext } from "./MapContext";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
@@ -20,21 +20,24 @@ const placer = L.icon({
 });
 
 function CenterMarker() {
-  const mapState = useContext(MapContext);
+  const mapState = useMapContext();
   const onMove = useCallback(() => {
     const mapCenter = mapState.map.getCenter();
-    mapState.setCenter([mapCenter.lat, mapCenter.lng]);
+    mapState.setPlantLocation([mapCenter.lat, mapCenter.lng]);
   }, [mapState?.map]);
-  mapState?.map?.on("move", onMove);
-  mapState?.map?.on("zoom", onMove);
+
+  useEffect(() => {
+    mapState?.map?.on("move", onMove);
+    mapState?.map?.on("zoom", onMove);
+  }, [onMove]);
 
   return mapState && mapState.step > 0 ? (
-    <Marker position={mapState.map.getCenter()} icon={placer} />
+    <Marker position={mapState.plantLocation} icon={placer} />
   ) : null;
 }
 
 export default function Map({ data, active = false }) {
-  const mapState = useContext(MapContext);
+  const mapState = useMapContext();
 
   return (
     <>
@@ -45,13 +48,13 @@ export default function Map({ data, active = false }) {
         maxBounds={bounds}
         maxBoundsViscosity={0.9}
         zoom={13}
-        zoomControl={active}
         dragging={active}
         scrollWheelZoom={active}
         doubleClickZoom={active}
         boxZoom={active}
         touchZoom={active}
         keyboard={active}
+        zoomControl={false}
         attributionControl={false}
         ref={mapState?.setMap}
       >

@@ -1,13 +1,13 @@
 import { useState, useContext } from "react";
 import { useAuth } from "./AuthContext";
-import { MapContext } from "./MapContext";
+import { useMapContext } from "./MapContext";
 import Autocomplete from "./Autocomplete";
-import { disableMap, enableMap } from "./libs/map";
+import { disableMap, enableMap, moveMap } from "./libs/map";
 import "./PlantCreator.scss";
 
 export default function PlantCreator() {
   const { user } = useAuth();
-  const mapState = useContext(MapContext);
+  const mapState = useMapContext();
   const [species, setSpecies] = useState({ id: 1 });
   const [number, setNumber] = useState("");
   const [height, setHeight] = useState("");
@@ -18,8 +18,8 @@ export default function PlantCreator() {
     const token = localStorage.getItem("authToken");
     const jsonData = {
       number: number || null,
-      latitude: mapState.center[0],
-      longitude: mapState.center[1],
+      latitude: mapState.plantLocation[0],
+      longitude: mapState.plantLocation[1],
       circumferences: [50], // TODO
       height: height || null,
       species: {
@@ -47,7 +47,14 @@ export default function PlantCreator() {
   if (user) {
     if (mapState.step == 0) {
       return (
-        <button className="add" onClick={() => mapState.setStep(1)} title="Aggiungi una pianta">
+        <button
+          className="add"
+          onClick={() => {
+            mapState.setStep(1);
+            // moveMap(mapState.map);
+          }}
+          title="Aggiungi una pianta"
+        >
           +
         </button>
       );
@@ -60,6 +67,7 @@ export default function PlantCreator() {
               onClick={() => {
                 mapState.setStep(2);
                 disableMap(mapState.map);
+                moveMap(mapState.map);
               }}
               title="Passo successivo"
             >
