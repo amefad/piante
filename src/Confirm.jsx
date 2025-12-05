@@ -31,7 +31,7 @@ export default function Confirm() {
   }, []);
 
   return (
-    <Page title="Conferma account" className="simple-page">
+    <Page title="Account confermato" className="simple-page">
       {user && (
         <>
           <p>

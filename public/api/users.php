@@ -1,4 +1,7 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Since in database email is unique, checks if the email already exists
 // Registers a new user inserting received JSON data in database
 // Returns the user just created
@@ -22,7 +25,7 @@ function postUser() {
     $stmt->execute([$name, $email, $password, $token]);
     // Sends confirmation email
     $id = $pdo->lastInsertId();
-    sendEmail($id, $name, $email, $token);
+    sendConfirmationEmail($id, $name, $email, $token);
     // Returns user just created
     $user = $pdo->query("SELECT id, full_name AS name, email, role FROM users WHERE id = $id")->fetch();
     return [$user, 201];
@@ -45,11 +48,7 @@ function resendConfirmation($email) {
                 $token = $user['token'];
             }
             // Sends the email
-            if (sendEmail($user['id'], $user['name'], $email, $token)) {
-                return success('Email di conferma inviata');
-            } else {
-                return error('Email non inviata', 500);
-            }
+            return sendConfirmationEmail($user['id'], $user['name'], $email, $token);
         } else {
             return error('Email già confermata', 409);
         }
@@ -58,8 +57,8 @@ function resendConfirmation($email) {
     }
 }
 
-// Returns true on success
-function sendEmail($id, $name, $email, $token) {
+// Returns success or error
+function sendConfirmationEmail($id, $name, $email, $token) {
     $token = urlencode($token);
     $subject = 'Benvenuto nella Mappa delle piante';
     $link = "https://michelesalvador.it/piante/confirm?id=$id&token=$token";
@@ -68,7 +67,7 @@ function sendEmail($id, $name, $email, $token) {
         <p><strong><a href=\"$link\">$link</a></strong></p>
         <p>Se non hai richiesto questa email, puoi ignorarla.</p>
         <p>Grazie,<br>Il team di Mappa delle piante</p>";
-    return mail($email, $subject, $message, "From: fame@libero.it\r\nContent-Type: text/html; charset=UTF-8");
+    return sendEmail($email, $name, $subject, $message);
 }
 
 // Confirms the user by setting the role to editor and the token to NULL in database
@@ -161,20 +160,43 @@ function sendResetEmail($email) {
             $token = $user['token'];
         }
         // Sends the email
+        $name = $user['name'];
         $subject = 'Reimposta la password di Mappa delle piante';
         $token = urlencode($token);
         $link = "https://michelesalvador.it/piante/reset?id=$id&token=$token";
-        $message = "<p>Ciao {$user['name']},<br>per reimpostare la tua password clicca questo link:</p>
+        $message = "<p>Ciao {$name},<br>per reimpostare la tua password clicca questo link:</p>
             <p><strong><a href=\"$link\">$link</a></strong></p>
             <p>Se non hai richiesto questa email, puoi ignorarla.</p>
             <p>Grazie,<br>Il team di Mappa delle piante</p>";
-        if (mail($email, $subject, $message, "From: fame@libero.it\r\nContent-Type: text/html; charset=UTF-8")) {
-            return success('Email di reset password inviata');
-        } else {
-            return error('Email non inviata', 500);
-        }
+        return sendEmail($email, $name, $subject, $message);
     } else {
         return error('Utente non trovato', 404);
+    }
+}
+
+function sendEmail($email, $name, $subject, $body) {
+    require PHPMAILER_PATH . 'PHPMailer.php';
+    require PHPMAILER_PATH . 'Exception.php';
+    require PHPMAILER_PATH . 'SMTP.php';
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->SMTPAuth = true;
+        $mail->Host = SMTP_SERVER;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD;
+        $mail->Port = 465;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->setFrom('noreply@' . SMTP_SERVER, 'No Reply');
+        $mail->addAddress($email, $name);
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+        $mail->send();
+        return success('Email inviata');
+    } catch (Exception $e) {
+        return error("Email non inviata: {$mail->ErrorInfo}", 500);
     }
 }
 
