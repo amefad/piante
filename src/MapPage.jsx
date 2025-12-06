@@ -1,5 +1,7 @@
+import { MapContextProvider } from "./MapContext";
 import Map from "./Map";
 import Access from "./Access";
+import PlantCreator from "./PlantCreator";
 import { usePlants } from "./hooks/usePlants";
 import "./MapPage.scss";
 
@@ -8,7 +10,12 @@ export default function MapPage() {
 
   return (
     <div id="map-page">
-      <Map data={data} active={true} />
+      <div className="content">
+        <MapContextProvider>
+          <Map data={data} active={true} />
+          <PlantCreator />
+        </MapContextProvider>
+      </div>
       <Access />
     </div>
   );
