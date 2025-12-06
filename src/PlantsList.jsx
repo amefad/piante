@@ -1,8 +1,8 @@
 export default function PlantList({ data, user }) {
   return (
     <>
-      {data.isError && <div>failed to load</div>}
-      {data.isLoading && <div>loading...</div>}
+      {data.error && <p className="error">{data.error.message}</p>}
+      {data.isLoading && <p>Loading...</p>}
       {data.plants?.length === 0 ? (
         <p>
           <strong>{user.name}</strong>, a quanto pare non hai inserito nessuna pianta.

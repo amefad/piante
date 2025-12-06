@@ -40,9 +40,11 @@ export default function Map({ data, active = false }) {
   const mapState = useMapContext();
 
   return (
-    <>
-      {data.isError && <div>failed to load</div>}
-      {data.isLoading && <div>loading...</div>}
+    <div className="map">
+      <div className="status">
+        {data.error && <p className="error">{data.error.message}</p>}
+        {data.isLoading && <p>Loading...</p>}
+      </div>
       <MapContainer
         center={initialCenter}
         maxBounds={bounds}
@@ -86,6 +88,6 @@ export default function Map({ data, active = false }) {
           ))}
         <CenterMarker />
       </MapContainer>
-    </>
+    </div>
   );
 }

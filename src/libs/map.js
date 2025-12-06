@@ -16,9 +16,8 @@ export const enableMap = (map) => {
   map.keyboard.enable();
 };
 
-export const moveMap = (map) => {
+export const resizeMap = (map) => {
   setTimeout(() => {
-    const panelHeight = document.getElementsByClassName("panel")[0].clientHeight;
-    map.panBy([0, panelHeight / 2]);
-  }, 200);
+    map.invalidateSize();
+  }, 100);
 };

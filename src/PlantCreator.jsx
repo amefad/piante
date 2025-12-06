@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { useAuth } from "./AuthContext";
 import { useMapContext } from "./MapContext";
 import Autocomplete from "./Autocomplete";
-import { disableMap, enableMap, moveMap } from "./libs/map";
+import { disableMap, enableMap, resizeMap } from "./libs/map";
 import "./PlantCreator.scss";
 
 export default function PlantCreator() {
@@ -37,6 +37,7 @@ export default function PlantCreator() {
         if (response.ok) {
           mapState.setStep(0);
           enableMap(mapState.map);
+          resizeMap(mapState.map);
         } else {
           setError(data.message || "Inserimento fallito");
         }
@@ -51,11 +52,11 @@ export default function PlantCreator() {
           className="add"
           onClick={() => {
             mapState.setStep(1);
-            // moveMap(mapState.map);
+            resizeMap(mapState.map);
           }}
           title="Aggiungi una pianta"
         >
-          +
+          <img src={`${import.meta.env.BASE_URL}/img/plus.svg`} alt="+" />
         </button>
       );
     } else if (mapState.step == 1) {
@@ -67,16 +68,13 @@ export default function PlantCreator() {
               onClick={() => {
                 mapState.setStep(2);
                 disableMap(mapState.map);
-                moveMap(mapState.map);
+                resizeMap(mapState.map);
               }}
               title="Passo successivo"
             >
               Prosegui
             </button>
           </section>
-          <div className="centerMarker">
-            <img src={`${import.meta.env.BASE_URL}/markers/custom-icon.png`} />
-          </div>
         </>
       );
     } else {
@@ -102,6 +100,7 @@ export default function PlantCreator() {
               onClick={() => {
                 mapState.setStep(0);
                 enableMap(mapState.map);
+                resizeMap(mapState.map);
               }}
               title="Annulla l'inserimento"
             >

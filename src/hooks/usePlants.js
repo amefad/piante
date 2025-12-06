@@ -7,7 +7,7 @@ export function usePlants(queryPath = "") {
   let url = `${import.meta.env.BASE_URL}/api/plants${queryPath}`;
 
   // debug: can help setting `dedupingInterval` (default is 2s)
-  const { data, error, isLoading } = useSWR(url, fetcher);
+  const { data, isLoading, error } = useSWR(url, fetcher);
 
   // debug
   // const { cache } = useSWRConfig();
@@ -16,6 +16,6 @@ export function usePlants(queryPath = "") {
   return {
     plants: data,
     isLoading,
-    isError: error,
+    error,
   };
 }

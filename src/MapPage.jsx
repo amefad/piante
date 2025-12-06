@@ -10,10 +10,12 @@ export default function MapPage() {
 
   return (
     <div id="map-page">
-      <MapContextProvider>
-        <Map data={data} active={true} />
-        <PlantCreator />
-      </MapContextProvider>
+      <div className="content">
+        <MapContextProvider>
+          <Map data={data} active={true} />
+          <PlantCreator />
+        </MapContextProvider>
+      </div>
       <Access />
     </div>
   );
