@@ -28,11 +28,10 @@ textarea {
   font-size: 1em;
   font-weight: 500;
 }
-button {
+button,
+input[type="button"] {
   border-radius: 8px;
   border: 2px solid transparent;
-  padding: 0.8em 1.5em;
-  font-size: 1.1em;
   font-weight: 500;
   background-color: light-dark(#d4d6d6, #1a1a1a);
   cursor: pointer;
@@ -40,6 +39,10 @@ button {
   &:hover {
     border-color: #646cff;
   }
+}
+button {
+  padding: 0.8em 1.5em;
+  font-size: 1.1em;
 }
 .error {
   padding: 0.3em 1em 0.5em;
