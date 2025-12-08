@@ -9,9 +9,10 @@ import "./PlantCreator.scss";
 export default function PlantCreator() {
   const { user, token } = useAuth();
   const mapState = useMapContext();
-  const [species, setSpecies] = useState({ id: 1 });
+  const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
-  const [diameters, setDiameters] = useState([]);
+  const [method, setMethod] = useState("diameter");
+  const [measures, setMeasures] = useState([""]);
   const [height, setHeight] = useState("");
   const [error, setError] = useState(null);
 
@@ -24,6 +25,16 @@ export default function PlantCreator() {
   // Posts the plant data to database
   function addPlant(event) {
     event.preventDefault();
+    setError(null);
+    const diameters =
+      method == "none"
+        ? ["unable"]
+        : measures
+            .map((measure) =>
+              method == "circum" ? Math.round(measure / Math.PI) : parseInt(measure)
+            )
+            .filter((diameter) => diameter > 0)
+            .sort((a, b) => b - a);
     const jsonData = {
       latitude: mapState.plantLocation[0],
       longitude: mapState.plantLocation[1],
@@ -42,9 +53,11 @@ export default function PlantCreator() {
     }).then((response) => {
       response.json().then((data) => {
         if (response.ok) {
-          mapState.setStep(0);
-          enableMap(mapState.map);
-          resizeMap(mapState.map);
+          gotoStep(0);
+          // Resets some values
+          setNumber("");
+          setMeasures([""]);
+          setHeight("");
         } else {
           setError(data.message || "Inserimento fallito");
         }
@@ -76,15 +89,20 @@ export default function PlantCreator() {
     } else {
       return (
         <form className="panel" onSubmit={addPlant}>
-          <Autocomplete value={"?"} setSpecies={setSpecies} />
-          {species.warning && <mark>{species.warning}</mark>}
+          <Autocomplete species={species} setSpecies={setSpecies} />
+          {species?.warning && <mark>{species.warning}</mark>}
           <input
             type="number"
             placeholder="Numero comunale"
             value={number}
             onChange={(event) => setNumber(parseInt(event.target.value))}
           />
-          <Trunks setDiameters={setDiameters} />
+          <Trunks
+            method={method}
+            setMethod={setMethod}
+            measures={measures}
+            setMeasures={setMeasures}
+          />
           <input
             type="number"
             placeholder="Altezza (metri)"
@@ -96,7 +114,7 @@ export default function PlantCreator() {
             <button type="button" onClick={() => gotoStep(1)} title="Torna al posizionamento">
               Indietro
             </button>
-            <button type="submit" onClick={addPlant} title="Concludi l'inserimento">
+            <button type="submit" title="Concludi l'inserimento">
               Salva
             </button>
           </div>

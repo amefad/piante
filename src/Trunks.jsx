@@ -1,10 +1,6 @@
-import { useState, useEffect } from "react";
 import "./Trunks.scss";
 
-export default function Trunks({ setDiameters }) {
-  const [method, setMethod] = useState("diameter");
-  const [measures, setMeasures] = useState([""]);
-
+export default function Trunks({ method, setMethod, measures, setMeasures }) {
   function addMeasure() {
     setMeasures([...measures.slice(), ""]);
   }
@@ -20,19 +16,6 @@ export default function Trunks({ setDiameters }) {
     }
     setMeasures(measures.map((measure, i) => (i == index ? value : measure)));
   }
-
-  // Sets data that will go to database
-  useEffect(() => {
-    if (method == "none") {
-      setDiameters(["unable"]);
-    } else {
-      const diameters = measures
-        .map((measure) => (method == "circum" ? Math.round(measure / Math.PI) : parseInt(measure)))
-        .filter((diameter) => diameter > 0)
-        .sort((a, b) => b - a);
-      setDiameters(diameters);
-    }
-  }, [method, measures]);
 
   return (
     <div id="trunks">

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import "./Autocomplete.scss";
 
-export default function Autocomplete({ value: origValue, setSpecies }) {
+export default function Autocomplete({ species, setSpecies }) {
   const [speciesList, setSpeciesList] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(species?.scientificName || "");
   const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
@@ -18,8 +18,8 @@ export default function Autocomplete({ value: origValue, setSpecies }) {
       });
   }, []);
 
-  const dataFilter = (texto) => {
-    return speciesList.filter((one) => one.text.indexOf(texto?.toLowerCase()) > -1);
+  const dataFilter = (text) => {
+    return speciesList.filter((one) => one.text.indexOf(text?.toLowerCase()) > -1);
   };
 
   return (
