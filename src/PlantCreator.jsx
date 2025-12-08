@@ -28,7 +28,7 @@ export default function PlantCreator() {
       latitude: mapState.plantLocation[0],
       longitude: mapState.plantLocation[1],
       number: number || null,
-      circumferences: diameters.length > 0 ? diameters : null,
+      diameters: diameters.length > 0 ? diameters : null,
       height: height || null,
       species: {
         id: species.id,

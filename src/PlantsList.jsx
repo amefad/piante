@@ -23,7 +23,7 @@ export default function PlantList({ data, user }) {
                     <br />
                     Numero {plant.number}
                     <br />
-                    Circonferenze {plant.circumferences.join(", ")} cm
+                    Diametri {plant.diameters.join(", ")} cm
                     <br />
                     Altezza {plant.height} m<br />
                     Data {plant.date}
