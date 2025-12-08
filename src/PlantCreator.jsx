@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useMapContext } from "./MapContext";
+import { useSnackbar } from "./SnackbarContext";
 import Autocomplete from "./Autocomplete";
 import Trunks from "./Trunks";
 import { disableMap, enableMap, resizeMap } from "./libs/map";
@@ -9,6 +10,7 @@ import "./PlantCreator.scss";
 export default function PlantCreator() {
   const { user, token } = useAuth();
   const mapState = useMapContext();
+  const { setSnack } = useSnackbar();
   const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
   const [method, setMethod] = useState("diameter");
@@ -58,8 +60,11 @@ export default function PlantCreator() {
           setNumber("");
           setMeasures([""]);
           setHeight("");
+          setSnack("Nuova pianta inserita");
         } else {
-          setError(data.message || "Inserimento fallito");
+          const message = data.message || "Inserimento fallito";
+          setError(message);
+          setSnack(message);
         }
       });
     });
