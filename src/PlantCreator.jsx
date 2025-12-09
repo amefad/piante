@@ -121,6 +121,9 @@ export default function PlantCreator() {
           {species?.warning && <mark>{species.warning}</mark>}
           <input
             type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
             placeholder="Numero comunale"
             value={number}
             onChange={(event) => setNumber(parseInt(event.target.value))}
@@ -133,6 +136,9 @@ export default function PlantCreator() {
           />
           <input
             type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
             placeholder="Altezza (metri)"
             value={height}
             onChange={(event) => setHeight(parseFloat(event.target.value))}
