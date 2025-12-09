@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Popup from "./Popup";
 import "./Autocomplete.scss";
 
 export default function Autocomplete({ species, setSpecies }) {
@@ -18,52 +19,52 @@ export default function Autocomplete({ species, setSpecies }) {
       });
   }, []);
 
-  const dataFilter = (text) => {
-    return speciesList.filter((one) => one.text.indexOf(text?.toLowerCase()) > -1);
-  };
+  function showSuggestions(event) {
+    const value = event.target.value;
+    if (value.length > 0) {
+      setFilteredData(
+        speciesList.filter((species) => species.text.indexOf(value.toLowerCase()) > -1)
+      );
+    } else {
+      setFilteredData(speciesList);
+    }
+    setMenuVisible(true);
+    setValue(value);
+  }
 
   return (
     <div id="autocomplete">
       <input
-        onFocus={() => {
-          if (value.length === 0) {
-            setMenuVisible(true);
-          }
-        }}
-        //onBlur={() => setMenuVisible(false)}
         placeholder="Nome specie"
-        onChange={(event) => {
-          const text = event.target.value;
-          if (text && text.length > 0) {
-            setFilteredData(dataFilter(text));
-          } else if (text && text.length === 0) {
-            setFilteredData(speciesList);
-          }
-          setMenuVisible(true);
-          setValue(text);
-        }}
+        onClick={showSuggestions}
+        onChange={showSuggestions}
         value={value}
         required
       />
-      {menuVisible && filteredData && (
-        <div className="list">
-          {filteredData.map((datum, i) => (
-            <div
-              className="datum"
-              key={i}
-              onClick={() => {
-                setValue(datum.scientificName);
-                setSpecies(datum);
-                setMenuVisible(false);
-              }}
-            >
-              <strong>{datum.scientificName}</strong>
-              <small>{datum.commonName}</small>
-              <mark>{datum.warning}</mark>
-            </div>
-          ))}
-        </div>
-      )}
+      <Popup
+        className="list"
+        show={menuVisible}
+        onClickOutside={() => {
+          species && setValue(species.scientificName);
+          setMenuVisible(false);
+        }}
+      >
+        {filteredData.map((datum, i) => (
+          <div
+            className="datum"
+            key={i}
+            onClick={() => {
+              setSpecies(datum);
+              setValue(datum.scientificName);
+              setMenuVisible(false);
+            }}
+          >
+            <strong>{datum.scientificName}</strong>
+            <small>{datum.commonName}</small>
+            <mark>{datum.warning}</mark>
+          </div>
+        ))}
+      </Popup>
     </div>
   );
 }

@@ -28,6 +28,10 @@ export default function PlantCreator() {
   function addPlant(event) {
     event.preventDefault();
     setError(null);
+    if(!species) {
+      setSnack("Specie non definita");
+      return;
+    }
     const diameters =
       method == "none"
         ? ["unable"]
