@@ -2,10 +2,27 @@ import { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useMapContext } from "./MapContext";
 import { useSnackbar } from "./SnackbarContext";
+import useSWRMutation from "swr/mutation";
 import Autocomplete from "./Autocomplete";
 import Trunks from "./Trunks";
 import { disableMap, enableMap, resizeMap } from "./libs/map";
 import "./PlantCreator.scss";
+
+const uploadPlant = async (urlKey, { arg: { token, plant } }) => {
+  const res = await fetch(urlKey, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(plant),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    const err = new Error(data?.message || `Request failed with status ${res.status}`);
+    err.status = res.status;
+    err.info = data;
+    throw err;
+  }
+  return data;
+};
 
 export default function PlantCreator() {
   const { user, token } = useAuth();
@@ -18,6 +35,13 @@ export default function PlantCreator() {
   const [height, setHeight] = useState("");
   const [error, setError] = useState(null);
 
+  const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, uploadPlant, {
+    populateCache: (newPlant, plants) => {
+      return [...plants, newPlant];
+    },
+    revalidate: false,
+  });
+
   function gotoStep(step) {
     mapState.setStep(step);
     step == 2 ? disableMap(mapState.map) : enableMap(mapState.map);
@@ -25,10 +49,10 @@ export default function PlantCreator() {
   }
 
   // Posts the plant data to database
-  function addPlant(event) {
+  async function addPlant(event) {
     event.preventDefault();
     setError(null);
-    if(!species) {
+    if (!species) {
       setSnack("Specie non definita");
       return;
     }
@@ -41,6 +65,7 @@ export default function PlantCreator() {
             )
             .filter((diameter) => diameter > 0)
             .sort((a, b) => b - a);
+
     const jsonData = {
       latitude: mapState.plantLocation[0],
       longitude: mapState.plantLocation[1],
@@ -52,26 +77,20 @@ export default function PlantCreator() {
       },
       userId: user.id,
     };
-    fetch(`${import.meta.env.BASE_URL}/api/plants`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify(jsonData),
-    }).then((response) => {
-      response.json().then((data) => {
-        if (response.ok) {
-          gotoStep(0);
-          // Resets some values
-          setNumber("");
-          setMeasures([""]);
-          setHeight("");
-          setSnack("Nuova pianta inserita");
-        } else {
-          const message = data.message || "Inserimento fallito";
-          setError(message);
-          setSnack(message);
-        }
-      });
-    });
+
+    try {
+      await trigger({ token: token, plant: jsonData });
+      setSnack("Nuova pianta inserita");
+      // Resets some values
+      setError(null);
+      gotoStep(0);
+      setNumber("");
+      setMeasures([""]);
+      setHeight("");
+    } catch (exception) {
+      setSnack("qualcosa andato storto");
+      setError(exception.message);
+    }
   }
 
   if (user) {
