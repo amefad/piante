@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 /**
  * @param props onClickOutside, show, className
  */
-export default function Pupup(props) {
+export default function Popup(props) {
   const ref = useRef(null);
 
   function handleClick(event) {

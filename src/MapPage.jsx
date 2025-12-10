@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { MapContextProvider } from "./MapContext";
 import Map from "./Map";
 import Access from "./Access";
@@ -10,13 +11,16 @@ export default function MapPage() {
 
   return (
     <div id="map-page">
+      <Link className="logo" to="/">
+        <img src={`${import.meta.env.BASE_URL}/favicon.svg`} alt="Logo" />
+      </Link>
+      <Access />
       <div className="content">
         <MapContextProvider>
           <Map data={data} active={true} />
           <PlantCreator />
         </MapContextProvider>
       </div>
-      <Access />
     </div>
   );
 }
