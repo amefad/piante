@@ -49,8 +49,10 @@ export default function Trunks({ method, setMethod, measures, setMeasures }) {
               value={measure}
             />
           ))}
-          {measures.length > 1 && <input type="button" value="-" onClick={removeMeasure} />}
-          <input type="button" value="+" onClick={addMeasure} />
+          <div className="buttons">
+            {measures.length > 1 && <input type="button" value="-" onClick={removeMeasure} />}
+            <input type="button" value="+" onClick={addMeasure} />
+          </div>
         </div>
       )}
     </div>
