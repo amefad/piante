@@ -123,7 +123,7 @@ export default function PlantCreator() {
             type="number"
             min="0"
             step="1"
-            inputmode="numeric"
+            inputMode="numeric"
             placeholder="Numero comunale"
             value={number}
             onChange={(event) => setNumber(parseInt(event.target.value))}
@@ -138,7 +138,7 @@ export default function PlantCreator() {
             type="number"
             min="0"
             step="1"
-            inputmode="numeric"
+            inputMode="numeric"
             placeholder="Altezza (metri)"
             value={height}
             onChange={(event) => setHeight(parseFloat(event.target.value))}

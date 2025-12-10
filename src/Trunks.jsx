@@ -46,9 +46,7 @@ export default function Trunks({ method, setMethod, measures, setMeasures }) {
             <input
               key={index}
               type="number"
-              min="0"
-              step="1"
-              inputmode="numeric"
+              inputMode="numeric"
               placeholder="Centimetri"
               onChange={(event) => changeMeasure(event, index)}
               value={measure}
