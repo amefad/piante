@@ -18,7 +18,6 @@ const uploadPlant = async (urlKey, { arg: { token, plant } }) => {
   if (!res.ok) {
     const err = new Error(data?.message || `Request failed with status ${res.status}`);
     err.status = res.status;
-    err.info = data;
     throw err;
   }
   return data;
@@ -33,9 +32,8 @@ export default function PlantCreator() {
   const [method, setMethod] = useState("diameter");
   const [measures, setMeasures] = useState([""]);
   const [height, setHeight] = useState("");
-  const [error, setError] = useState(null);
 
-  const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, uploadPlant, {
+  const { trigger, error } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, uploadPlant, {
     populateCache: (newPlant, plants) => {
       return [...plants, newPlant];
     },
@@ -51,7 +49,6 @@ export default function PlantCreator() {
   // Posts the plant data to database
   async function addPlant(event) {
     event.preventDefault();
-    setError(null);
     if (!species) {
       setSnack("Specie non definita");
       return;
@@ -82,14 +79,13 @@ export default function PlantCreator() {
       await trigger({ token: token, plant: jsonData });
       setSnack("Nuova pianta inserita");
       // Resets some values
-      setError(null);
       gotoStep(0);
       setNumber("");
       setMeasures([""]);
       setHeight("");
     } catch (exception) {
-      setSnack("qualcosa andato storto");
-      setError(exception.message);
+      setSnack("Qualcosa è andato storto");
+      console.log(exception);
     }
   }
 
@@ -108,7 +104,7 @@ export default function PlantCreator() {
             <button type="button" onClick={() => gotoStep(0)} title="Annulla l'inserimento">
               Annulla
             </button>
-            <button onClick={() => gotoStep(2)} title="Passo successivo">
+            <button type="button" onClick={() => gotoStep(2)} title="Passo successivo">
               Prosegui
             </button>
           </div>
@@ -152,7 +148,7 @@ export default function PlantCreator() {
               Salva
             </button>
           </div>
-          {error && <p className="error">{error}</p>}
+          {error && <p className="error">{error.message}</p>}
         </form>
       );
     }
