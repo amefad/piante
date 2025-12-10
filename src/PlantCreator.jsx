@@ -66,9 +66,9 @@ export default function PlantCreator() {
     const jsonData = {
       latitude: mapState.plantLocation[0],
       longitude: mapState.plantLocation[1],
-      number: number || null,
+      number: parseInt(number) || null,
       diameters: diameters.length > 0 ? diameters : null,
-      height: height || null,
+      height: parseFloat(height) || null,
       species: {
         id: species.id,
       },
@@ -117,12 +117,11 @@ export default function PlantCreator() {
           {species?.warning && <mark>{species.warning}</mark>}
           <input
             type="number"
-            min="0"
-            step="1"
+            min="1"
             inputMode="numeric"
             placeholder="Numero comunale"
             value={number}
-            onChange={(event) => setNumber(parseInt(event.target.value))}
+            onChange={(event) => setNumber(event.target.value)}
           />
           <Trunks
             method={method}
@@ -133,11 +132,11 @@ export default function PlantCreator() {
           <input
             type="number"
             min="0"
-            step="1"
-            inputMode="numeric"
+            step="0.1"
+            inputMode="decimal"
             placeholder="Altezza (metri)"
             value={height}
-            onChange={(event) => setHeight(parseFloat(event.target.value))}
+            onChange={(event) => setHeight(event.target.value)}
           />
           <textarea placeholder="Note" value="Note (da implementare)" disabled />
           <div className="buttons">

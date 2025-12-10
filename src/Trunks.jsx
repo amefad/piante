@@ -10,11 +10,7 @@ export default function Trunks({ method, setMethod, measures, setMeasures }) {
   }
 
   function changeMeasure(event, index) {
-    let value = event.target.value;
-    if (value <= 0) {
-      value = "";
-    }
-    setMeasures(measures.map((measure, i) => (i == index ? value : measure)));
+    setMeasures(measures.map((measure, i) => (i == index ? event.target.value : measure)));
   }
 
   return (
@@ -46,6 +42,7 @@ export default function Trunks({ method, setMethod, measures, setMeasures }) {
             <input
               key={index}
               type="number"
+              min="1"
               inputMode="numeric"
               placeholder="Centimetri"
               onChange={(event) => changeMeasure(event, index)}
