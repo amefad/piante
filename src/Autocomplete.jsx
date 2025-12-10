@@ -38,6 +38,7 @@ export default function Autocomplete({ species, setSpecies }) {
         placeholder="Nome specie"
         onClick={showSuggestions}
         onChange={showSuggestions}
+        onBlur={() => setValue(species?.scientificName || "")}
         value={value}
         required
       />

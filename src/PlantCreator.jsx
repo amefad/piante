@@ -8,17 +8,15 @@ import Trunks from "./Trunks";
 import { disableMap, enableMap, resizeMap } from "./libs/map";
 import "./PlantCreator.scss";
 
-const uploadPlant = async (urlKey, { arg: { token, plant } }) => {
+const postData = async (urlKey, { arg: { token, jsonData } }) => {
   const res = await fetch(urlKey, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify(plant),
+    body: JSON.stringify(jsonData),
   });
   const data = await res.json().catch(() => null);
   if (!res.ok) {
-    const err = new Error(data?.message || `Request failed with status ${res.status}`);
-    err.status = res.status;
-    throw err;
+    throw new Error(data?.message || `${res.statusText} (${res.status})`);
   }
   return data;
 };
@@ -32,8 +30,9 @@ export default function PlantCreator() {
   const [method, setMethod] = useState("diameter");
   const [measures, setMeasures] = useState([""]);
   const [height, setHeight] = useState("");
+  const [error, setError] = useState(null);
 
-  const { trigger, error } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, uploadPlant, {
+  const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, postData, {
     populateCache: (newPlant, plants) => {
       return [...plants, newPlant];
     },
@@ -42,15 +41,22 @@ export default function PlantCreator() {
 
   function gotoStep(step) {
     mapState.setStep(step);
+    if (step == 0) {
+      setNumber("");
+      setMeasures([""]);
+      setHeight("");
+    }
     step == 2 ? disableMap(mapState.map) : enableMap(mapState.map);
     resizeMap(mapState.map);
+    setError(null);
   }
 
   // Posts the plant data to database
   async function addPlant(event) {
     event.preventDefault();
+    setError(null);
     if (!species) {
-      setSnack("Specie non definita");
+      setError("Specie non definita");
       return;
     }
     const diameters =
@@ -76,16 +82,11 @@ export default function PlantCreator() {
     };
 
     try {
-      await trigger({ token: token, plant: jsonData });
-      setSnack("Nuova pianta inserita");
-      // Resets some values
+      await trigger({ token, jsonData });
       gotoStep(0);
-      setNumber("");
-      setMeasures([""]);
-      setHeight("");
-    } catch (exception) {
-      setSnack("Qualcosa è andato storto");
-      console.log(exception);
+      setSnack("Nuova pianta inserita");
+    } catch (error) {
+      setError(error.message || "Qualcosa è andato storto");
     }
   }
 
@@ -139,6 +140,7 @@ export default function PlantCreator() {
             onChange={(event) => setHeight(event.target.value)}
           />
           <textarea placeholder="Note" value="Note (da implementare)" disabled />
+          {error && <p className="error">{error}</p>}
           <div className="buttons">
             <button type="button" onClick={() => gotoStep(1)} title="Torna al posizionamento">
               Indietro
@@ -147,7 +149,6 @@ export default function PlantCreator() {
               Salva
             </button>
           </div>
-          {error && <p className="error">{error.message}</p>}
         </form>
       );
     }
