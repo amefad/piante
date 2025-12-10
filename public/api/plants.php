@@ -146,7 +146,7 @@ function postPlant() {
     $stmt->bindParam(':user', $data['userId']);
     $stmt->execute();
     // Returns new plant
-    $plant = getPlant($pdo->lastInsertId(), false);
+    $plant = getPlant($pdo->lastInsertId());
     return [$plant, 201];
 }
 
