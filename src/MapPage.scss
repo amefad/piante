@@ -5,4 +5,9 @@
     right: 1em;
     z-index: 400;
   }
+  .content {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100dvh;
+  }
 }

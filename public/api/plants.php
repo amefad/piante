@@ -5,8 +5,8 @@ define('MAX_SPECIES_ID', 92);
 function getPlants() {
     try {
         require 'pdo.php';
-        $query = 'SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, height, circumferences, height,
-        species_id AS species, insert_date AS date, user_id AS user FROM plants';
+        $query = 'SELECT id, ST_Y(location) AS latitude, ST_X(location) AS longitude, number, diameters, height,
+        species_id AS species, user_id AS user, insert_date AS date FROM plants';
         if (isset($_GET['user'])) {
             $userId = intval($_GET['user']);
             if ($userId <= 0) {
@@ -25,10 +25,10 @@ function getPlants() {
 
         if ($plants) {
             foreach ($plants as &$plant) {
-                if (!is_null($plant['circumferences'])) {
-                    $plant['circumferences'] = json_decode($plant['circumferences']);
+                if (!is_null($plant['diameters'])) {
+                    $plant['diameters'] = json_decode($plant['diameters']);
                 } else {
-                    $plant['circumferences'] = array();
+                    $plant['diameters'] = array();
                 }
                 $species = $pdo->query('SELECT id, scientific_name AS scientificName, common_name AS commonName, warning
                 FROM species WHERE id = '. $plant['species'])->fetch();
@@ -77,15 +77,15 @@ function getPlants() {
 // With $complete false returns no user nor images
 function getPlant($id, $complete = true) {
     require 'pdo.php';
-    $stmt = $pdo->prepare('SELECT id, number, ST_Y(location) AS latitude, ST_X(location) AS longitude, circumferences, height,
-    species_id AS species, insert_date AS date, user_id AS user FROM plants WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT id, ST_Y(location) AS latitude, ST_X(location) AS longitude, number, diameters, height,
+    species_id AS species, user_id AS user, insert_date AS date FROM plants WHERE id = ?');
     $stmt->execute([$id]);
     $plant = $stmt->fetch();
     if ($plant) {
-        if (!is_null($plant['circumferences'])) {
-            $plant['circumferences'] = json_decode($plant['circumferences']);
+        if (!is_null($plant['diameters'])) {
+            $plant['diameters'] = json_decode($plant['diameters']);
         } else {
-            $plant['circumferences'] = array();
+            $plant['diameters'] = array();
         }
         $species = $pdo->query('SELECT id, scientific_name AS scientificName, common_name AS commonName, warning
         FROM species WHERE id = '. $plant['species'])->fetch();
@@ -128,15 +128,15 @@ function postPlant() {
         return error('ID utente necessario');
     }
     global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO plants (number, location, circumferences, height, species_id, user_id)
-    VALUES (:num, POINT(:lon, :lat), :circ, :height, :species, :user)");
-    $stmt->bindParam(':num', $data['number']);
+    $stmt = $pdo->prepare("INSERT INTO plants (location, number, diameters, height, species_id, user_id)
+    VALUES (POINT(:lon, :lat), :num, :diam, :height, :species, :user)");
     $stmt->bindParam(':lon', $data['longitude']);
     $stmt->bindParam(':lat', $data['latitude']);
-    if (isset($data['circumferences']) && !is_null($data['circumferences'])) {
-        $circ = json_encode($data['circumferences']);
+    $stmt->bindParam(':num', $data['number']);
+    if (isset($data['diameters']) && !is_null($data['diameters'])) {
+        $diameters = json_encode($data['diameters']);
     }
-    $stmt->bindParam(':circ', $circ);
+    $stmt->bindParam(':diam', $diameters);
     $stmt->bindParam(':height', $data['height']);
     $speciesId = intval($data['species']['id']);
     if ($speciesId <= 0 || $speciesId > MAX_SPECIES_ID) {
@@ -146,7 +146,7 @@ function postPlant() {
     $stmt->bindParam(':user', $data['userId']);
     $stmt->execute();
     // Returns new plant
-    $plant = getPlant($pdo->lastInsertId(), false);
+    $plant = getPlant($pdo->lastInsertId());
     return [$plant, 201];
 }
 
@@ -154,10 +154,10 @@ function postPlant() {
 // Doesn't update date, user and images
 function putPlant($id) {
     $updates = array(
-        'number' => 'number',
         'longitude' => 'longitude',
         'latitude' => 'latitude',
-        'circumferences' => 'circumferences',
+        'number' => 'number',
+        'diameters' => 'diameters',
         'height' => 'height',
         'species_id' => 'species'
     );
@@ -176,7 +176,7 @@ function putPlant($id) {
                 unset($updates[$key]);
             } else if (is_null($data[$value])) {
                 $updates[$key] = NULL;
-            } else if ($key == 'circumferences') {
+            } else if ($key == 'diameters') {
                 $updates[$key] = json_encode($data[$value]);
             } else {
                 $updates[$key] = $data[$value];

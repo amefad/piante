@@ -1,8 +1,8 @@
 export default function PlantList({ data, user }) {
   return (
     <>
-      {data.isError && <div>failed to load</div>}
-      {data.isLoading && <div>loading...</div>}
+      {data.error && <p className="error">{data.error.message}</p>}
+      {data.isLoading && <p>Loading...</p>}
       {data.plants?.length === 0 ? (
         <p>
           <strong>{user.name}</strong>, a quanto pare non hai inserito nessuna pianta.
@@ -23,7 +23,7 @@ export default function PlantList({ data, user }) {
                     <br />
                     Numero {plant.number}
                     <br />
-                    Circonferenze {plant.circumferences.join(", ")} cm
+                    Diametri {plant.diameters.join(", ")} cm
                     <br />
                     Altezza {plant.height} m<br />
                     Data {plant.date}

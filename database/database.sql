@@ -44,9 +44,9 @@ CREATE TABLE `images` (
 
 CREATE TABLE `plants` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `number` smallint unsigned DEFAULT NULL,
   `location` point DEFAULT NULL,
-  `circumferences` json DEFAULT NULL,
+  `number` smallint unsigned DEFAULT NULL,
+  `diameters` json DEFAULT NULL,
   `height` decimal(4,1) unsigned DEFAULT NULL,
   `species_id` tinyint unsigned NOT NULL DEFAULT '1',
   `user_id` int unsigned NOT NULL,

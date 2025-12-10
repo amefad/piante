@@ -1,0 +1,39 @@
+#snackbar {
+  position: fixed;
+  z-index: 2000;
+  left: 1em;
+  margin-right: 1em;
+  bottom: 2em;
+  box-shadow: black 0 5px 20px;
+  border-radius: 5px;
+  background-color: light-dark(#ffffff, #242424);
+  padding: 15px 20px;
+  &.show {
+    animation: bounceIn 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) 0s both, fadeOut 0.5s ease 4.5s both;
+  }
+  &.hide {
+    display: none;
+  }
+}
+@keyframes bounceIn {
+  0% {
+    transform: translateY(120%);
+  }
+  33% {
+    transform: translateY(-10px);
+  }
+  66% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
