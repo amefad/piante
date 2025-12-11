@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from "react";
+import { Link } from "react-router";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
 import { useMapContext } from "./MapContext";
@@ -83,6 +84,7 @@ export default function Map({ data, active = false }) {
                   <br />
                   da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
                 </p>
+                <Link to={`/plant/${plant.id}`}>Dettagli</Link>
               </Popup>
             </Marker>
           ))}

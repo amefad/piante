@@ -1,5 +1,6 @@
 <?php
 define('MAX_SPECIES_ID', 92);
+define('MAX_NUMBER', 65535);
 
 // Gets all plants from the database
 function getPlants() {
@@ -121,11 +122,14 @@ function getPlant($id, $complete = true) {
 // Inserts a new plant in database
 function postPlant() {
     $data = json_decode(file_get_contents('php://input'), true);
-    if (!isset($data['species']) || !is_array($data['species']) || !isset($data['species']['id'])) {
-        return error('Specie non valida');
-    }
     if (!isset($data['userId'])) {
         return error('ID utente necessario');
+    }
+    if (array_key_exists('number', $data) && $data['number'] > MAX_NUMBER) {
+        return error('Number è maggiore di ' . MAX_NUMBER);
+    }
+    if (!isset($data['species']) || !is_array($data['species']) || !isset($data['species']['id'])) {
+        return error('Specie non valida');
     }
     global $pdo;
     $stmt = $pdo->prepare("INSERT INTO plants (location, number, diameters, height, species_id, user_id)
@@ -153,6 +157,7 @@ function postPlant() {
 // Receives a JSON with plant ID and other data and updates the plant in database
 // Doesn't update date, user and images
 function putPlant($id) {
+    //return error("iddddddddddd " . $id);
     $updates = array(
         'longitude' => 'longitude',
         'latitude' => 'latitude',
@@ -176,6 +181,8 @@ function putPlant($id) {
                 unset($updates[$key]);
             } else if (is_null($data[$value])) {
                 $updates[$key] = NULL;
+            } else if ($key == 'number' && $data[$value] > MAX_NUMBER) {
+                return error('Number è maggiore di ' . MAX_NUMBER);
             } else if ($key == 'diameters') {
                 $updates[$key] = json_encode($data[$value]);
             } else {
@@ -204,7 +211,7 @@ function putPlant($id) {
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         if ($stmt->rowCount() == 1) {
-            return getPlant($id, false);
+            return getPlant($id);
         } else {
             return success('Nessuna pianta è stata modificata');
         }

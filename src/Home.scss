@@ -9,6 +9,10 @@
       border-radius: 5px;
       background-color: #468a7e4c;
       padding: 1em 1.5em;
+      cursor: pointer;
+      &:hover {
+        background-color: cadetblue;
+      }
       h3 {
         margin: 0;
       }

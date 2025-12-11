@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router";
+
 export default function PlantList({ data, user }) {
+  const navigate = useNavigate();
+
   return (
     <>
       {data.error && <p className="error">{data.error.message}</p>}
@@ -13,7 +17,7 @@ export default function PlantList({ data, user }) {
           <section>
             {data.plants &&
               data.plants.map((plant) => (
-                <article key={plant.id}>
+                <article key={plant.id} onClick={() => navigate(`/plant/${plant.id}`)}>
                   <h3>{plant.species.scientificName}</h3>
                   {plant.species.commonName}
                   <br />
