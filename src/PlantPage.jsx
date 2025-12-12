@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useNavigate } from "react-router";
 import useSWRMutation from "swr/mutation";
 import { usePlants } from "./hooks/usePlants";
 import { useAuth } from "./AuthContext";
@@ -33,16 +33,28 @@ const putData = async (urlKey, { arg: { id, token, jsonData } }) => {
   return data;
 };
 
+const deleteData = async (urlKey, { arg: { id, token } }) => {
+  const res = await fetch(`${urlKey}/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.message || `${res.statusText} (${res.status})`);
+  }
+  return data;
+};
+
 export default function PlantPage() {
   const { id } = useParams();
   const plantsData = usePlants();
   const [plant, setPlant] = useState(null);
   const [editData, setEditData] = useState(false);
   const [editMap, setEditMap] = useState(false);
-
   const { user, token } = useAuth();
   const { setSnack } = useSnackbar();
-  const [putError, setPutError] = useState(null);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Plant states
   const [species, setSpecies] = useState(null);
@@ -54,17 +66,26 @@ export default function PlantPage() {
   const [height, setHeight] = useState("");
   const [note, setNote] = useState("");
 
-  const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, putData, {
-    populateCache: (data, plants) => {
-      if (data.id) {
-        // data is a plant
-        const filteredPlants = plants.filter((plant) => plant.id != data.id);
-        return [...filteredPlants, data];
-      }
-      return data;
-    },
-    revalidate: false,
-  });
+  const { trigger: triggerPut } = useSWRMutation(
+    `${import.meta.env.BASE_URL}/api/plants`,
+    putData,
+    {
+      populateCache: (data, plants) => {
+        if (data.id) {
+          // data is a plant
+          const filteredPlants = plants.filter((plant) => plant.id != data.id);
+          return [...filteredPlants, data];
+        }
+        return data;
+      },
+      revalidate: false,
+    }
+  );
+
+  const { trigger: triggerDelete } = useSWRMutation(
+    `${import.meta.env.BASE_URL}/api/plants`,
+    deleteData
+  );
 
   useEffect(() => {
     if (plantsData.plants) {
@@ -90,7 +111,7 @@ export default function PlantPage() {
 
   async function putPlantData(event) {
     event.preventDefault();
-    setPutError(null);
+    setError(null);
     const jsonData = {
       id: parseInt(id),
       number: parseInt(number) || null,
@@ -102,7 +123,7 @@ export default function PlantPage() {
       },
     };
     try {
-      await trigger({ id, token, jsonData });
+      await triggerPut({ id, token, jsonData });
       setEditData(false);
       setSnack("Dati aggiornati");
     } catch (error) {
@@ -110,21 +131,21 @@ export default function PlantPage() {
         setEditData(false);
         setSnack(error.message);
       } else {
-        setPutError(error.message || "Qualcosa è andato storto");
+        setError(error.message || "Qualcosa è andato storto");
       }
     }
   }
 
   async function putPlantLocation(event, plantLocation) {
     event.preventDefault();
-    setPutError(null);
+    setError(null);
     const jsonData = {
       id: parseInt(id),
       latitude: plantLocation[0],
       longitude: plantLocation[1],
     };
     try {
-      await trigger({ id, token, jsonData });
+      await triggerPut({ id, token, jsonData });
       setEditMap(false);
       setSnack("Posizione aggiornata");
     } catch (error) {
@@ -132,7 +153,22 @@ export default function PlantPage() {
         setEditMap(false);
         setSnack(error.message);
       } else {
-        setPutError(error.message || "Qualcosa è andato storto");
+        setError(error.message || "Qualcosa è andato storto");
+      }
+    }
+  }
+
+  async function deletePlant(event) {
+    event.preventDefault();
+    setError(null);
+    if (confirm("Sicuro di voler eliminare questa pianta dal database?")) {
+      try {
+        await triggerDelete({ id, token });
+        setSnack("Pianta eliminata");
+        navigate(-1);
+      } catch (error) {
+        console.log(error);
+        setError(error.message || "Qualcosa è andato storto");
       }
     }
   }
@@ -201,7 +237,7 @@ export default function PlantPage() {
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
               />
-              {putError && <p className="error">{putError}</p>}
+              {error && <p className="error">{error}</p>}
               <div className="buttons">
                 <button type="button" onClick={() => setEditData(false)}>
                   Annulla
@@ -233,9 +269,15 @@ export default function PlantPage() {
               </Link>
             </MapProvider>
             {user && (
-              <p>
-                <button onClick={() => setEditMap(true)}>Modifica posizione</button>
-              </p>
+              <>
+                <p>
+                  <button onClick={() => setEditMap(true)}>Modifica posizione</button>
+                </p>
+                {error && <p className="error">{error}</p>}
+                <p>
+                  <button onClick={deletePlant}>Elimina pianta</button>
+                </p>
+              </>
             )}
             {plant.images.map((image) => (
               <img
