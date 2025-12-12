@@ -48,7 +48,9 @@ export default function PlantPage() {
   const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
   const [method, setMethod] = useState("diameter");
-  const [diameters, setDiameters] = useState([""]);
+  const [indeterminable, setIndeterminable] = useState(false);
+  const [measures, setMeasures] = useState([""]);
+  const [diameters, setDiameters] = useState(measures);
   const [height, setHeight] = useState("");
 
   const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, putData, {
@@ -76,8 +78,10 @@ export default function PlantPage() {
     if (plant) {
       setSpecies(plant.species || null);
       setNumber(plant.number || "");
-      setMethod(plant.diameters.includes("unable") ? "none" : "diameter");
-      setDiameters(plant.diameters.length > 0 ? plant.diameters : [""]);
+      setMethod("diameter");
+      setIndeterminable(plant.diameters.includes("unable"));
+      setMeasures(plant.diameters.length > 0 ? plant.diameters : [""]);
+      setDiameters(measures);
       setHeight(plant.height != null ? String(plant.height) : "");
     }
   }, [plant, editData]);
@@ -174,8 +178,11 @@ export default function PlantPage() {
               <Trunks
                 method={method}
                 setMethod={setMethod}
-                measures={diameters}
-                setMeasures={setDiameters}
+                indeterminable={indeterminable}
+                setIndeterminable={setIndeterminable}
+                measures={measures}
+                setMeasures={setMeasures}
+                setDiameters={setDiameters}
               />
               <input
                 type="number"

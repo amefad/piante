@@ -28,7 +28,9 @@ export default function PlantCreator() {
   const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
   const [method, setMethod] = useState("diameter");
+  const [indeterminable, setIndeterminable] = useState(false);
   const [measures, setMeasures] = useState([""]);
+  const [diameters, setDiameters] = useState(measures);
   const [height, setHeight] = useState("");
   const [error, setError] = useState(null);
 
@@ -55,20 +57,6 @@ export default function PlantCreator() {
   async function addPlant(event) {
     event.preventDefault();
     setError(null);
-    if (!species) {
-      setError("Specie non definita");
-      return;
-    }
-    const diameters =
-      method == "none"
-        ? ["unable"]
-        : measures
-            .map((measure) =>
-              method == "circum" ? Math.round(measure / Math.PI) : parseInt(measure)
-            )
-            .filter((diameter) => diameter > 0)
-            .sort((a, b) => b - a);
-
     const jsonData = {
       latitude: mapState.plantLocation[0],
       longitude: mapState.plantLocation[1],
@@ -80,7 +68,6 @@ export default function PlantCreator() {
       },
       userId: user.id,
     };
-
     try {
       await trigger({ token, jsonData });
       gotoStep(0);
@@ -127,8 +114,11 @@ export default function PlantCreator() {
           <Trunks
             method={method}
             setMethod={setMethod}
+            indeterminable={indeterminable}
+            setIndeterminable={setIndeterminable}
             measures={measures}
             setMeasures={setMeasures}
+            setDiameters={setDiameters}
           />
           <input
             type="number"
