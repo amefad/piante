@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useSnackbar } from "./SnackbarContext";
+import { useApp } from "./AppContext";
 import "./Snackbar.scss";
 
 export default function Snackbar() {
-  const { snack, setSnack } = useSnackbar();
+  const { snack, setSnack } = useApp();
   const [timeoutId, setTimeoutId] = useState();
 
   useEffect(() => {

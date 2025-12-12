@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useAuth } from "./AuthContext";
-import { useMap } from "./MapContext";
-import { useSnackbar } from "./SnackbarContext";
 import useSWRMutation from "swr/mutation";
+import { useAuth } from "./AuthContext";
+import { useApp } from "./AppContext";
+import { useMap } from "./MapContext";
 import Autocomplete from "./Autocomplete";
 import Trunks from "./Trunks";
 import { disableMap, enableMap, resizeMap } from "./libs/map";
@@ -24,7 +24,7 @@ const postData = async (urlKey, { arg: { token, jsonData } }) => {
 export default function PlantCreator() {
   const { user, token } = useAuth();
   const mapState = useMap();
-  const { setSnack } = useSnackbar();
+  const { setSnack } = useApp();
   const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
   const [method, setMethod] = useState("diameter");
@@ -132,7 +132,11 @@ export default function PlantCreator() {
             value={height}
             onChange={(event) => setHeight(event.target.value)}
           />
-          <textarea placeholder="Note" value={note} onChange={(event) => setNote(event.target.value)} />
+          <textarea
+            placeholder="Note"
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+          />
           {error && <p className="error">{error}</p>}
           <div className="buttons">
             <button type="button" onClick={() => gotoStep(1)} title="Torna al posizionamento">

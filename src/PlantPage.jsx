@@ -3,8 +3,8 @@ import { useParams, Link, useNavigate } from "react-router";
 import useSWRMutation from "swr/mutation";
 import { usePlants } from "./hooks/usePlants";
 import { useAuth } from "./AuthContext";
+import { useApp } from "./AppContext";
 import { MapProvider, useMap } from "./MapContext";
-import { useSnackbar } from "./SnackbarContext";
 import Page from "./Page";
 import Map from "./Map";
 import Autocomplete from "./Autocomplete";
@@ -52,7 +52,7 @@ export default function PlantPage() {
   const [editData, setEditData] = useState(false);
   const [editMap, setEditMap] = useState(false);
   const { user, token } = useAuth();
-  const { setSnack } = useSnackbar();
+  const { setMapView, setSnack } = useApp();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -175,11 +175,9 @@ export default function PlantPage() {
 
   const LocationButtons = () => {
     const mapState = useMap();
-
     useEffect(() => {
       mapState.setStep(1);
     });
-
     return (
       <div className="buttons">
         <button onClick={() => setEditMap(false)}>Annulla</button>
@@ -264,7 +262,10 @@ export default function PlantPage() {
               Aggiunta il <data value={plant.date}>{plant.date}</data> da {plant.user.name}
             </p>
             <MapProvider>
-              <Link to="/map">
+              <Link
+                to="/map"
+                onClick={() => setMapView({ zoom: 18, coords: [plant.latitude, plant.longitude] })}
+              >
                 <Map data={plantsData} />
               </Link>
             </MapProvider>

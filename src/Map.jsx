@@ -1,7 +1,8 @@
 import { useEffect, useCallback } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
+import { useApp } from "./AppContext";
 import { useMap } from "./MapContext";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
@@ -24,11 +25,18 @@ const placer = L.icon({
   iconAnchor: [12, 24],
 });
 
-function LocationMarker() {
+export default function Map({ data, active = false }) {
+  const { mapView, setMapView } = useApp();
   const mapState = useMap();
+  const location = useLocation();
+
   const onMove = useCallback(() => {
+    const mapZoom = mapState.map.getZoom();
     const mapCenter = mapState.map.getCenter();
     mapState.setPlantLocation([mapCenter.lat, mapCenter.lng]);
+    if (location.pathname == "/map") {
+      setMapView({ zoom: mapZoom, coords: [mapCenter.lat, mapCenter.lng] });
+    }
   }, [mapState?.map]);
 
   useEffect(() => {
@@ -36,15 +44,12 @@ function LocationMarker() {
     mapState?.map?.on("zoom", onMove);
   }, [onMove]);
 
-  return <Marker position={mapState.plantLocation} icon={placer} />;
-}
-
-export default function Map({ data, active = false }) {
-  const mapState = useMap();
-
+  // Sets map zoom and position at loading
   useEffect(() => {
     if (data.selected) {
       mapState?.map?.setView([data.selected.latitude, data.selected.longitude], 19);
+    } else {
+      mapState?.map?.setView([mapView.coords[0], mapView.coords[1]], mapView.zoom);
     }
   }, [mapState?.map]);
 
@@ -105,7 +110,7 @@ export default function Map({ data, active = false }) {
               )}
             </Marker>
           ))}
-        {mapState?.step > 0 && <LocationMarker />}
+        {mapState?.step > 0 && <Marker position={mapState.plantLocation} icon={placer} />}
       </MapContainer>
     </div>
   );
