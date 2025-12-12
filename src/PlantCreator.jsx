@@ -32,6 +32,7 @@ export default function PlantCreator() {
   const [measures, setMeasures] = useState([""]);
   const [diameters, setDiameters] = useState(measures);
   const [height, setHeight] = useState("");
+  const [note, setNote] = useState("");
   const [error, setError] = useState(null);
 
   const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, postData, {
@@ -47,6 +48,7 @@ export default function PlantCreator() {
       setNumber("");
       setMeasures([""]);
       setHeight("");
+      setNote("");
     }
     step == 2 ? disableMap(mapState.map) : enableMap(mapState.map);
     resizeMap(mapState.map);
@@ -63,6 +65,7 @@ export default function PlantCreator() {
       number: parseInt(number) || null,
       diameters: diameters.length > 0 ? diameters : null,
       height: parseFloat(height) || null,
+      note: note || null,
       species: {
         id: species.id,
       },
@@ -129,7 +132,7 @@ export default function PlantCreator() {
             value={height}
             onChange={(event) => setHeight(event.target.value)}
           />
-          <textarea placeholder="Note" value="Note (da implementare)" disabled />
+          <textarea placeholder="Note" value={note} onChange={(event) => setNote(event.target.value)} />
           {error && <p className="error">{error}</p>}
           <div className="buttons">
             <button type="button" onClick={() => gotoStep(1)} title="Torna al posizionamento">

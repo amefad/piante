@@ -51,6 +51,7 @@ CREATE TABLE `plants` (
   `species_id` tinyint unsigned NOT NULL DEFAULT '1',
   `user_id` int unsigned NOT NULL,
   `insert_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `note` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 

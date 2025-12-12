@@ -52,6 +52,7 @@ export default function PlantPage() {
   const [measures, setMeasures] = useState([""]);
   const [diameters, setDiameters] = useState(measures);
   const [height, setHeight] = useState("");
+  const [note, setNote] = useState("");
 
   const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, putData, {
     populateCache: (data, plants) => {
@@ -82,7 +83,8 @@ export default function PlantPage() {
       setIndeterminable(plant.diameters.includes("unable"));
       setMeasures(plant.diameters.length > 0 ? plant.diameters : [""]);
       setDiameters(measures);
-      setHeight(plant.height != null ? String(plant.height) : "");
+      setHeight(plant.height || "");
+      setNote(plant.note || "");
     }
   }, [plant, editData]);
 
@@ -94,6 +96,7 @@ export default function PlantPage() {
       number: parseInt(number) || null,
       diameters: diameters.length > 0 ? diameters : null,
       height: parseFloat(height) || null,
+      note: note || null,
       species: {
         id: species.id,
       },
@@ -193,7 +196,11 @@ export default function PlantPage() {
                 value={height}
                 onChange={(event) => setHeight(event.target.value)}
               />
-              {/* <textarea placeholder="Note" value="" /> */}
+              <textarea
+                placeholder="Note"
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+              />
               {putError && <p className="error">{putError}</p>}
               <div className="buttons">
                 <button type="button" onClick={() => setEditData(false)}>
@@ -214,6 +221,7 @@ export default function PlantPage() {
               Diametri {plant.diameters.join(", ")} cm
               <br />
               Altezza {plant.height} m<br />
+              Nota {plant.note}
             </p>
             {user && <button onClick={() => setEditData(true)}>Modifica dati</button>}
             <p>

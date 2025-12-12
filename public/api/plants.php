@@ -7,7 +7,7 @@ function getPlants() {
     try {
         require 'pdo.php';
         $query = 'SELECT id, ST_Y(location) AS latitude, ST_X(location) AS longitude, number, diameters, height,
-        species_id AS species, user_id AS user, insert_date AS date FROM plants';
+        note, species_id AS species, user_id AS user, insert_date AS date FROM plants';
         if (isset($_GET['user'])) {
             $userId = intval($_GET['user']);
             if ($userId <= 0) {
@@ -79,7 +79,7 @@ function getPlants() {
 function getPlant($id, $complete = true) {
     require 'pdo.php';
     $stmt = $pdo->prepare('SELECT id, ST_Y(location) AS latitude, ST_X(location) AS longitude, number, diameters, height,
-    species_id AS species, user_id AS user, insert_date AS date FROM plants WHERE id = ?');
+    note, species_id AS species, user_id AS user, insert_date AS date FROM plants WHERE id = ?');
     $stmt->execute([$id]);
     $plant = $stmt->fetch();
     if ($plant) {
@@ -132,8 +132,8 @@ function postPlant() {
         return error('Specie non valida');
     }
     global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO plants (location, number, diameters, height, species_id, user_id)
-    VALUES (POINT(:lon, :lat), :num, :diam, :height, :species, :user)");
+    $stmt = $pdo->prepare("INSERT INTO plants (location, number, diameters, height, note, species_id, user_id)
+    VALUES (POINT(:lon, :lat), :num, :diam, :height, :note, :species, :user)");
     $stmt->bindParam(':lon', $data['longitude']);
     $stmt->bindParam(':lat', $data['latitude']);
     $stmt->bindParam(':num', $data['number']);
@@ -142,6 +142,7 @@ function postPlant() {
     }
     $stmt->bindParam(':diam', $diameters);
     $stmt->bindParam(':height', $data['height']);
+    $stmt->bindParam(':note', $data['note']);
     $speciesId = intval($data['species']['id']);
     if ($speciesId <= 0 || $speciesId > MAX_SPECIES_ID) {
         $speciesId = 1; // Default species
@@ -157,13 +158,13 @@ function postPlant() {
 // Receives a JSON with plant ID and other data and updates the plant in database
 // Doesn't update date, user and images
 function putPlant($id) {
-    //return error("iddddddddddd " . $id);
     $updates = array(
         'longitude' => 'longitude',
         'latitude' => 'latitude',
         'number' => 'number',
         'diameters' => 'diameters',
         'height' => 'height',
+        'note' => 'note',
         'species_id' => 'species'
     );
     // Data into $updates
