@@ -8,6 +8,7 @@ import Resend from "./Resend";
 import Recover from "./Recover";
 import Reset from "./Reset";
 import MapPage from "./MapPage";
+import PlantPage from "./PlantPage";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
       <Route path="recover" element={<Recover />} />
       <Route path="reset" element={<Reset />} />
       <Route path="map" element={<MapPage />} />
+      <Route path="plant/:id" element={<PlantPage />} />
       <Route path="*" element={<Home />} />
     </Routes>
   );

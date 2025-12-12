@@ -99,6 +99,8 @@ function putUser($id) {
     );
     // Data into $updates
     $data = json_decode(file_get_contents('php://input'), true);
+    $token = getToken();
+    $currentUser = $pdo->query("SELECT role FROM users WHERE token = '$token'")->fetch();
     foreach ($updates as $key => $value) {
         if (isset($data[$value])) { // Actual values only
             // Checks existing email
@@ -112,8 +114,6 @@ function putUser($id) {
             // Only admin can change the role
             else if ($key == 'role') {
                 if ($targetUser['role'] != $data[$value]) {
-                    $token = getToken();
-                    $currentUser = $pdo->query("SELECT role FROM users WHERE token = '$token'")->fetch();
                     if ($currentUser['role'] != 'admin') {
                         return error('Solo un amministratore può modificare il ruolo', 401);
                     }
@@ -124,6 +124,9 @@ function putUser($id) {
             } else {
                 $updates[$key] = $data[$value];
             }
+        } else if ($key == 'role' && $currentUser['role'] == 'invalid') { // Coming from reset password
+            $updates[$key] = 'editor';
+            $updates['token'] = NULL;    
         } else {
             unset($updates[$key]);
         }

@@ -3,7 +3,20 @@
     position: absolute;
     top: 1em;
     right: 1em;
-    z-index: 400;
+    z-index: 401;
+  }
+  .logo {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    z-index: 401;
+    border-radius: 50%;
+    background-color: light-dark(#e9eeee, #111515);
+    img {
+      display: block;
+      height: 45px;
+      width: 45px;
+    }
   }
   .content {
     display: grid;
