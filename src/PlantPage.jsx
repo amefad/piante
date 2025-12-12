@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import useSWRMutation from "swr/mutation";
 import { usePlants } from "./hooks/usePlants";
+import { timeAgo } from "./libs/various";
 import { useAuth } from "./AuthContext";
 import { useApp } from "./AppContext";
 import { MapProvider, useMap } from "./MapContext";
@@ -259,7 +260,11 @@ export default function PlantPage() {
             </p>
             {user && <button onClick={() => setEditData(true)}>Modifica dati</button>}
             <p>
-              Aggiunta il <data value={plant.date}>{plant.date}</data> da {plant.user.name}
+              Aggiunta{" "}
+              <data value={plant.date} title={plant.date}>
+                {timeAgo(plant.date)}
+              </data>{" "}
+              da <strong>{plant.user.name}</strong>
             </p>
             <MapProvider>
               <Link

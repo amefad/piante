@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { timeAgo } from "./libs/various";
 
 export default function PlantList({ data, user }) {
   const navigate = useNavigate();
@@ -30,7 +31,10 @@ export default function PlantList({ data, user }) {
                     Diametri {plant.diameters.join(", ")} cm
                     <br />
                     Altezza {plant.height} m<br />
-                    Data {plant.date}
+                    Aggiunta{" "}
+                    <data value={plant.date} title={plant.date}>
+                      {timeAgo(plant.date)}
+                    </data>
                   </p>
                   {plant.images.map((image) => (
                     <img

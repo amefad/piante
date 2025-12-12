@@ -4,6 +4,7 @@ import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
 import { useApp } from "./AppContext";
 import { useMap } from "./MapContext";
+import { timeAgo } from "./libs/various";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
@@ -101,9 +102,7 @@ export default function Map({ data, active = false }) {
                   <br />
                   <mark>{plant.species.warning}</mark>
                   <p>
-                    Aggiunta il <data value={plant.date}>{plant.date}</data>
-                    <br />
-                    da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
+                    Aggiunta {timeAgo(plant.date)} da <strong>{plant.user?.name}</strong>
                   </p>
                   <Link to={`/plant/${plant.id}`}>Dettagli</Link>
                 </Popup>
