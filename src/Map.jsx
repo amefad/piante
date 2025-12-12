@@ -2,7 +2,7 @@ import { useEffect, useCallback } from "react";
 import { Link } from "react-router";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, AttributionControl } from "react-leaflet";
-import { useMapContext } from "./MapContext";
+import { useMap } from "./MapContext";
 import "leaflet/dist/leaflet.css";
 import "./Map.scss";
 
@@ -15,13 +15,17 @@ const marker = L.icon({
   iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin.svg`,
   iconAnchor: [9, 9],
 });
+const selectedMarker = L.icon({
+  iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin-selected.svg`,
+  iconAnchor: [9, 9],
+});
 const placer = L.icon({
   iconUrl: `${import.meta.env.BASE_URL}/markers/map-pin-red.svg`,
   iconAnchor: [12, 24],
 });
 
-function CenterMarker() {
-  const mapState = useMapContext();
+function LocationMarker() {
+  const mapState = useMap();
   const onMove = useCallback(() => {
     const mapCenter = mapState.map.getCenter();
     mapState.setPlantLocation([mapCenter.lat, mapCenter.lng]);
@@ -32,13 +36,17 @@ function CenterMarker() {
     mapState?.map?.on("zoom", onMove);
   }, [onMove]);
 
-  return mapState && mapState.step > 0 ? (
-    <Marker position={mapState.plantLocation} icon={placer} />
-  ) : null;
+  return <Marker position={mapState.plantLocation} icon={placer} />;
 }
 
 export default function Map({ data, active = false }) {
-  const mapState = useMapContext();
+  const mapState = useMap();
+
+  useEffect(() => {
+    if (data.selected) {
+      mapState?.map?.setView([data.selected.latitude, data.selected.longitude], 19);
+    }
+  }, [mapState?.map]);
 
   return (
     <div className="map">
@@ -70,25 +78,34 @@ export default function Map({ data, active = false }) {
         <AttributionControl prefix={false} position="bottomright" />
         {data.plants
           ?.filter((plant) => plant.latitude && plant.longitude)
+          .filter((plant) => {
+            return !(mapState?.step > 0 && plant.id == data.selected?.id);
+          })
           .map((plant) => (
-            <Marker position={[plant.latitude, plant.longitude]} icon={marker} key={plant.id}>
-              <Popup>
-                <div style={{ fontWeight: "bold", fontSize: "1.2em" }}>
-                  {plant.species.scientificName}
-                </div>
-                {plant.species.commonName}
-                <br />
-                <mark>{plant.species.warning}</mark>
-                <p>
-                  Aggiunta il <data value={plant.date}>{plant.date}</data>
+            <Marker
+              position={[plant.latitude, plant.longitude]}
+              icon={plant.id == data.selected?.id ? selectedMarker : marker}
+              key={plant.id}
+            >
+              {active && (
+                <Popup>
+                  <div style={{ fontWeight: "bold", fontSize: "1.2em" }}>
+                    {plant.species.scientificName}
+                  </div>
+                  {plant.species.commonName}
                   <br />
-                  da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
-                </p>
-                <Link to={`/plant/${plant.id}`}>Dettagli</Link>
-              </Popup>
+                  <mark>{plant.species.warning}</mark>
+                  <p>
+                    Aggiunta il <data value={plant.date}>{plant.date}</data>
+                    <br />
+                    da <span style={{ fontStyle: "italic" }}>{plant.user?.name}</span>
+                  </p>
+                  <Link to={`/plant/${plant.id}`}>Dettagli</Link>
+                </Popup>
+              )}
             </Marker>
           ))}
-        <CenterMarker />
+        {mapState?.step > 0 && <LocationMarker />}
       </MapContainer>
     </div>
   );

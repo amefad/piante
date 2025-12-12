@@ -1,9 +1,9 @@
 import { Link } from "react-router";
-import { MapContextProvider } from "./MapContext";
+import { MapProvider } from "./MapContext";
+import { usePlants } from "./hooks/usePlants";
 import Map from "./Map";
 import Access from "./Access";
 import PlantCreator from "./PlantCreator";
-import { usePlants } from "./hooks/usePlants";
 import "./MapPage.scss";
 
 export default function MapPage() {
@@ -16,10 +16,10 @@ export default function MapPage() {
       </Link>
       <Access />
       <div className="content">
-        <MapContextProvider>
+        <MapProvider>
           <Map data={data} active={true} />
           <PlantCreator />
-        </MapContextProvider>
+        </MapProvider>
       </div>
     </div>
   );

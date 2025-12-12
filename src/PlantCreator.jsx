@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
-import { useMapContext } from "./MapContext";
+import { useMap } from "./MapContext";
 import { useSnackbar } from "./SnackbarContext";
 import useSWRMutation from "swr/mutation";
 import Autocomplete from "./Autocomplete";
@@ -23,7 +23,7 @@ const postData = async (urlKey, { arg: { token, jsonData } }) => {
 
 export default function PlantCreator() {
   const { user, token } = useAuth();
-  const mapState = useMapContext();
+  const mapState = useMap();
   const { setSnack } = useSnackbar();
   const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
