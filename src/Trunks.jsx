@@ -24,8 +24,8 @@ export default function Trunks({
     setMeasures([...measures.slice(), ""]);
   }
 
-  function removeMeasure() {
-    setMeasures(measures.slice(0, -1));
+  function removeMeasure(index) {
+    setMeasures([...measures.slice(0, index), ...measures.slice(index + 1)]);
   }
 
   function changeMeasure(event, index) {
@@ -80,22 +80,23 @@ export default function Trunks({
         </label>
       </div>
       {!indeterminable && (
-        <div className="values">
+        <div className={measures.length > 1 ? "values multi" : "values"}>
           {measures.map((measure, index) => (
-            <input
-              key={index}
-              type="number"
-              min="1"
-              inputMode="numeric"
-              placeholder="Centimetri"
-              onChange={(event) => changeMeasure(event, index)}
-              value={measure}
-            />
+            <div className="trunk" key={index}>
+              <input
+                type="number"
+                min="1"
+                inputMode="numeric"
+                placeholder="Centimetri"
+                onChange={(event) => changeMeasure(event, index)}
+                value={measure}
+              />
+              {measures.length > 1 && (
+                <input type="button" value="-" onClick={() => removeMeasure(index)} />
+              )}
+            </div>
           ))}
-          <div className="buttons">
-            {measures.length > 1 && <input type="button" value="-" onClick={removeMeasure} />}
-            <input type="button" value="+" onClick={addMeasure} />
-          </div>
+          <input type="button" value="+" onClick={addMeasure} />
         </div>
       )}
     </div>
