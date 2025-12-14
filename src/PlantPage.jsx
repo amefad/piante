@@ -213,6 +213,7 @@ export default function PlantPage() {
               <input
                 type="number"
                 min="1"
+                max="65535"
                 inputMode="numeric"
                 placeholder="Numero comunale"
                 value={number}
@@ -230,6 +231,7 @@ export default function PlantPage() {
               <input
                 type="number"
                 min="0"
+                max="999.9"
                 step="0.1"
                 inputMode="decimal"
                 placeholder="Altezza (metri)"

@@ -86,6 +86,7 @@ export default function Trunks({
               <input
                 type="number"
                 min="1"
+                max="1000"
                 inputMode="numeric"
                 placeholder="Centimetri"
                 onChange={(event) => changeMeasure(event, index)}

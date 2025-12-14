@@ -1,6 +1,7 @@
 <?php
 define('MAX_SPECIES_ID', 92);
 define('MAX_NUMBER', 65535);
+define('MAX_HEIGHT', 999.9);
 
 // Gets all plants from the database
 function getPlants() {
@@ -128,6 +129,9 @@ function postPlant() {
     if (array_key_exists('number', $data) && $data['number'] > MAX_NUMBER) {
         return error('Number è maggiore di ' . MAX_NUMBER);
     }
+    if (array_key_exists('height', $data) && $data['height'] > MAX_HEIGHT) {
+        return error('Height è maggiore di ' . MAX_HEIGHT);
+    }
     if (!isset($data['species']) || !is_array($data['species']) || !isset($data['species']['id'])) {
         return error('Specie non valida');
     }
@@ -186,6 +190,8 @@ function putPlant($id) {
                 return error('Number è maggiore di ' . MAX_NUMBER);
             } else if ($key == 'diameters') {
                 $updates[$key] = json_encode($data[$value]);
+            } else if ($key == 'height' && $data[$value] > MAX_HEIGHT) {
+                return error('Height è maggiore di ' . MAX_HEIGHT);
             } else {
                 $updates[$key] = $data[$value];
             }
