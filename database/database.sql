@@ -143,7 +143,7 @@ INSERT INTO `species` (`scientific_name`, `common_name`, `warning`) VALUES
 ('Quercus robur', 'Farnia', NULL),
 ('Quercus robur \'Pyramidalis\'', 'Farnia colonnare', NULL),
 ('Quercus rubra', 'Quercia rossa', NULL),
-('Robinia pseudoacacia', 'Robinia / Acacia', 'Il nome acacia è improprio.'),
+('Robinia pseudoacacia', 'Robinia / Acacia', NULL),
 ('Salix alba', 'Salice bianco', NULL),
 ('Salix babylonica', 'Salice piangente', NULL),
 ('Taxus baccata', 'Tasso', NULL),
