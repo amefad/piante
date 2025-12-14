@@ -229,6 +229,7 @@ function deletePlant($id) {
     if ($stmt->rowCount() == 1) {
         // TODO Eliminare anche immagini?
         //$stmt = $pdo->prepare("DELETE FROM images WHERE plant_id = $id");
+        $pdo->query('ALTER TABLE plants AUTO_INCREMENT = 0');
         return success('Pianta eliminata');
     } else {
         return error('Pianta non trovata', 404);

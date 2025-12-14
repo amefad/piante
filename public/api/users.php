@@ -223,6 +223,7 @@ function deleteUser($id) {
     $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
     $stmt->execute([$id]);
     if ($stmt->rowCount() == 1) {
+        $pdo->query('ALTER TABLE users AUTO_INCREMENT = 0');
         return success('Utente eliminato');
     } else {
         return error('Utente non trovato', 404);
