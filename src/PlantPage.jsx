@@ -97,7 +97,6 @@ export default function PlantPage() {
   }, [plantsData]);
 
   useEffect(() => {
-    // if (plant && !editor) ?
     if (plant) {
       setSpecies(plant.species || null);
       setNumber(plant.number || "");
@@ -162,13 +161,12 @@ export default function PlantPage() {
   async function deletePlant(event) {
     event.preventDefault();
     setError(null);
-    if (confirm("Sicuro di voler eliminare questa pianta dal database?")) {
+    if (confirm("Sicuro di voler eliminare questa pianta?")) {
       try {
         await triggerDelete({ id, token });
         setSnack("Pianta eliminata");
         navigate(-1);
       } catch (error) {
-        console.log(error);
         setError(error.message || "Qualcosa è andato storto");
       }
     }
@@ -181,7 +179,14 @@ export default function PlantPage() {
     });
     return (
       <div className="buttons">
-        <button onClick={() => setEditMap(false)}>Annulla</button>
+        <button
+          onClick={() => {
+            setError(null);
+            setEditMap(false);
+          }}
+        >
+          Annulla
+        </button>
         <button onClick={(event) => putPlantLocation(event, mapState.plantLocation)}>Salva</button>
       </div>
     );
@@ -191,14 +196,14 @@ export default function PlantPage() {
     <Page>
       {plantsData.isLoading && <p>Loading...</p>}
       {plantsData.error && <p className="error">{plantsData.error.message}</p>}
-      {plant &&
-        !plantsData.error &&
-        ((editData || editMap) && user ? (
+      {plant && !plantsData.error ? (
+        (editData || editMap) && user ? (
           editMap ? (
             <div className="location-editor">
               <MapProvider>
                 <Map data={plantsData} active={true} />
-                <LocationButtons setEditMap={setEditMap} putPlantLocation={putPlantLocation} />
+                {error && <p className="error">{error}</p>}
+                <LocationButtons />
               </MapProvider>
             </div>
           ) : (
@@ -238,7 +243,13 @@ export default function PlantPage() {
               />
               {error && <p className="error">{error}</p>}
               <div className="buttons">
-                <button type="button" onClick={() => setEditData(false)}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setEditData(false);
+                  }}
+                >
                   Annulla
                 </button>
                 <button type="submit">Salva</button>
@@ -292,7 +303,10 @@ export default function PlantPage() {
               />
             ))}
           </div>
-        ))}
+        )
+      ) : (
+        <p className="error">Pianta non trovata</p>
+      )}
     </Page>
   );
 }
