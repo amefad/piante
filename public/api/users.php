@@ -191,7 +191,7 @@ function sendEmail($email, $name, $subject, $body) {
         $mail->Password = SMTP_PASSWORD;
         $mail->Port = 465;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->setFrom('noreply@' . SMTP_SERVER, 'No Reply');
+        $mail->setFrom('noreply@' . SMTP_SERVER, 'Mappa delle piante');
         $mail->addAddress($email, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
