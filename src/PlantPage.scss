@@ -1,0 +1,21 @@
+.plant-page {
+  .map {
+    height: 300px;
+  }
+}
+.data-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.location-editor {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+}
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}

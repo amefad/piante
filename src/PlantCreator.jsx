@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useAuth } from "./AuthContext";
-import { useMapContext } from "./MapContext";
-import { useSnackbar } from "./SnackbarContext";
 import useSWRMutation from "swr/mutation";
+import { useAuth } from "./AuthContext";
+import { useApp } from "./AppContext";
+import { useMap } from "./MapContext";
 import Autocomplete from "./Autocomplete";
 import Trunks from "./Trunks";
 import { disableMap, enableMap, resizeMap } from "./libs/map";
@@ -23,13 +23,16 @@ const postData = async (urlKey, { arg: { token, jsonData } }) => {
 
 export default function PlantCreator() {
   const { user, token } = useAuth();
-  const mapState = useMapContext();
-  const { setSnack } = useSnackbar();
+  const mapState = useMap();
+  const { setSnack } = useApp();
   const [species, setSpecies] = useState(null);
   const [number, setNumber] = useState("");
   const [method, setMethod] = useState("diameter");
+  const [indeterminable, setIndeterminable] = useState(false);
   const [measures, setMeasures] = useState([""]);
+  const [diameters, setDiameters] = useState(measures);
   const [height, setHeight] = useState("");
+  const [note, setNote] = useState("");
   const [error, setError] = useState(null);
 
   const { trigger } = useSWRMutation(`${import.meta.env.BASE_URL}/api/plants`, postData, {
@@ -45,6 +48,7 @@ export default function PlantCreator() {
       setNumber("");
       setMeasures([""]);
       setHeight("");
+      setNote("");
     }
     step == 2 ? disableMap(mapState.map) : enableMap(mapState.map);
     resizeMap(mapState.map);
@@ -55,32 +59,18 @@ export default function PlantCreator() {
   async function addPlant(event) {
     event.preventDefault();
     setError(null);
-    if (!species) {
-      setError("Specie non definita");
-      return;
-    }
-    const diameters =
-      method == "none"
-        ? ["unable"]
-        : measures
-            .map((measure) =>
-              method == "circum" ? Math.round(measure / Math.PI) : parseInt(measure)
-            )
-            .filter((diameter) => diameter > 0)
-            .sort((a, b) => b - a);
-
     const jsonData = {
       latitude: mapState.plantLocation[0],
       longitude: mapState.plantLocation[1],
       number: parseInt(number) || null,
       diameters: diameters.length > 0 ? diameters : null,
       height: parseFloat(height) || null,
+      note: note || null,
       species: {
         id: species.id,
       },
       userId: user.id,
     };
-
     try {
       await trigger({ token, jsonData });
       gotoStep(0);
@@ -119,6 +109,7 @@ export default function PlantCreator() {
           <input
             type="number"
             min="1"
+            max="65535"
             inputMode="numeric"
             placeholder="Numero comunale"
             value={number}
@@ -127,19 +118,27 @@ export default function PlantCreator() {
           <Trunks
             method={method}
             setMethod={setMethod}
+            indeterminable={indeterminable}
+            setIndeterminable={setIndeterminable}
             measures={measures}
             setMeasures={setMeasures}
+            setDiameters={setDiameters}
           />
           <input
             type="number"
             min="0"
+            max="999.9"
             step="0.1"
             inputMode="decimal"
             placeholder="Altezza (metri)"
             value={height}
             onChange={(event) => setHeight(event.target.value)}
           />
-          <textarea placeholder="Note" value="Note (da implementare)" disabled />
+          <textarea
+            placeholder="Note"
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+          />
           {error && <p className="error">{error}</p>}
           <div className="buttons">
             <button type="button" onClick={() => gotoStep(1)} title="Torna al posizionamento">

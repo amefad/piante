@@ -1,3 +1,5 @@
+SET NAMES utf8;
+
 CREATE DATABASE `piante` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `piante`;
 
@@ -51,6 +53,7 @@ CREATE TABLE `plants` (
   `species_id` tinyint unsigned NOT NULL DEFAULT '1',
   `user_id` int unsigned NOT NULL,
   `insert_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `note` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -142,7 +145,7 @@ INSERT INTO `species` (`scientific_name`, `common_name`, `warning`) VALUES
 ('Quercus robur', 'Farnia', NULL),
 ('Quercus robur \'Pyramidalis\'', 'Farnia colonnare', NULL),
 ('Quercus rubra', 'Quercia rossa', NULL),
-('Robinia pseudoacacia', 'Robinia / Acacia', 'Il nome acacia è improprio.'),
+('Robinia pseudoacacia', 'Robinia / Acacia', NULL),
 ('Salix alba', 'Salice bianco', NULL),
 ('Salix babylonica', 'Salice piangente', NULL),
 ('Taxus baccata', 'Tasso', NULL),

@@ -1,11 +1,8 @@
 #trunks {
   .methods {
     display: flex;
-    gap: 5px;
-    label {
-      display: flex;
-      align-items: center;
-    }
+    flex-wrap: wrap;
+    gap: 8px 5px;
   }
   .values {
     margin-top: 10px;
@@ -14,6 +11,19 @@
     flex-wrap: wrap;
     input[type="number"] {
       width: 6em;
+    }
+  }
+  .multi {
+    .trunk {
+      input[type="number"] {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: none;
+      }
+      input[type="button"] {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
     }
   }
 }
