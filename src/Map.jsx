@@ -26,7 +26,7 @@ const placer = L.icon({
   iconAnchor: [12, 24],
 });
 
-export default function Map({ data, active = false }) {
+export default function Map({ data, selected, active = false }) {
   const { mapView, setMapView } = useApp();
   const mapState = useMap();
   const location = useLocation();
@@ -47,8 +47,8 @@ export default function Map({ data, active = false }) {
 
   // Sets map zoom and position at loading
   useEffect(() => {
-    if (data.selected) {
-      mapState?.map?.setView([data.selected.latitude, data.selected.longitude], 19);
+    if (selected) {
+      mapState?.map?.setView([selected.latitude, selected.longitude], 19);
     } else {
       mapState?.map?.setView([mapView.coords[0], mapView.coords[1]], mapView.zoom);
     }
@@ -85,12 +85,12 @@ export default function Map({ data, active = false }) {
         {data.plants
           ?.filter((plant) => plant.latitude && plant.longitude)
           .filter((plant) => {
-            return !(mapState?.step > 0 && plant.id == data.selected?.id);
+            return !(mapState?.step > 0 && plant.id == selected?.id);
           })
           .map((plant) => (
             <Marker
               position={[plant.latitude, plant.longitude]}
-              icon={plant.id == data.selected?.id ? selectedMarker : marker}
+              icon={plant.id == selected?.id ? selectedMarker : marker}
               key={plant.id}
             >
               {active && (

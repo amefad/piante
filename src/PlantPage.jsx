@@ -92,7 +92,6 @@ export default function PlantPage() {
     if (plantsData.plants) {
       const thisPlant = plantsData.plants.find((plant) => plant.id == id);
       setPlant(thisPlant);
-      plantsData.selected = thisPlant;
     }
   }, [plantsData]);
 
@@ -201,7 +200,7 @@ export default function PlantPage() {
           editMap ? (
             <div className="location-editor">
               <MapProvider>
-                <Map data={plantsData} active={true} />
+                <Map data={plantsData} selected={plant} active={true} />
                 {error && <p className="error">{error}</p>}
                 <LocationButtons />
               </MapProvider>
@@ -284,7 +283,7 @@ export default function PlantPage() {
                 to="/map"
                 onClick={() => setMapView({ zoom: 18, coords: [plant.latitude, plant.longitude] })}
               >
-                <Map data={plantsData} />
+                <Map data={plantsData} selected={plant} />
               </Link>
             </MapProvider>
             {user && (
