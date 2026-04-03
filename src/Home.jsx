@@ -1,10 +1,10 @@
 import { Link } from "react-router";
+import { useAuth } from "./AuthContext";
+import { usePlants } from "./hooks/usePlants";
 import Page from "./Page";
+import PlantList from "./PlantsList";
 import Map from "./Map";
 import "./Home.scss";
-import PlantList from "./PlantsList";
-import { usePlants } from "./hooks/usePlants";
-import { useAuth } from "./AuthContext";
 
 export default function Home() {
   const { user } = useAuth();
@@ -26,7 +26,9 @@ export default function Home() {
         </p>
       )}
       <p>
-        <a href={`${import.meta.env.BASE_URL}/test/index.html`}>Interfaccia minima con le API</a>
+        {user?.role == "admin" && (
+          <a href={`${import.meta.env.BASE_URL}/test/index.html`}>Interfaccia minima con le API</a>
+        )}
       </p>
       <Link to="/map">
         <Map data={data} />

@@ -2,8 +2,8 @@ header {
   padding: 1em;
   background-color: light-dark(#e9eeee, #111515);
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 5px;
   .logo {
     display: flex;
     align-items: center;
@@ -12,13 +12,10 @@ header {
       height: 2.5rem;
     }
     h1 {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
       font-weight: 600;
       margin: 0;
       color: light-dark(#1b4236, #a0d2c0);
     }
-  }
-  #access {
-    margin-left: 1em;
   }
 }

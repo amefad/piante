@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NavLink } from "react-router";
 import { useAuth } from "./AuthContext";
+import Popup from "./Popup";
 import "./Access.scss";
 
 function writeInitials(user) {
@@ -13,14 +15,31 @@ function writeInitials(user) {
   return initials.toUpperCase();
 }
 
-export default function Header() {
+export default function Access() {
   const { user, logout } = useAuth();
+  const [menuVisible, setMenuVisible] = useState(false);
+
   return (
     <div id="access">
       {user ? ( // User is logged in
-        <button onClick={logout} title={`Logout ${user.name}`}>
-          {writeInitials(user)}
-        </button>
+        <div className="avatar">
+          <button
+            onClick={() => setMenuVisible(true)}
+            title={`Profilo di ${user.name}`}
+            className="avatar-image"
+          >
+            {writeInitials(user)}
+          </button>
+          <Popup
+            show={menuVisible}
+            onClickOutside={() => setMenuVisible(false)}
+            className="avatar-menu"
+          >
+            <button onClick={logout} title="Logout">
+              Logout
+            </button>
+          </Popup>
+        </div>
       ) : (
         <>
           <NavLink to="/login">Login</NavLink>

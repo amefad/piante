@@ -127,6 +127,7 @@ function deleteImage($id) {
     $stmt = $pdo->prepare('DELETE FROM images WHERE id = ?');
     $stmt->execute([$id]);
     if ($stmt->rowCount() == 1) {
+        $pdo->query('ALTER TABLE images AUTO_INCREMENT = 0');
         return success('Immagine eliminata');
     } else {
         return error('Immagine non trovata', 404);

@@ -99,6 +99,8 @@ function putUser($id) {
     );
     // Data into $updates
     $data = json_decode(file_get_contents('php://input'), true);
+    $token = getToken();
+    $currentUser = $pdo->query("SELECT role FROM users WHERE token = '$token'")->fetch();
     foreach ($updates as $key => $value) {
         if (isset($data[$value])) { // Actual values only
             // Checks existing email
@@ -112,8 +114,6 @@ function putUser($id) {
             // Only admin can change the role
             else if ($key == 'role') {
                 if ($targetUser['role'] != $data[$value]) {
-                    $token = getToken();
-                    $currentUser = $pdo->query("SELECT role FROM users WHERE token = '$token'")->fetch();
                     if ($currentUser['role'] != 'admin') {
                         return error('Solo un amministratore può modificare il ruolo', 401);
                     }
@@ -124,6 +124,9 @@ function putUser($id) {
             } else {
                 $updates[$key] = $data[$value];
             }
+        } else if ($key == 'role' && $currentUser['role'] == 'invalid') { // Coming from reset password
+            $updates[$key] = 'editor';
+            $updates['token'] = NULL;    
         } else {
             unset($updates[$key]);
         }
@@ -188,7 +191,7 @@ function sendEmail($email, $name, $subject, $body) {
         $mail->Password = SMTP_PASSWORD;
         $mail->Port = 465;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->setFrom('noreply@' . SMTP_SERVER, 'No Reply');
+        $mail->setFrom('noreply@' . SMTP_SERVER, 'Mappa delle piante');
         $mail->addAddress($email, $name);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -220,6 +223,7 @@ function deleteUser($id) {
     $stmt = $pdo->prepare('DELETE FROM users WHERE id = ?');
     $stmt->execute([$id]);
     if ($stmt->rowCount() == 1) {
+        $pdo->query('ALTER TABLE users AUTO_INCREMENT = 0');
         return success('Utente eliminato');
     } else {
         return error('Utente non trovato', 404);
